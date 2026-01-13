@@ -15,6 +15,7 @@ class Elevator:
         self.moving_direction = Direction.IDLE
 #!------------------------------------------------------------------------------   
         self.ws_manager = None  # WebSocket manager will be set later
+        self.prev_state = None  # Track previous state for broadcast optimization
 
     def set_websocket_manager(self, ws_manager):
         """Set the WebSocket manager for broadcasting updates"""
@@ -32,7 +33,7 @@ class Elevator:
 
         state = {
             "current_floor": self.current_floor,
-            "direction": moving_direction.value,
+            "direction": moving_direction,
             "is_door_open": self.is_door_open,
             "timestamp": loop.time()
         }
@@ -200,8 +201,10 @@ class Elevator:
 
                 if self.direction == Direction.UP:
                     self.current_floor += 0.2
+                    self.current_floor = round(self.current_floor, 1)
                 else:
                     self.current_floor -= 0.2 
+                    self.current_floor = round(self.current_floor, 1)
 
                 print(f"[Elevator Moving] Current Floor: {self.current_floor}")
                 await self.broadcast_state()  #! Broadcast position update
