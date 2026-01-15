@@ -169,10 +169,6 @@ class Elevator:
                 self.up_stops.insert(floor)
 
     def get_effective_direction(self):
-        """
-        After completing a move_to we generally set Direction.IDLE...
-        But At a Intermediate stop we set IDLE only for 2 sec
-        """
         if self.direction != Direction.IDLE:
             return self.direction
         if self.is_door_open == True:
