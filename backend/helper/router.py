@@ -2,7 +2,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 from methods.add_request import add_request 
 from methods.add_stop import add_stop
 from methods.get_status import get_status
-from methods.set_floors import set_floors
+from methods.initialize_building import initialize_building
 
 from .models import RequestModel, StopModel, BuildingModel
 from .websocket_manager import ws_manager
@@ -21,9 +21,9 @@ async def add_request_route(request: RequestModel):
 async def add_stop_route(stop: StopModel):
     return await add_stop(stop)
 
-@custom_router.post("/total_floors")
-async def set_floors_route(building: BuildingModel):
-    return await set_floors(building)
+@custom_router.post("/building")
+async def initialize_building_route(building: BuildingModel):
+    return await initialize_building(building)
 
 @custom_router.websocket("/ws")
 async def websocket_endpoint(websocket: WebSocket):

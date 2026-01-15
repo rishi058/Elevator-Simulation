@@ -4,6 +4,8 @@ from typing import Set
 class WebSocketManager:
     def __init__(self):
         self.active_connections: Set[WebSocket] = set()
+        print("[System] WebSocket endpoint: ws://localhost:8000/api/ws")
+
     
     async def connect(self, websocket: WebSocket):
         await websocket.accept()

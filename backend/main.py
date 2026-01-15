@@ -2,8 +2,8 @@ from fastapi import FastAPI
 from helper.router import custom_router
 import uvicorn
 
-from elevator.elevator import Elevator
-from helper import global_elevator
+from helper import global_controller
+from elevator.multi_elevator_system import CollectiveDispatchController
 from contextlib import asynccontextmanager
 import asyncio
 from fastapi.middleware.cors import CORSMiddleware
@@ -12,22 +12,24 @@ from helper.websocket_manager import ws_manager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Startup Logic 
-
+    # Startup
+    
     yield
+    
+    # Shutdown
+    controller_task = global_controller.controller_task
+    if controller_task:
+        print("[System] Shutting down Elevator System") 
 
-    # Shutdown Logic
-    task = global_elevator.elevator_task
-    if task:
-        print("[System] Stopping elevator service...")
-        global_elevator.elevator.cleanup()
-        del global_elevator.elevator
+        await global_controller.controller.stop()  # stop each elevator gracefully
+        del global_controller.controller
 
-        task.cancel()
+        controller_task.cancel()
         try:
-            await task
+            await controller_task
         except asyncio.CancelledError:
             pass
+        
     print("[System] Elevator service stopped")
 
 app = FastAPI(title="Elevator Microservice", lifespan=lifespan)
@@ -43,13 +45,12 @@ app.include_router(custom_router)
 @app.get("/", tags=["Info"])
 async def root():
     return {
-        "message": "Welcome to Elevator Microservice",
+        "message": "Welcome to Multi-Elevator Microservice",
         "endpoints": {
-            "GET /status": "Get current elevator status",
-            "POST /request": "Add a floor request with direction (e.g., '5U', '3D')",
-            "POST /stop": "Add a stop at a specific floor",
-            "POST /total_floors": "Set the total number of floors in the building",
-
+            "GET /api/status": "Get status of all elevators",
+            "POST /api/request": "Hall call - request elevator at floor with direction (e.g., floor=5, direction='U')",
+            "POST /api/stop": "Car call - add stop for specific elevator (e.g., elevator_id=0, floor=7)",
+            "POST /api/total_floors": "Set the total number of floors in the building",
             "WS /api/ws": "WebSocket connection for real-time elevator status updates",   
         }
     }

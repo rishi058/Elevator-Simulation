@@ -1,11 +1,11 @@
 from .direction import Direction
 from .heap import MinHeap, MaxHeap
 import asyncio
-import copy
 
 class Elevator: 
-    def __init__(self, total_floors=10):
-        self.total_floors = total_floors   #! Used for validation fast-api methods
+    def __init__(self, elevator_id: int, total_floors: int = 10):
+        self.id = elevator_id
+        self.total_floors = total_floors  #! UseLess
         self.current_floor = 0  # Can be float during movement (e.g., 1.25)
         self.direction = Direction.IDLE
         self.up_stops = MinHeap()
@@ -13,39 +13,11 @@ class Elevator:
 
         self.is_door_open = False
         self.moving_direction = Direction.IDLE
-#!------------------------------------------------------------------------------   
-        self.ws_manager = None  # WebSocket manager will be set later
-        self.prev_state = None  # Track previous state for broadcast optimization
+        
+        # Callback for state broadcast (set by controller)
+        self.on_state_change = None
 
-    def set_websocket_manager(self, ws_manager):
-        """Set the WebSocket manager for broadcasting updates"""
-        self.ws_manager = ws_manager
-    
-    async def broadcast_state(self):
-        if self.ws_manager is None:
-            return
 
-        moving_direction = self.direction
-        if moving_direction == Direction.IDLE and self.is_door_open:
-            moving_direction = self.moving_direction
-
-        loop = asyncio.get_running_loop()
-
-        state = {
-            "current_floor": self.current_floor,
-            "direction": moving_direction,
-            "is_door_open": self.is_door_open,
-            "timestamp": loop.time()
-        }
-
-        if self.prev_state:
-            if {k: v for k, v in state.items() if k != "timestamp"} == \
-            {k: v for k, v in self.prev_state.items() if k != "timestamp"}:
-                return
-
-        await self.ws_manager.broadcast(state)
-        self.prev_state = copy.deepcopy(state)
-#!------------------------------------------------------------------------------   
     def add_request(self, input_floor: int, input_dir: str):
         effective_direction = self.get_effective_direction()
 
@@ -75,18 +47,10 @@ class Elevator:
             else:
                 self.up_stops.insert(input_floor)
 
-    # Effective-Direction is IDLE, Request is for Same Floor 
-    async def open_door(self):
-        self.is_door_open = True
-        await asyncio.sleep(5)  # Door open for 5 seconds
-        self.is_door_open = False
-
     def add_stop(self, floor: int):
         effective_direction = self.get_effective_direction()
 
         if floor == self.current_floor:
-            if not self.is_door_open:
-                asyncio.create_task(self.open_door())
             return
 
         # ─────────────────────────────
@@ -180,20 +144,15 @@ class Elevator:
         return None
     
     async def run(self):
+        
         while True:
             stop = self.get_next_stop(delete=True)
-
             if stop is None:
                 self.direction = Direction.IDLE
-                await self.broadcast_state()  #! Broadcast idle state
                 await asyncio.sleep(1)
                 continue  
 
             self.direction = Direction.UP if stop > self.current_floor else Direction.DOWN
-            await self.broadcast_state()  #! Broadcast direction change
-
-            while self.is_door_open:  # wait for door to close before moving
-                await asyncio.sleep(1)
 
             while int(self.current_floor) != stop: 
                 # Check if there's a closer stop in the same direction
@@ -214,29 +173,53 @@ class Elevator:
                     self.current_floor += 0.2
                     self.current_floor = round(self.current_floor, 1)
                 else:
-                    self.current_floor -= 0.2 
+                    self.current_floor -= 0.2
                     self.current_floor = round(self.current_floor, 1)
-
-                print(f"[Elevator Moving] Current Floor: {self.current_floor}")
-                await self.broadcast_state()  #! Broadcast position update
+                
+                print(f"Elevator {self.id} moving to floor {self.current_floor}")
+                await self._notify_state_change() #! Broadcast state change
                 await asyncio.sleep(1)   # this will take 5 seconds to move one floor
 
             self.current_floor = int(self.current_floor)  # Ensure exact floor value
-            print(f"[Elevator] Arrived at floor: {self.current_floor}")
             self.is_door_open = True
             self.moving_direction = self.direction
             self.direction = Direction.IDLE  # Set idle while door is open
-            await self.broadcast_state()  #! Broadcast arrival with door open
+            await self._notify_state_change() #! Broadcast state change
             await asyncio.sleep(5)  # Door open for 5 seconds
             self.is_door_open = False
-            await self.broadcast_state()  #! Broadcast door close
+            await self._notify_state_change() #! Broadcast state change
 
+    #!---------------------------------------------------------------------------------
+    
+    async def _notify_state_change(self):
+        """Notify controller about state change for broadcasting"""
+        if self.on_state_change:
+            await self.on_state_change(self)
+    
+    def get_status(self) -> dict:
+        """Get current elevator status as dictionary"""
+        moving_direction = self.direction
+        if moving_direction == Direction.IDLE and self.is_door_open:
+            moving_direction = self.moving_direction
+        
+        return {
+            "elevator_id": self.id,
+            "current_floor": self.current_floor,
+            "direction": moving_direction,
+            "is_door_open": self.is_door_open,
+            "up_stops": list(self.up_stops.heap),
+            "down_stops": list(self.down_stops.heap)
+        }
+    
+    #!---------------------------------------------------------------------------------
+    
     def cleanup(self):
-        self.total_floors = 0
-        self.current_floor = 0  
-        self.direction = Direction.IDLE
-        self.is_door_open = False
-        self.moving_direction = Direction.IDLE
+        self.id = None
+        self.total_floors = None 
+        self.current_floor = None
+        self.direction = None
         self.up_stops = None
         self.down_stops = None
-        self.ws_manager = None 
+        self.is_door_open = None
+        self.moving_direction = None
+        self.on_state_change = None 

@@ -1,23 +1,31 @@
 from fastapi import HTTPException
-from helper.models import ElevatorStatus
+from helper.models import MultiElevatorStatus, ElevatorStatus
 from elevator.direction import Direction
 
-from helper import global_elevator
+from helper import global_controller
 
-async def get_status(): 
-    elevator = global_elevator.elevator 
+async def get_status():
+    """Get status of all elevators in the system"""
+    controller = global_controller.controller
        
-    if elevator is None:
+    if controller is None:
         raise HTTPException(status_code=503, detail="Elevator service not initialized")
     
-    moving_direction = elevator.direction
-    if moving_direction==Direction.IDLE and elevator.is_door_open:
-        moving_direction = elevator.moving_direction
+    status = controller.get_status()
     
-    return ElevatorStatus(
-        current_floor=elevator.current_floor,
-        direction=moving_direction,
-        is_door_open=elevator.is_door_open,
-        # message = elevator.status_message,
-        # is_moving= (current == -1)
+    elevator_statuses = [
+        ElevatorStatus(
+            elevator_id=e["elevator_id"],
+            current_floor=e["current_floor"],
+            direction=e["direction"],
+            is_door_open=e["is_door_open"],
+            up_stops=e.get("up_stops", []),
+            down_stops=e.get("down_stops", [])
+        )
+        for e in status["elevators"]
+    ]
+    
+    return MultiElevatorStatus(
+        total_floors=status["total_floors"],
+        elevators=elevator_statuses
     )
