@@ -75,10 +75,18 @@ class Elevator:
             else:
                 self.up_stops.insert(input_floor)
 
+    # Effective-Direction is IDLE, Request is for Same Floor 
+    async def open_door(self):
+        self.is_door_open = True
+        await asyncio.sleep(5)  # Door open for 5 seconds
+        self.is_door_open = False
+
     def add_stop(self, floor: int):
         effective_direction = self.get_effective_direction()
 
         if floor == self.current_floor:
+            if not self.is_door_open:
+                asyncio.create_task(self.open_door())
             return
 
         # ─────────────────────────────
@@ -183,6 +191,9 @@ class Elevator:
 
             self.direction = Direction.UP if stop > self.current_floor else Direction.DOWN
             await self.broadcast_state()  #! Broadcast direction change
+
+            while self.is_door_open:  # wait for door to close before moving
+                await asyncio.sleep(1)
 
             while int(self.current_floor) != stop: 
                 # Check if there's a closer stop in the same direction
