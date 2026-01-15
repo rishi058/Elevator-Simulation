@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useElevatorStore, type ElevatorStatus } from '../store/elevatorStore';
 import { showErrorToast } from '../utils/toast';
+import Elevator from '../services/elevator_api';
 
 const WS_URL = 'ws://localhost:8000/api/ws';
 const RECONNECT_DELAY = 3000; // 3 seconds
@@ -11,10 +12,27 @@ export const useElevatorWebSocket = () => {
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimeoutRef = useRef<number | null>(null);
   const [isConnected, setIsConnected] = useState(false);
+  const initialFetchDoneRef = useRef(false);
 
   const updateElevatorStatus = useElevatorStore((state) => state.updateElevatorStatus);
 
   const connectRef = useRef<(() => void) | null>(null);
+
+  // Fetch initial status from backend on mount
+  const fetchInitialStatus = useCallback(async () => {
+    if (initialFetchDoneRef.current) return;
+    initialFetchDoneRef.current = true;
+    
+    try {
+      const status = await new Elevator().getStatus();
+      if (status) {
+        console.log('[Initial] Fetched elevator status:', status);
+        updateElevatorStatus(status);
+      }
+    } catch (error) {
+      console.error('[Initial] Failed to fetch elevator status:', error);
+    }
+  }, [updateElevatorStatus]);
 
 //-------------------------------------------------------------------------------------------------
   const connect = useCallback(() => {
@@ -81,8 +99,12 @@ export const useElevatorWebSocket = () => {
     connectRef.current = connect;
   }, [connect]);
 
-  // Connect on mount, disconnect on unmount
+  // Fetch initial status and connect WebSocket on mount
   useEffect(() => {
+    // Fetch initial status immediately to show correct elevator position
+    fetchInitialStatus();
+    
+    // Then connect WebSocket for real-time updates
     connect();
     return () => {
       if (reconnectTimeoutRef.current) {

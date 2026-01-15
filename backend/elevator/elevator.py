@@ -66,11 +66,15 @@ class Elevator:
             else:
                 self.ui_external_down_requests.discard(self.current_floor)
 
-        if self.direction == Direction.DOWN:
+        elif self.direction == Direction.DOWN:
             if self.current_floor in self.ui_external_down_requests:
                 self.ui_external_down_requests.discard(self.current_floor)
             else:
                 self.ui_external_up_requests.discard(self.current_floor)
+
+        else:  # IDLE
+            self.ui_external_up_requests.discard(self.current_floor)
+            self.ui_external_down_requests.discard(self.current_floor)
 
     def add_request(self, input_floor: int, input_dir: str):
         if input_dir == Direction.UP:
@@ -84,8 +88,19 @@ class Elevator:
         # IDLE ELEVATOR
         # ─────────────────────────────
         if effective_direction == Direction.IDLE:
-            self.add_stop(input_floor)
+            if input_floor == self.current_floor:
+                if not self.is_door_open:
+                    asyncio.create_task(self.open_door())
+                return
+            
+            if input_floor > self.current_floor:
+                self.up_stops.insert(input_floor)
+                self.direction = Direction.UP
+            else:
+                self.down_stops.insert(input_floor)
+                self.direction = Direction.DOWN
             return
+        
 
         # ─────────────────────────────
         # MOVING UP
@@ -221,12 +236,14 @@ class Elevator:
                 await self.broadcast_state()  #! Broadcast idle state
                 await asyncio.sleep(1)
                 continue  
-
+            
             self.direction = Direction.UP if stop > self.current_floor else Direction.DOWN
             await self.broadcast_state()  #! Broadcast direction change
 
             while self.is_door_open:  # wait for door to close before moving
                 await asyncio.sleep(1)
+
+            self.update_ui_requests()
 
             while int(self.current_floor) != stop: 
                 # Check if there's a closer stop in the same direction

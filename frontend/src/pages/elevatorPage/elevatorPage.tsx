@@ -52,7 +52,12 @@ function ElevatorPage() {
     new Elevator().addRequest(floor, direction);
   };
 
+  const addInternalStop = useElevatorStore((state) => state.addInternalStop);
+
   const handleFloorSelect = (floor: number) => {
+    // Optimistic update - immediately show the button as selected
+    addInternalStop(floor);
+    // Then send the request to the server
     new Elevator().addStop(floor);
   };
 
@@ -60,7 +65,7 @@ function ElevatorPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-purple-950 p-8 overflow-x-auto">
       <div className="mb-8 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white/90">
-          Single-Elevator System Simulation
+          Single-Elevator Simulation
         </h1>
         <button
           onClick={() => navigate('/')}

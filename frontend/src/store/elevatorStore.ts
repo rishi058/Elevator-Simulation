@@ -15,6 +15,8 @@ export interface ElevatorStatus {
 interface ElevatorStore extends ElevatorStatus {
   // Elevator status actions
   updateElevatorStatus: (status: Partial<ElevatorStatus>) => void;
+  // Optimistic update for internal stops
+  addInternalStop: (floor: number) => void;
 }
 
 export const useElevatorStore = create<ElevatorStore>()((set) => ({
@@ -33,6 +35,14 @@ export const useElevatorStore = create<ElevatorStore>()((set) => ({
   updateElevatorStatus: (status) => set((state) => ({
     ...state,
     ...status,
+  })),
+
+  // Optimistic update - immediately add floor to internal requests
+  addInternalStop: (floor) => set((state) => ({
+    ...state,
+    internal_requests: state.internal_requests.includes(floor)
+      ? state.internal_requests
+      : [...state.internal_requests, floor],
   })),
 }));
 
