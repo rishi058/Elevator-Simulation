@@ -5,7 +5,7 @@ import copy
 
 class Elevator: 
     def __init__(self, total_floors=10):
-        self.total_floors = total_floors
+        self.total_floors = total_floors   #! Used for validation fast-api methods
         self.current_floor = 0  # Can be float during movement (e.g., 1.25)
         self.direction = Direction.IDLE
         self.up_stops = MinHeap()
@@ -219,3 +219,13 @@ class Elevator:
             await asyncio.sleep(5)  # Door open for 5 seconds
             self.is_door_open = False
             await self.broadcast_state()  #! Broadcast door close
+
+    def cleanup(self):
+        self.total_floors = 0
+        self.current_floor = 0  
+        self.direction = Direction.IDLE
+        self.is_door_open = False
+        self.moving_direction = Direction.IDLE
+        self.up_stops = None
+        self.down_stops = None
+        self.ws_manager = None 

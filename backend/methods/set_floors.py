@@ -6,11 +6,15 @@ import asyncio
 
 async def set_floors(building: BuildingModel):
     if global_elevator.elevator_task:
-       print("[System] Restarting elevator service with new total floors...")
-       global_elevator.elevator_task.cancel()
-       try:
+        print("[System] Shutting down Old Elevator System...")
+
+        global_elevator.elevator.cleanup()
+        del global_elevator.elevator
+        
+        global_elevator.elevator_task.cancel()
+        try:
            await global_elevator.elevator_task
-       except asyncio.CancelledError:
+        except asyncio.CancelledError:
            pass
     
     print(f"[System] New Elevator Sytem Starting....")

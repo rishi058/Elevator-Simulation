@@ -20,6 +20,9 @@ async def lifespan(app: FastAPI):
     task = global_elevator.elevator_task
     if task:
         print("[System] Stopping elevator service...")
+        global_elevator.elevator.cleanup()
+        del global_elevator.elevator
+
         task.cancel()
         try:
             await task
