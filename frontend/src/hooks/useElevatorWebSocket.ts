@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from 'react';
-import { useMultiElevatorSystemStore, type ElevatorStatus } from '../store/elevatorStore';
+import { useMultiElevatorSystemStore, type ElevatorStatus, useHasHydrated } from '../store/elevatorStore';
 import { showErrorToast } from '../utils/toast';
 
 const WS_URL = 'ws://localhost:8000/api/ws';
@@ -20,9 +20,12 @@ export const useElevatorWebSocket = () => {
   const reconnectTimeoutRef = useRef<number | null>(null);
   const lastButtonClearTimeRef = useRef<Record<number, number>>({}); // Per-elevator throttle
   const [isConnected, setIsConnected] = useState(false);
+  
+  const hasHydrated = useHasHydrated();
 
   const syncFromBackend = useMultiElevatorSystemStore((state) => state.syncFromBackend);
   const removeExternalStop = useMultiElevatorSystemStore((state) => state.removeExternalStop);
+  const removeInternalStop = useMultiElevatorSystemStore((state) => state.removeInternalStop);
   
   const connectRef = useRef<(() => void) | null>(null);
 
@@ -51,10 +54,10 @@ export const useElevatorWebSocket = () => {
             return;
           }
 
-          // Sync all elevator data from backend (includes up_stops, down_stops)
+          // Sync all elevator data from backend (internal stops are managed locally)
           syncFromBackend(message.total_floors, message.elevators);
 
-          // Auto-clear external buttons when any elevator arrives at floor with door open
+          // Auto-clear buttons when any elevator arrives at floor with door open
           // Throttled per elevator to once every 4 seconds
           const THROTTLE_DELAY = 4000; // 4 seconds
           const now = Date.now();
@@ -67,6 +70,9 @@ export const useElevatorWebSocket = () => {
                 lastButtonClearTimeRef.current[elevator.elevator_id] = now;
                 
                 const floor = Math.floor(elevator.current_floor);
+                
+                // Clear internal stop for this elevator at current floor
+                removeInternalStop(elevator.elevator_id, floor);
                
                 // Clear external stop based on elevator direction
                 if (elevator.direction === "U") {
@@ -113,15 +119,19 @@ export const useElevatorWebSocket = () => {
     } catch (error) {
       console.error('[WebSocket] Connection error:', error);
     }
-  }, [syncFromBackend, removeExternalStop]);
+  }, [syncFromBackend, removeExternalStop, removeInternalStop]);
 
   // Store connect function in ref using useEffect
   useEffect(() => {
     connectRef.current = connect;
   }, [connect]);
 
-  // Connect on mount, disconnect on unmount
+  // Connect on mount (after hydration), disconnect on unmount
   useEffect(() => {
+    if (!hasHydrated) {
+      return; // Wait for store hydration before connecting
+    }
+    
     connect();
     return () => {
       if (reconnectTimeoutRef.current) {
@@ -133,7 +143,7 @@ export const useElevatorWebSocket = () => {
         wsRef.current = null;
       }
     };
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [hasHydrated]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const disconnect = useCallback(() => {
     if (reconnectTimeoutRef.current) {

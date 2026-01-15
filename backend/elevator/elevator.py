@@ -50,8 +50,10 @@ class Elevator:
     # Effective-Direction is IDLE, Request is for Same Floor 
     async def open_door(self):
         self.is_door_open = True
+        await self._notify_state_change() #! Broadcast state change
         await asyncio.sleep(5)  # Door open for 5 seconds
         self.is_door_open = False
+        await self._notify_state_change() #! Broadcast state change
 
     def add_stop(self, floor: int):
         effective_direction = self.get_effective_direction()

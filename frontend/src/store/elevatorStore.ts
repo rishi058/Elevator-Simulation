@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { useShallow } from 'zustand/react/shallow';
 
 // ============== Types ==============
@@ -32,6 +33,9 @@ export interface MultiElevatorSystemState {
   
   // Last update timestamp
   timestamp?: number;
+  
+  // Hydration flag
+  _hasHydrated: boolean;
 }
 
 interface MultiElevatorSystemActions {
@@ -72,49 +76,72 @@ const initialState: MultiElevatorSystemState = {
   elevators: [],
   externalStops: [],
   timestamp: undefined,
+  _hasHydrated: false,
 };
 
 // ============== Store ==============
 
-export const useMultiElevatorSystemStore = create<MultiElevatorStore>((set, get) => ({
-  ...initialState,
+export const useMultiElevatorSystemStore = create<MultiElevatorStore>()(
+  persist(
+    (set, get) => ({
+      ...initialState,
 
-  // Building actions
-  initializeBuilding: (totalFloors, totalElevators) => {
-    const elevators: ElevatorStatus[] = Array.from({ length: totalElevators }, (_, i) => ({
-      elevator_id: i,
-      current_floor: 0,
-      direction: "IDLE" as Direction,
-      is_door_open: false,
-      up_stops: [],
-      down_stops: [],
-    }));
+      // Building actions
+      initializeBuilding: (totalFloors, totalElevators) => {
+        const elevators: ElevatorStatus[] = Array.from({ length: totalElevators }, (_, i) => ({
+          elevator_id: i,
+          current_floor: 0,
+          direction: "IDLE" as Direction,
+          is_door_open: false,
+          up_stops: [],
+          down_stops: [],
+        }));
 
-    set({
+        set({
+          total_floors: totalFloors,
+          total_elevators: totalElevators,
+          elevators,
+          externalStops: [],
+          timestamp: Date.now(),
+        });
+      },
+
+  // Sync state from backend (preserves internal & external stops from local state)
+  syncFromBackend: (totalFloors, elevators) => set((state) => {
+    // Don't sync until hydration is complete to avoid overwriting persisted data
+    if (!state._hasHydrated) {
+      return state;
+    }
+    
+    // Get persisted stops from current state
+    const getLocalStops = (elevatorId: number) => {
+      const localElevator = state.elevators.find((e) => e.elevator_id === elevatorId);
+      return {
+        up_stops: localElevator?.up_stops ?? [],
+        down_stops: localElevator?.down_stops ?? [],
+      };
+    };
+
+    return {
       total_floors: totalFloors,
-      total_elevators: totalElevators,
-      elevators,
-      externalStops: [],
+      total_elevators: elevators.length,
+      elevators: elevators.map((e) => {
+        const localStops = getLocalStops(e.elevator_id);
+        return {
+          elevator_id: e.elevator_id,
+          current_floor: e.current_floor,
+          direction: e.direction,
+          is_door_open: e.is_door_open,
+          // Preserve local internal stops, don't use backend stops
+          up_stops: localStops.up_stops,
+          down_stops: localStops.down_stops,
+        };
+      }),
+      // Keep external stops from local state (they are managed by frontend)
+      externalStops: state.externalStops,
       timestamp: Date.now(),
-    });
-  },
-
-  // Sync state from backend (preserves external stops from local state)
-  syncFromBackend: (totalFloors, elevators) => set((state) => ({
-    total_floors: totalFloors,
-    total_elevators: elevators.length,
-    elevators: elevators.map((e) => ({
-      elevator_id: e.elevator_id,
-      current_floor: e.current_floor,
-      direction: e.direction,
-      is_door_open: e.is_door_open,
-      up_stops: e.up_stops ?? [],
-      down_stops: e.down_stops ?? [],
-    })),
-    // Keep external stops from local state (they are managed by frontend)
-    externalStops: state.externalStops,
-    timestamp: Date.now(),
-  })),
+    };
+  }),
 
   // Elevator status actions
   updateAllElevators: (elevators, timestamp) => set({
@@ -227,7 +254,68 @@ export const useMultiElevatorSystemStore = create<MultiElevatorStore>((set, get)
   },
 
   reset: () => set(initialState),
-}));
+    }),
+    {
+      name: 'elevator-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        // Only persist the stops data
+        elevators: state.elevators.map((e) => ({
+          elevator_id: e.elevator_id,
+          up_stops: e.up_stops,
+          down_stops: e.down_stops,
+        })),
+        externalStops: state.externalStops,
+        total_floors: state.total_floors,
+        total_elevators: state.total_elevators,
+      }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state._hasHydrated = true;
+        }
+      },
+      merge: (persistedState, currentState) => {
+        const persisted = persistedState as Partial<MultiElevatorSystemState>;
+        
+        // Handle initial load: currentState.elevators is empty, restore from persisted
+        let mergedElevators: ElevatorStatus[];
+        
+        if (currentState.elevators.length === 0 && persisted.elevators && persisted.elevators.length > 0) {
+          // Initial load - restore elevator structure from persisted data
+          mergedElevators = persisted.elevators.map((pe) => ({
+            elevator_id: pe.elevator_id,
+            current_floor: 0,
+            direction: "IDLE" as Direction,
+            is_door_open: false,
+            up_stops: pe.up_stops ?? [],
+            down_stops: pe.down_stops ?? [],
+          }));
+        } else {
+          // Runtime - merge persisted stops into current elevators
+          mergedElevators = currentState.elevators.map((elevator) => {
+            const persistedElevator = persisted.elevators?.find(
+              (e) => e.elevator_id === elevator.elevator_id
+            );
+            return {
+              ...elevator,
+              up_stops: persistedElevator?.up_stops ?? elevator.up_stops,
+              down_stops: persistedElevator?.down_stops ?? elevator.down_stops,
+            };
+          });
+        }
+        
+        return {
+          ...currentState,
+          externalStops: persisted.externalStops ?? currentState.externalStops,
+          total_floors: persisted.total_floors ?? currentState.total_floors,
+          total_elevators: persisted.total_elevators ?? currentState.total_elevators,
+          elevators: mergedElevators,
+          _hasHydrated: false, // Will be set to true by onRehydrateStorage
+        };
+      },
+    }
+  )
+);
 
 // ============== Selectors ==============
 
@@ -282,3 +370,7 @@ export const useHasInternalStop = (elevatorId: number, floor: number) =>
 // Timestamp selector
 export const useTimestamp = () =>
   useMultiElevatorSystemStore((state) => state.timestamp);
+
+// Hydration selector
+export const useHasHydrated = () =>
+  useMultiElevatorSystemStore((state) => state._hasHydrated);
