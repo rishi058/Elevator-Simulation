@@ -12,18 +12,14 @@ from helper.websocket_manager import ws_manager
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global_elevator.elevator = Elevator()  # Only this way you can initialize gloval variable
+    # Startup Logic 
 
-    global_elevator.elevator.set_websocket_manager(ws_manager)  # Set WebSocket manager
-
-    task = asyncio.create_task(global_elevator.elevator.run())
-    print("[System] Elevator service started")
-    print("[System] WebSocket endpoint: ws://localhost:8000/api/ws")
-    
     yield
-    
-    # Shutdown
+
+    # Shutdown Logic
+    task = global_elevator.elevator_task
     if task:
+        print("[System] Stopping elevator service...")
         task.cancel()
         try:
             await task

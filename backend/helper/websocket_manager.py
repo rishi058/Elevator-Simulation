@@ -1,7 +1,5 @@
 from fastapi import WebSocket
 from typing import Set
-import json
-import asyncio
 
 class WebSocketManager:
     def __init__(self):
