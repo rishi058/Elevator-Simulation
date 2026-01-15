@@ -18,6 +18,7 @@ async def get_status():
         current_floor=elevator.current_floor,
         direction=moving_direction,
         is_door_open=elevator.is_door_open,
-        # message = elevator.status_message,
-        # is_moving= (current == -1)
+        external_up_requests=list(elevator.ui_external_up_requests),
+        external_down_requests=list(elevator.ui_external_down_requests),
+        internal_requests=list(elevator.ui_internal_requests)
     )

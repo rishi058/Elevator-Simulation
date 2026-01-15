@@ -25,8 +25,10 @@ class ElevatorStatus(BaseModel):
     current_floor: float
     direction: str
     is_door_open: bool
-    # message: str
-    # is_moving: bool
+    
+    external_up_requests: list[int]
+    external_down_requests: list[int]
+    internal_requests: list[int]
 
 class BuildingModel(BaseModel):
     total_floors: int

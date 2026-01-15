@@ -4,7 +4,7 @@ import Floor from './components/Floor';
 import Elevator from '../../services/elevator_api';
 import ElevatorInterface from './components/Elevator';
 import { useElevatorWebSocket } from '../../hooks/useElevatorWebSocket';
-import { useElevatorStore, useInternalStops, useExternalStops } from '../../store/elevatorStore';
+import { useElevatorStore,} from '../../store/elevatorStore';
 
 interface LocationState {
   floors: number;
@@ -29,19 +29,17 @@ function ElevatorPage() {
   const current_floor = useElevatorStore((state) => state.current_floor);
   const is_door_open = useElevatorStore((state) => state.is_door_open);
   const direction = useElevatorStore((state) => state.direction);
+  const internalStopsArray = useElevatorStore((state) => state.internal_requests);
+  const externalUpRequests = useElevatorStore((state) => state.external_up_requests);
+  const externalDownRequests = useElevatorStore((state) => state.external_down_requests);
+
+  function hasUpStop(floor: number) {
+    return externalUpRequests.includes(floor);
+  }
   
-  // Get button states from Zustand store using custom hooks for proper reactivity
-  const internalStopsArray = useInternalStops();
-  const externalStopsData = useExternalStops();
-  
-  const addInternalStop = useElevatorStore((state) => state.addInternalStop);
-  const addExternalStop = useElevatorStore((state) => state.addExternalStop);
-  
-  // Helper functions to check stops (derived from reactive data)
-  const hasUpStop = (floor: number) => 
-    externalStopsData.some(s => s.floor === floor && s.direction === 'U');
-  const hasDownStop = (floor: number) => 
-    externalStopsData.some(s => s.floor === floor && s.direction === 'D');
+  function hasDownStop(floor: number) {
+    return externalDownRequests.includes(floor);
+  }
 
   useEffect(() => {
     if (!state || !state.floors || !state.elevators) {
@@ -52,12 +50,10 @@ function ElevatorPage() {
 
   const handleCallElevator = (floor: number, direction: 'U' | 'D') => {
     new Elevator().addRequest(floor, direction);
-    addExternalStop(floor, direction); // Track with direction in Zustand
   };
 
   const handleFloorSelect = (floor: number) => {
     new Elevator().addStop(floor);
-    addInternalStop(floor); // Track in Zustand
   };
 
   return (

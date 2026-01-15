@@ -5,7 +5,7 @@ import copy
 
 class Elevator: 
     def __init__(self, total_floors=10):
-        self.total_floors = total_floors   #! Used for validation fast-api methods
+        self.total_floors = total_floors   #! Used for fast-api validation only
         self.current_floor = 0  # Can be float during movement (e.g., 1.25)
         self.direction = Direction.IDLE
         self.up_stops = MinHeap()
@@ -13,6 +13,12 @@ class Elevator:
 
         self.is_door_open = False
         self.moving_direction = Direction.IDLE
+#!------------------------------------------------------------------------------  
+        # For UI Purpose to light on/off buttons 
+        self.ui_external_up_requests = set()  
+        self.ui_external_down_requests = set()  
+
+        self.ui_internal_requests = set()  
 #!------------------------------------------------------------------------------   
         self.ws_manager = None  # WebSocket manager will be set later
         self.prev_state = None  # Track previous state for broadcast optimization
@@ -35,6 +41,9 @@ class Elevator:
             "current_floor": self.current_floor,
             "direction": moving_direction,
             "is_door_open": self.is_door_open,
+            "external_up_requests": list(self.ui_external_up_requests),
+            "external_down_requests": list(self.ui_external_down_requests),
+            "internal_requests": list(self.ui_internal_requests),
             "timestamp": loop.time()
         }
 
@@ -46,7 +55,29 @@ class Elevator:
         await self.ws_manager.broadcast(state)
         self.prev_state = copy.deepcopy(state)
 #!------------------------------------------------------------------------------   
+
+    def update_ui_requests(self):
+        if self.current_floor in self.ui_internal_requests:
+            self.ui_internal_requests.discard(self.current_floor)
+        # -----------------------------------------------------
+        if self.direction == Direction.UP:
+            if self.current_floor in self.ui_external_up_requests:
+                self.ui_external_up_requests.discard(self.current_floor)
+            else:
+                self.ui_external_down_requests.discard(self.current_floor)
+
+        if self.direction == Direction.DOWN:
+            if self.current_floor in self.ui_external_down_requests:
+                self.ui_external_down_requests.discard(self.current_floor)
+            else:
+                self.ui_external_up_requests.discard(self.current_floor)
+
     def add_request(self, input_floor: int, input_dir: str):
+        if input_dir == Direction.UP:
+            self.ui_external_up_requests.add(input_floor)
+        else:
+            self.ui_external_down_requests.add(input_floor)
+
         effective_direction = self.get_effective_direction()
 
         # ─────────────────────────────
@@ -82,6 +113,8 @@ class Elevator:
         self.is_door_open = False
 
     def add_stop(self, floor: int):
+        self.ui_internal_requests.add(floor)
+
         effective_direction = self.get_effective_direction()
 
         if floor == self.current_floor:
@@ -225,6 +258,7 @@ class Elevator:
             print(f"[Elevator] Arrived at floor: {self.current_floor}")
             self.is_door_open = True
             self.moving_direction = self.direction
+            self.update_ui_requests()
             self.direction = Direction.IDLE  # Set idle while door is open
             await self.broadcast_state()  #! Broadcast arrival with door open
             await asyncio.sleep(5)  # Door open for 5 seconds

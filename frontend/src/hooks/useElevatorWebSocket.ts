@@ -10,15 +10,13 @@ export const useElevatorWebSocket = () => {
   const wsRef = useRef<WebSocket | null>(null);
   const reconnectAttemptsRef = useRef(0);
   const reconnectTimeoutRef = useRef<number | null>(null);
-  const lastButtonClearTimeRef = useRef<number>(0);
   const [isConnected, setIsConnected] = useState(false);
 
   const updateElevatorStatus = useElevatorStore((state) => state.updateElevatorStatus);
-  const removeInternalStop = useElevatorStore((state) => state.removeInternalStop);
-  const removeExternalStop = useElevatorStore((state) => state.removeExternalStop);
-  
+
   const connectRef = useRef<(() => void) | null>(null);
 
+//-------------------------------------------------------------------------------------------------
   const connect = useCallback(() => {
     if (wsRef.current?.readyState === WebSocket.OPEN) {
       return; // Already connected
@@ -28,11 +26,11 @@ export const useElevatorWebSocket = () => {
       const ws = new WebSocket(WS_URL);
       wsRef.current = ws;
 
+      
       ws.onopen = () => {
         console.log('[WebSocket] Connected to elevator service');
         reconnectAttemptsRef.current = 0;
         setIsConnected(true);
-        // showToast('Connected to elevator');
       };
 
       ws.onmessage = (event) => {
@@ -40,36 +38,8 @@ export const useElevatorWebSocket = () => {
           const data: ElevatorStatus = JSON.parse(event.data);
           console.log('[WebSocket] Received:', data);
           
-          // Update elevator status in store
           updateElevatorStatus(data);
-
-          // Auto-clear buttons when elevator arrives at floor with door open
-          // Throttled to once every 4 seconds
-          if (data.is_door_open) {
-            const now = Date.now();
-            const THROTTLE_DELAY = 4000; // 4 seconds
-            
-            if (now - lastButtonClearTimeRef.current >= THROTTLE_DELAY) {
-              lastButtonClearTimeRef.current = now;
-              
-              const floor = Math.floor(data.current_floor);
-             
-              if (data.direction === "U"){
-                const ok = removeExternalStop(floor, "U");
-                if(!ok){
-                  removeExternalStop(floor, "D");
-                }
-              }
-              else if (data.direction === "D"){
-                const ok = removeExternalStop(floor, "D");
-                if(!ok){
-                  removeExternalStop(floor, "U");
-                }
-              }
-            }
-
-            removeInternalStop(Math.floor(data.current_floor));
-          }
+        
         } catch (error) {
           console.error('[WebSocket] Error parsing message:', error);
         }
@@ -97,10 +67,14 @@ export const useElevatorWebSocket = () => {
           console.error('[WebSocket] Max reconnection attempts reached');
         }
       };
-    } catch (error) {
+    } 
+    catch (error) {
       console.error('[WebSocket] Connection error:', error);
     }
-  }, [updateElevatorStatus, removeInternalStop, removeExternalStop]);
+  }, [updateElevatorStatus]);
+
+//-------------------------------------------------------------------------------------------------
+
 
   // Store connect function in ref using useEffect
   useEffect(() => {
