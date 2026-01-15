@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import Elevator from '../../services/elevator_api';
 
 function HomePage() {
-  const [floors, setFloors] = useState('');
-  const [elevators, setElevators] = useState('');
+  const [floors, setFloors] = useState('8');
+  const [elevators, setElevators] = useState('1');
   const navigate = useNavigate();
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,7 +29,7 @@ function HomePage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900">
       <div className="bg-white/5 backdrop-blur-md rounded-lg shadow-2xl p-8 w-full max-w-md border border-white/30">
         <h1 className="text-3xl font-bold text-center text-white/90 mb-6">
-          Elevator Simulation
+          Single-Elevator System Simulation
         </h1>
         
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -62,6 +62,7 @@ function HomePage() {
               className="w-full px-4 py-2 bg-white/5 backdrop-blur-sm border border-white/50 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-transparent outline-none transition text-white placeholder-white/60"
               placeholder="Enter number of elevators"
               required
+              disabled
             />
           </div>
 

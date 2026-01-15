@@ -64,7 +64,7 @@ function ElevatorPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-950 via-blue-950 to-purple-950 p-8 overflow-x-auto">
       <div className="mb-8 flex justify-between items-center">
         <h1 className="text-3xl font-bold text-white/90">
-          Elevator Simulation
+          Single-Elevator System Simulation
         </h1>
         <button
           onClick={() => navigate('/')}
