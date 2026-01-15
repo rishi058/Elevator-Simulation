@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
 export interface ElevatorStatus {
   current_floor: number;
@@ -34,7 +35,9 @@ interface ElevatorStore extends ElevatorStatus, ButtonState {
   clearExternalStops: () => void;
 }
 
-export const useElevatorStore = create<ElevatorStore>((set, get) => ({ 
+export const useElevatorStore = create<ElevatorStore>()(
+  persist(
+    (set, get) => ({ 
   
   // Initial elevator status
   current_floor: 0,
@@ -104,7 +107,16 @@ export const useElevatorStore = create<ElevatorStore>((set, get) => ({
   },
   
   clearExternalStops: () => set({ externalStops: [] }),
-}));
+    }),
+    {
+      name: 'elevator-stops-storage',
+      partialize: (state) => ({
+        internalStops: state.internalStops,
+        externalStops: state.externalStops,
+      }),
+    }
+  )
+);
 
 // Simple selectors for internal stops
 export const useInternalStops = () => 
