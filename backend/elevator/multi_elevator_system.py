@@ -8,7 +8,7 @@ import asyncio
 class CollectiveDispatchController:
     def __init__(self, total_floors: int = 10, total_elevators: int = 3):
         self.total_floors = total_floors
-        self.elevator_count = total_elevators
+        self.total_elevators = total_elevators
         self.elevators = [Elevator(elevator_id=i, total_floors=total_floors) for i in range(total_elevators)]
         self.running_tasks = []
                
@@ -46,7 +46,7 @@ class CollectiveDispatchController:
             del elevator
         
         self.total_floors = None    
-        self.elevator_count = None
+        self.total_elevators = None
         self.elevators = None
         self.running_tasks = None
         self.ws_manager = None
@@ -103,26 +103,22 @@ class CollectiveDispatchController:
         )
 
 #!----------------------------------------------------------------------------------------------------------------
-
     # ─────────────────────────────────────────────────────────────
-    # STATUS & WEBSOCKET
+    # REST-API STATUS
     # ─────────────────────────────────────────────────────────────
 
     def get_status(self) -> dict:
-        """Get status of all elevators"""
         return {
             "total_floors": self.total_floors,
-            "elevator_count": self.elevator_count,
+            "total_elevators": self.total_elevators,
             "elevators": [
                 elevator.get_status() for elevator in self.elevators
             ]
         }
 
-    def get_elevator_status(self, elevator_id: int) -> dict:   # Get status of a specific elevator
-        if elevator_id < 0 or elevator_id >= len(self.elevators):
-            raise ValueError(f"Invalid elevator ID: {elevator_id}")
-        return self.elevators[elevator_id].get_status()
-
+    # ─────────────────────────────────────────────────────────────
+    # STATUS & WEBSOCKET
+    # ─────────────────────────────────────────────────────────────
     async def _on_elevator_state_change(self, elevator):
         """Callback when an elevator's state changes"""
         await self._broadcast_state()

@@ -13,19 +13,60 @@ class Elevator:
 
         self.is_door_open = False
         self.moving_direction = Direction.IDLE
-        
+#!------------------------------------------------------------------------------  
+        # For UI Purpose to light on/off buttons 
+        self.ui_external_up_requests = set()  
+        self.ui_external_down_requests = set()  
+
+        self.ui_internal_requests = set()  
+#!------------------------------------------------------------------------------  
         # Callback for state broadcast (set by controller)
         self.on_state_change = None
 
+    def update_ui_requests(self):
+        if self.current_floor in self.ui_internal_requests:
+            self.ui_internal_requests.discard(self.current_floor)
+        # -----------------------------------------------------
+        if self.direction == Direction.UP:
+            if self.current_floor in self.ui_external_up_requests:
+                self.ui_external_up_requests.discard(self.current_floor)
+            else:
+                self.ui_external_down_requests.discard(self.current_floor)
+
+        elif self.direction == Direction.DOWN:
+            if self.current_floor in self.ui_external_down_requests:
+                self.ui_external_down_requests.discard(self.current_floor)
+            else:
+                self.ui_external_up_requests.discard(self.current_floor)
+
+        else:  # IDLE
+            self.ui_external_up_requests.discard(self.current_floor)
+            self.ui_external_down_requests.discard(self.current_floor)
+
 
     def add_request(self, input_floor: int, input_dir: str):
+        if input_dir == Direction.UP:
+            self.ui_external_up_requests.add(input_floor)
+        else:
+            self.ui_external_down_requests.add(input_floor)
+
         effective_direction = self.get_effective_direction()
 
         # ─────────────────────────────
         # IDLE ELEVATOR
         # ─────────────────────────────
         if effective_direction == Direction.IDLE:
-            self.add_stop(input_floor)
+            if input_floor == self.current_floor:
+                if not self.is_door_open:
+                    asyncio.create_task(self.open_door())
+                return
+            
+            if input_floor > self.current_floor:
+                self.up_stops.insert(input_floor)
+                self.direction = Direction.UP
+            else:
+                self.down_stops.insert(input_floor)
+                self.direction = Direction.DOWN
             return
 
         # ─────────────────────────────
@@ -50,12 +91,12 @@ class Elevator:
     # Effective-Direction is IDLE, Request is for Same Floor 
     async def open_door(self):
         self.is_door_open = True
-        await self._notify_state_change() #! Broadcast state change
         await asyncio.sleep(5)  # Door open for 5 seconds
         self.is_door_open = False
-        await self._notify_state_change() #! Broadcast state change
 
     def add_stop(self, floor: int):
+        self.ui_internal_requests.add(floor)
+
         effective_direction = self.get_effective_direction()
 
         if floor == self.current_floor:
@@ -95,10 +136,6 @@ class Elevator:
                 self.up_stops.insert(floor)
 
     def get_effective_direction(self):
-        """
-        After completing a move_to we generally set Direction.IDLE...
-        But At a Intermediate stop we set IDLE only for 2 sec
-        """
         if self.direction != Direction.IDLE:
             return self.direction
         if self.is_door_open == True:
@@ -159,13 +196,17 @@ class Elevator:
             stop = self.get_next_stop(delete=True)
             if stop is None:
                 self.direction = Direction.IDLE
+                await self._notify_state_change() #! Broadcast state change
                 await asyncio.sleep(1)
                 continue  
 
             self.direction = Direction.UP if stop > self.current_floor else Direction.DOWN
+            await self._notify_state_change() #! Broadcast state change
 
             while self.is_door_open:  # wait for door to close before moving
                 await asyncio.sleep(1)
+
+            self.update_ui_requests()
 
             while int(self.current_floor) != stop: 
                 # Check if there's a closer stop in the same direction
@@ -195,7 +236,8 @@ class Elevator:
 
             self.current_floor = int(self.current_floor)  # Ensure exact floor value
             self.is_door_open = True
-            self.moving_direction = self.direction
+            self.moving_direction = self.direction 
+            self.update_ui_requests()
             self.direction = Direction.IDLE  # Set idle while door is open
             await self._notify_state_change() #! Broadcast state change
             await asyncio.sleep(5)  # Door open for 5 seconds
@@ -204,24 +246,19 @@ class Elevator:
 
     #!---------------------------------------------------------------------------------
     
-    async def _notify_state_change(self):
-        """Notify controller about state change for broadcasting"""
+    async def _notify_state_change(self): # Notify Controller about state change
         if self.on_state_change:
             await self.on_state_change(self)
     
     def get_status(self) -> dict:
-        """Get current elevator status as dictionary"""
-        moving_direction = self.direction
-        if moving_direction == Direction.IDLE and self.is_door_open:
-            moving_direction = self.moving_direction
-        
         return {
             "elevator_id": self.id,
             "current_floor": self.current_floor,
-            "direction": moving_direction,
+            "direction": self.get_effective_direction(),
             "is_door_open": self.is_door_open,
-            "up_stops": list(self.up_stops.heap),
-            "down_stops": list(self.down_stops.heap)
+            "external_up_requests": list(self.ui_external_up_requests),
+            "external_down_requests": list(self.ui_external_down_requests),
+            "internal_requests": list(self.ui_internal_requests),
         }
     
     #!---------------------------------------------------------------------------------

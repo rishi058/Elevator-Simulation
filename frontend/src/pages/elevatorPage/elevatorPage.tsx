@@ -1,14 +1,11 @@
 import { useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useCallback } from 'react';
+import { useEffect } from 'react';
 import Floor from './components/Floor';
-import ElevatorApi from '../../services/elevator_api';
 import ElevatorInterface from './components/Elevator';
-import { useElevatorWebSocket } from '../../hooks/useElevatorWebSocket';
-import { 
-  useMultiElevatorSystemStore,
-  useElevators,
-  useExternalStops,
-} from '../../store/elevatorStore';
+import { useMultiElevatorWebSocket } from '../../hooks/useMultiElevatorWebSocket';
+import Elevator from '../../services/elevator_api';
+import { useMultiElevatorStore } from '../../store/elevatorStore';
+
 
 interface LocationState {
   floors: number;
@@ -27,39 +24,22 @@ function ElevatorPage() {
   const elevatorHeight = 70; // Match the elevator component height
 
   // Use WebSocket hook for real-time updates
-  useElevatorWebSocket();
+  useMultiElevatorWebSocket();
   
-  // Store actions
-  const initializeBuilding = useMultiElevatorSystemStore((state) => state.initializeBuilding);
-  const syncFromBackend = useMultiElevatorSystemStore((state) => state.syncFromBackend);
-  const addExternalStop = useMultiElevatorSystemStore((state) => state.addExternalStop);
-  const addInternalStop = useMultiElevatorSystemStore((state) => state.addInternalStop);
-  
-  // Get all elevators status from Zustand store
-  const elevators = useElevators();
-  
-  // Get button states from Zustand store
-  const externalStopsData = useExternalStops();
+  const elevators = useMultiElevatorStore((store) => store.elevators);
   
   // Helper functions to check stops (derived from reactive data)
-  const hasUpStop = (floor: number) => 
-    externalStopsData.some(s => s.floor === floor && s.direction === 'U');
-  const hasDownStop = (floor: number) => 
-    externalStopsData.some(s => s.floor === floor && s.direction === 'D');
+  function hasUpStop(floor: number) {
+    // run a loop through all elevators to see if any have an up stop at this floor
+    const externalUpRequests = elevators.flatMap(e => e.external_up_requests);
+    return externalUpRequests.includes(floor);
+  }
+  
+  function hasDownStop(floor: number) {
+    const externalDownRequests = elevators.flatMap(e => e.external_down_requests);
+    return externalDownRequests.includes(floor);
+  }
 
-  // Fetch and sync initial status from backend
-  const fetchInitialStatus = useCallback(async () => {
-    try {
-      const api = new ElevatorApi();
-      const status = await api.getStatus();
-      if (status && status.elevators) {
-        syncFromBackend(status.total_floors, status.elevators);
-        console.log('[ElevatorPage] Synced initial status from backend:', status);
-      }
-    } catch (error) {
-      console.error('[ElevatorPage] Failed to fetch initial status:', error);
-    }
-  }, [syncFromBackend]);
 
   // Initialize building on mount
   useEffect(() => {
@@ -68,21 +48,19 @@ function ElevatorPage() {
       return;
     }
     
-    // First initialize the store with default state
-    initializeBuilding(numFloors, numElevators);
-    
-    // Then fetch actual status from backend to sync positions
-    fetchInitialStatus();
-  }, [state, navigate, initializeBuilding, numFloors, numElevators, fetchInitialStatus]);
+  }, [state, navigate]);
 
   const handleCallElevator = (floor: number, direction: 'U' | 'D') => {
-    new ElevatorApi().addRequest(floor, direction);
-    addExternalStop(floor, direction); // Track with direction in Zustand
+    new Elevator().addRequest(floor, direction);
   };
-
-  const handleFloorSelect = (elevatorId: number, floor: number) => {
-    new ElevatorApi().addStop(elevatorId, floor);
-    addInternalStop(elevatorId, floor); // Track in Zustand
+  
+  const addInternalStop = useMultiElevatorStore((state) => state.addInternalStop);
+  
+  const handleFloorSelect = (elevator_id: number, floor: number) => {
+    // Optimistic update - immediately show the button as selected
+    addInternalStop(elevator_id, floor);
+    // Then send the request to the server
+    new Elevator().addStop(elevator_id, floor);
   };
 
   return (
@@ -100,7 +78,7 @@ function ElevatorPage() {
       </div>
 
       {/* Display Internal Stops per Elevator */}
-      <div className="p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/30 mb-4">
+      {/* <div className="p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/30 mb-4">
         <div className="text-white/90 text-sm space-y-1">
           <span className="font-semibold">Internal Stops:</span>
           {elevators.length === 0 ? (
@@ -121,7 +99,7 @@ function ElevatorPage() {
             })
           )}
         </div>
-      </div>
+      </div> */}
 
       <div className="relative" style={{ minWidth: `${(numElevators * 100) + 300}px`, height: `${(numFloors + 1) * floorHeight}px` }}>
         {/* Render floors */}

@@ -27,11 +27,13 @@ class ElevatorStatus(BaseModel):
     current_floor: float
     direction: str
     is_door_open: bool
-    up_stops: list[int] = []
-    down_stops: list[int] = []
+    external_up_requests: list[int]
+    external_down_requests: list[int]
+    internal_requests: list[int]
 
 class MultiElevatorStatus(BaseModel):
     total_floors: int
+    total_elevators: int
     elevators: list[ElevatorStatus]
 
 class BuildingModel(BaseModel):

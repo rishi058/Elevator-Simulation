@@ -5,7 +5,6 @@ from elevator.direction import Direction
 from helper import global_controller
 
 async def get_status():
-    """Get status of all elevators in the system"""
     controller = global_controller.controller
        
     if controller is None:
@@ -19,13 +18,15 @@ async def get_status():
             current_floor=e["current_floor"],
             direction=e["direction"],
             is_door_open=e["is_door_open"],
-            up_stops=e.get("up_stops", []),
-            down_stops=e.get("down_stops", [])
+            external_up_requests=e["external_up_requests"],
+            external_down_requests=e["external_down_requests"],
+            internal_requests=e["internal_requests"]
         )
         for e in status["elevators"]
     ]
     
     return MultiElevatorStatus(
         total_floors=status["total_floors"],
+        total_elevators=status["total_elevators"],  
         elevators=elevator_statuses
     )

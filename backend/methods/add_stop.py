@@ -12,10 +12,10 @@ async def add_stop(stop: StopModel):
     elevator_id = stop.elevator_id
     floor = stop.floor
 
-    if elevator_id < 0 or elevator_id >= controller.elevator_count:
+    if elevator_id < 0 or elevator_id >= controller.total_elevators:
         raise HTTPException(
             status_code=400, 
-            detail=f"Elevator ID must be between 0 and {controller.elevator_count - 1}"
+            detail=f"Elevator ID must be between 0 and {controller.total_elevators - 1}"
         )
     
     if floor < 0 or floor > controller.total_floors:
