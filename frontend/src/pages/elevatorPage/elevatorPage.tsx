@@ -78,28 +78,24 @@ function ElevatorPage() {
       </div>
 
       {/* Display Internal Stops per Elevator */}
-      {/* <div className="p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/30 mb-4">
-        <div className="text-white/90 text-sm space-y-1">
+      <div className="p-4 bg-white/10 backdrop-blur-sm rounded-lg border border-white/30 mb-4">
+        <div className="text-white/90 text-sm flex items-center gap-6">
           <span className="font-semibold">Internal Stops:</span>
-          {elevators.length === 0 ? (
-            <span className="text-white/60 italic ml-2">No elevators</span>
-          ) : (
-            elevators.map((elevator) => {
-              const stops = [...elevator.up_stops, ...elevator.down_stops].sort((a, b) => a - b);
+          {elevators.map((elevator) => {
               return (
-                <div key={elevator.elevator_id} className="ml-4">
-                  <span className="text-blue-300">Elevator {elevator.elevator_id + 1}:</span>
-                  {stops.length === 0 ? (
+                <div key={elevator.elevator_id} className="flex items-center">
+                  <span className="text-blue-300">E{elevator.elevator_id + 1}:</span>
+                  {elevator.internal_requests.length === 0 ? (
                     <span className="text-white/60 italic ml-2">None</span>
                   ) : (
-                    <span className="ml-2">{stops.join(', ')}</span>
+                    <span className="ml-2">{[...elevator.internal_requests].sort((a, b) => a - b).join(', ')}</span>
                   )}
                 </div>
               );
             })
-          )}
+          }
         </div>
-      </div> */}
+      </div>
 
       <div className="relative" style={{ minWidth: `${(numElevators * 100) + 300}px`, height: `${(numFloors + 1) * floorHeight}px` }}>
         {/* Render floors */}
