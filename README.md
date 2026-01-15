@@ -3,7 +3,7 @@
 
 ## 📋 Project Overview
 
-A full-stack elevator simulation system that demonstrates concurrent request processing, real-time state synchronization, and intelligent scheduling algorithms. The system simulates a single elevator serving multiple floors with external call buttons (up/down) and internal destination buttons.
+A full-stack elevator simulation system that demonstrates concurrent request processing, real-time state synchronization, and intelligent scheduling algorithms. The system simulates a elevator serving multiple floors with external call buttons (up/down) and internal destination buttons.
 
 **Key Highlights:**
 - **Real-time Updates**: WebSocket-based live state broadcasting for instant UI updates
@@ -52,7 +52,6 @@ This project is ideal for understanding:
 | **Vite** | Build tool & dev server |
 | **Zustand** | Lightweight state management |
 | **TailwindCSS 4** | Utility-first styling |
-| **Framer Motion** | Animation library |
 | **Axios** | HTTP client with interceptors |
 | **React Router** | Client-side routing |
 | **React Toastify** | Toast notifications |
@@ -255,7 +254,7 @@ The system uses a **dual-heap approach** for intelligent request handling:
 3. **State Flow**:
    ```
    IDLE → Request arrives → Determine direction → MOVING
-   → Reach floor → DOOR_OPEN (2s delay) → DOOR_CLOSE
+   → Reach floor → DOOR_OPEN (5s delay) → DOOR_CLOSE
    → Next floor or IDLE
    ```
 
@@ -339,8 +338,7 @@ Frontend will start at: `http://localhost:5173`
 ## 🔧 Things to Improve
 
 ### Performance & Scalability
-- [ ] **Multi-Elevator Support**: Extend to multiple elevators with load balancing
-- [ ] **Optimized Scheduling**: Implement SCAN or LOOK algorithms for better efficiency
+- [ ] **Optimized Scheduling**: Implement optimized SCAN or LOOK algorithms for better efficiency
 - [ ] **Request Batching**: Group nearby requests to reduce stops
 
 ### Concurrency & Safety
@@ -358,8 +356,6 @@ Frontend will start at: `http://localhost:5173`
 ### UX Enhancements
 - [ ] **Audio Feedback**: Ding sound on arrival, button click sounds
 - [ ] **Arrival Predictions**: Show estimated time to arrival for each floor
-- [ ] **Queue Visualization**: Display pending requests in order
-- [ ] **Dark Mode**: Theme toggle for UI
 - [ ] **Mobile Responsive**: Better mobile/tablet layouts
 
 ### Code Quality
@@ -441,13 +437,5 @@ Contributions are welcome! Feel free to:
 - Open issues for bugs or feature requests
 - Submit pull requests with improvements
 - Share feedback on the architecture
-
----
-
-## 📧 Contact
-
-For questions or suggestions, please open an issue on the repository.
-
----
 
 **Happy Coding!** 🚀
