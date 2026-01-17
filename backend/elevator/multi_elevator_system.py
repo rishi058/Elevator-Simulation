@@ -1,5 +1,5 @@
 from .direction import Direction
-from .elevator import Elevator
+from .elevator_system import Elevator
 import asyncio
 
 # Collective Control Dispatch System
@@ -7,7 +7,7 @@ import asyncio
 
 class CollectiveDispatchController:
     def __init__(self, total_floors: int = 10, total_elevators: int = 3):
-        self.total_floors = total_floors
+        self.total_floors = total_floors   #! Only used for validation in fast-api
         self.total_elevators = total_elevators
         self.elevators = [Elevator(elevator_id=i, total_floors=total_floors) for i in range(total_elevators)]
         self.running_tasks = []
@@ -68,14 +68,15 @@ class CollectiveDispatchController:
 
     def _select_elevator(self, floor: int, direction: str) -> Elevator:
         """
-        Collective Control selection rules:
-        1. Prefer elevator already moving in same direction and approaching the floor
-        2. Else choose closest idle elevator
-        3. Else fallback to least-loaded elevator
+        Modified LOOK with Opportunistic Scheduling:
+        1. Prefer elevator moving in same direction that will pass the floor (main sweep)
+        2. Prefer elevator moving opposite but about to turn around near the floor (opportunistic)
+        3. Else choose closest idle elevator
+        4. Else fallback to least-loaded elevator (considering all 6 queues)
         """
         candidates = []
 
-        # Rule 1: Same direction & will pass the floor
+        # Rule 1: Same direction & will pass the floor (Main Sweep - Phase 1)
         for elevator in self.elevators:
             eff_dir = elevator.get_effective_direction()
             
@@ -88,7 +89,30 @@ class CollectiveDispatchController:
         if candidates:
             return min(candidates, key=lambda e: abs(e.current_floor - floor))
 
-        # Rule 2: Idle elevators (prefer closest)
+        # Rule 2: Opportunistic - Elevator going opposite direction but will turn around
+        # Check if an elevator is about to reverse and can pick up this request
+        for elevator in self.elevators:
+            eff_dir = elevator.get_effective_direction()
+            
+            # Elevator going UP, request wants DOWN - check if elevator will turn around above floor
+            if eff_dir == Direction.UP and direction == Direction.DOWN:
+                # Get the highest floor this elevator will visit before turning
+                turnaround_floor = self._get_turnaround_floor(elevator, Direction.UP)
+                if turnaround_floor is not None and turnaround_floor >= floor:
+                    candidates.append(elevator)
+            
+            # Elevator going DOWN, request wants UP - check if elevator will turn around below floor
+            elif eff_dir == Direction.DOWN and direction == Direction.UP:
+                # Get the lowest floor this elevator will visit before turning
+                turnaround_floor = self._get_turnaround_floor(elevator, Direction.DOWN)
+                if turnaround_floor is not None and turnaround_floor <= floor:
+                    candidates.append(elevator)
+
+        if candidates:
+            # Prefer the one whose turnaround is closest to the requested floor
+            return min(candidates, key=lambda e: self._estimated_arrival_time(e, floor, direction))
+
+        # Rule 3: Idle elevators (prefer closest)
         idle_elevators = [
             e for e in self.elevators 
             if e.get_effective_direction() == Direction.IDLE
@@ -96,11 +120,81 @@ class CollectiveDispatchController:
         if idle_elevators:
             return min(idle_elevators, key=lambda e: abs(e.current_floor - floor))
 
-        # Rule 3: Least loaded elevator (fallback)
+        # Rule 4: Least loaded elevator (fallback) - considering all 6 queues
         return min(
             self.elevators,
-            key=lambda e: len(e.up_stops.heap) + len(e.down_stops.heap)
+            key=lambda e: self._get_total_load(e)
         )
+
+    def _get_total_load(self, elevator: Elevator) -> int:
+        """Calculate total load across all 6 queues of the Modified LOOK scheduler"""
+        return (
+            len(elevator.internal_up.heap) +
+            len(elevator.internal_down.heap) +
+            len(elevator.up_up.heap) +
+            len(elevator.down_down.heap) +
+            len(elevator.up_down.heap) +
+            len(elevator.down_up.heap)
+        )
+
+    def _get_turnaround_floor(self, elevator: Elevator, current_direction: str) -> int | None:
+        """
+        Get the floor where the elevator will turn around.
+        For UP: returns the highest floor in up_up, internal_up, or up_down
+        For DOWN: returns the lowest floor in down_down, internal_down, or down_up
+        """
+        if current_direction == Direction.UP:
+            candidates = []
+            if elevator.up_up.get_min() is not None:
+                # For MinHeap, we need the max - but up_up stores floors to visit going up
+                # The turnaround is the highest floor, so we check all values
+                candidates.extend(elevator.up_up.heap)
+            if elevator.internal_up.get_min() is not None:
+                candidates.extend(elevator.internal_up.heap)
+            if elevator.up_down.get_max() is not None:
+                candidates.extend(elevator.up_down.heap)
+            
+            return max(candidates) if candidates else None
+        
+        elif current_direction == Direction.DOWN:
+            candidates = []
+            if elevator.down_down.get_max() is not None:
+                candidates.extend(elevator.down_down.heap)
+            if elevator.internal_down.get_max() is not None:
+                candidates.extend(elevator.internal_down.heap)
+            if elevator.down_up.get_min() is not None:
+                candidates.extend(elevator.down_up.heap)
+            
+            return min(candidates) if candidates else None
+        
+        return None
+
+    def _estimated_arrival_time(self, elevator: Elevator, floor: int, direction: str) -> int:
+        """
+        Estimate arrival time (in floors traveled) for opportunistic scheduling.
+        This is a heuristic - actual time depends on stops and door operations.
+        """
+        eff_dir = elevator.get_effective_direction()
+        current = elevator.current_floor
+        
+        if eff_dir == Direction.IDLE:
+            return abs(current - floor)
+        
+        # Calculate distance including turnaround
+        turnaround = self._get_turnaround_floor(elevator, eff_dir)
+        
+        if turnaround is None:
+            return abs(current - floor)
+        
+        if eff_dir == Direction.UP and direction == Direction.DOWN:
+            # Distance to turnaround + distance from turnaround to floor
+            return (turnaround - current) + (turnaround - floor)
+        
+        elif eff_dir == Direction.DOWN and direction == Direction.UP:
+            # Distance to turnaround + distance from turnaround to floor
+            return (current - turnaround) + (floor - turnaround)
+        
+        return abs(current - floor)
 
 #!----------------------------------------------------------------------------------------------------------------
     # ─────────────────────────────────────────────────────────────
@@ -118,13 +212,12 @@ class CollectiveDispatchController:
 
     # ─────────────────────────────────────────────────────────────
     # STATUS & WEBSOCKET
-    # ─────────────────────────────────────────────────────────────
+    # ───────────────────────────────────────────────────────────── 
+    #! THIS UNUSED ELEVATOR PARAM IS INTENTIONAL FOR CALLBACK SIGNATURE
     async def _on_elevator_state_change(self, elevator):
-        """Callback when an elevator's state changes"""
         await self._broadcast_state()
 
     async def _broadcast_state(self):
-        """Broadcast current state of all elevators to WebSocket clients"""
         if self.ws_manager is None:
             return
 
