@@ -60,8 +60,12 @@ class StopScheduler(BaseElevator):
         """Internal car buttons always go to internal heaps"""
         if floor > self.current_floor:
             self.internal_up.insert(floor)
+            if self.direction == Direction.IDLE:
+                self.direction = Direction.UP
         elif floor < self.current_floor:
             self.internal_down.insert(floor)
+            if self.direction == Direction.IDLE:
+                self.direction = Direction.DOWN
 
     def get_next_stop(self, delete: bool = True, only_same_direction: bool = False):
         """
