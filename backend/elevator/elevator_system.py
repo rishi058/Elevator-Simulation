@@ -42,7 +42,7 @@ class Elevator(UIStateManager):
     
     async def run(self):
         while True:
-            self.update_ui_requests()  # Helps When lift is IDLE and request comes for current floor 
+            self.update_ui_requests()
 
             stop = self.get_next_stop()
             if stop is None:
@@ -51,40 +51,54 @@ class Elevator(UIStateManager):
                 await asyncio.sleep(1)
                 continue  
             
-            self.direction = Direction.UP if stop > self.current_floor else Direction.DOWN
-            await self.broadcast_state()   # Notify direction change
+            # --- FIX 1: Handle "Already Here" Case ---
+            if stop == self.current_floor:
+                # We are already at the target. Just open door.
+                # Do NOT change direction (keep previous moving direction logic if needed)
+                pass 
+            else:
+                # Only set direction if we actually need to move
+                self.direction = Direction.UP if stop > self.current_floor else Direction.DOWN
+            
+            await self.broadcast_state()
 
-            while self.is_door_open:    # Wait until door is closed[Edge case]
+            # Wait for door to close before moving
+            while self.is_door_open:
                 await asyncio.sleep(1)
             
+            # Move loop
             while self.current_floor != stop: 
-                # Check if there's a closer stop in the same direction
-                new_stop = self.get_next_stop(delete=False)
+                # Check for interruptions (Phase 1 logic)
+                new_stop = self.get_next_stop(delete=False, only_same_direction=True)
+                
                 if new_stop is not None:
+                    # Logic: If we are going UP, and new_stop is closer (and above us), take it.
                     if self.direction == Direction.UP and new_stop < stop and new_stop > self.current_floor:
-                        self.get_next_stop()
-                        self.up_stops.insert(stop)
+                        self.get_next_stop(delete=True, only_same_direction=True) 
+                        self.add_stop(stop) 
                         stop = new_stop
+                    
                     elif self.direction == Direction.DOWN and new_stop > stop and new_stop < self.current_floor:
-                        self.get_next_stop()
-                        self.down_stops.insert(stop)
+                        self.get_next_stop(delete=True, only_same_direction=True) 
+                        self.add_stop(stop)
                         stop = new_stop
 
                 self.current_floor += 0.2 if self.direction == Direction.UP else -0.2
                 self.current_floor = round(self.current_floor, 1)
-                print(f"[Elevator Moving] Current Floor: {self.current_floor}")
                 await self.broadcast_state()
                 await asyncio.sleep(1)
 
             # Arrival Logic
-            print(f"[Elevator] Arrived at floor: {self.current_floor}")
             self.is_door_open = True
+            
+            # --- FIX 2: Maintain Direction State on Arrival ---
+            # Don't immediately set IDLE. Let the scheduler decide next loop.
+            # self.moving_direction can be used for UI indicators (arrows)
             self.moving_direction = self.direction            
-            self.direction = Direction.IDLE
             
             self.update_ui_requests() 
             await self.broadcast_state()
-            await asyncio.sleep(5)  # We cant use [asyncio.create_task(self.open_door())] here bcz we need to wait until door is closed
+            await asyncio.sleep(5) 
             self.is_door_open = False
             await self.broadcast_state()
 

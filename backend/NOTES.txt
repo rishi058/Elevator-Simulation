@@ -29,25 +29,23 @@ Correct principle used in real elevators
 Real elevators use LOOK + Directional Intent Filtering, not pure SCAN.
 A request must only be serviced if its intent matches the current direction.
 
-Correct solution (production-grade)
-1. Split queues by directional intent
+--------------------------------------------------------------------------
 
-Maintain four queues, not two:
-External UP calls
-External DOWN calls
-Internal requests (neutral)
-Active direction queue
+LOOK algorithm implemented:
 
-2. Direction-aware admission rule
+Current Issues: 
 
-While moving UP:
-Accept:
-External UP where floor ≥ current
-Internal where floor ≥ current
+2. The "Full Car" Bypass (Capacity Constraint)
+The Scenario: The elevator has 10 people inside (maximum capacity). It is going UP from 1 to 10. 
+There is a hall call at floor 5 UP.Current Failure: Your scheduler will identify floor 5 as a valid stop and stop there.
+The doors will open, but nobody can get in. This wastes time and energy.
 
-Defer:
-All DOWN requests
+Real World Logic: Elevators have a "Load Weighing" input. If load > threshold, the scheduler ignores Hall Calls (external) but still services Car Calls (internal).
 
-3. Use LOOK, not SCAN
-Do not go to artificial extremes. Reverse only when:
-No more valid requests exist in the current direction
+3. Starvation (The "Penthouse" Problem)
+The Scenario: The elevator is busy servicing floors 1–5 continuously (high traffic). Someone at floor 10 presses "DOWN".
+Current Failure: Your heaps prioritize proximity. If new requests keep appearing at floors 2, 3, and 4, the elevator may bounce between them indefinitely,
+never reaching floor 10.
+
+Real World Logic: Requests usually have a "timestamp" or "age". If a request ages beyond a threshold (e.g., 60 seconds), it enters "Emergency Priority" mode,
+overriding the proximity logic to force the elevator to serve that floor.

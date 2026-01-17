@@ -6,119 +6,165 @@ import asyncio
 class StopScheduler(BaseElevator):    
     def __init__(self, total_floors=10):
         super().__init__(total_floors)
-        self.up_stops = MinHeap()
-        self.down_stops = MaxHeap()
-    
+        
+        # --- Internal Requests (Car Buttons) ---
+        self.internal_up = MinHeap()
+        self.internal_down = MaxHeap()
+
+        # --- External Requests (Hall Buttons) ---
+        # Phase 1: Main Sweep (e.g., Going UP, picking up UP requests)
+        self.up_up = MinHeap()     # [Floor > Curr] Want UP
+        self.down_down = MaxHeap() # [Floor < Curr] Want DOWN
+        
+        # Phase 2: Secondary Sweep (e.g., Going UP, picking up DOWN requests at top)
+        self.up_down = MaxHeap()   # [Floor > Curr] Want DOWN
+        self.down_up = MinHeap()   # [Floor < Curr] Want UP
+
     def add_request(self, input_floor: int, input_dir: str):
+        """Sorts external requests into the correct Phase queue"""
+        curr = self.current_floor
         eff_dir = self.get_effective_direction()
-
-        # IDLE ELEVATOR
+        
+        # If IDLE, assign based on simple proximity/direction
         if eff_dir == Direction.IDLE:
-            if input_floor == self.current_floor:
-                if not self.is_door_open:
-                    asyncio.create_task(self.open_door())
-                return
-            
-            if input_floor > self.current_floor:
-                self.up_stops.insert(input_floor)
+            if input_floor > curr:
+                self.up_up.insert(input_floor)
                 self.direction = Direction.UP
-            else:
-                self.down_stops.insert(input_floor)
+            elif input_floor < curr:
+                self.down_down.insert(input_floor)
                 self.direction = Direction.DOWN
+            else:
+                if not self.is_door_open: asyncio.create_task(self.open_door())
             return
 
-        # MOVING UP
+        # LOGIC MAP: Decide which queue this request belongs to
         if eff_dir == Direction.UP:
-            if input_floor >= self.current_floor and input_dir == Direction.UP:
-                self.up_stops.insert(input_floor)
+            if input_floor >= curr:
+                if input_dir == Direction.UP: 
+                    self.up_up.insert(input_floor)   # Standard: On our way
+                else: 
+                    self.up_down.insert(input_floor) # Turnaround: Pick up on way down
             else:
-                self.down_stops.insert(input_floor)
-            return
+                self.down_up.insert(input_floor)     # Missed: Behind us (Phase 4)
 
-        # MOVING DOWN
-        if eff_dir == Direction.DOWN:
-            if input_floor <= self.current_floor and input_dir == Direction.DOWN:
-                self.down_stops.insert(input_floor)
+        elif eff_dir == Direction.DOWN:
+            if input_floor <= curr:
+                if input_dir == Direction.DOWN: 
+                    self.down_down.insert(input_floor) # Standard: On our way
+                else: 
+                    self.down_up.insert(input_floor)   # Turnaround: Pick up on way up
             else:
-                self.up_stops.insert(input_floor)
+                self.up_down.insert(input_floor)       # Missed: Behind us (Phase 4)
 
     def add_stop(self, floor: int):
-        eff_dir = self.get_effective_direction()
+        """Internal car buttons always go to internal heaps"""
+        if floor > self.current_floor:
+            self.internal_up.insert(floor)
+        elif floor < self.current_floor:
+            self.internal_down.insert(floor)
 
-        if floor == self.current_floor:
-            if not self.is_door_open:
-                asyncio.create_task(self.open_door())
-            return
+    def get_next_stop(self, delete: bool = True, only_same_direction: bool = False):
+        """
+        Determines the next floor to visit.
+        FIX: Now compares all valid candidates by proximity to ensure we don't skip floors
+        stuck in 'Turnaround' heaps that are actually ahead of us.
+        """
+        # IDLE: Logic remains same
+        if self.direction == Direction.IDLE:
+            target = self.up_up.get_min() or self.down_down.get_max()
+            if target is not None:
+                if delete:
+                    if target == self.up_up.get_min(): self.up_up.extract_min()
+                    else: self.down_down.extract_max()
+                return target
+            return None
 
-        # IDLE
-        if eff_dir == Direction.IDLE:
-            if floor > self.current_floor:
-                self.up_stops.insert(floor)
-                self.direction = Direction.UP
-            else:
-                self.down_stops.insert(floor)
+        # --- UPWARD LOGIC ---
+        if self.direction == Direction.UP:
+            # Phase 1: Check Internal, Same-Direction, AND "Misplaced" Turnaround requests
+            candidates = []
+
+            # 1. Internal Requests
+            if self.internal_up.get_min() is not None:
+                candidates.append((self.internal_up.get_min(), 'internal_up'))
+            
+            # 2. Standard UP Requests
+            if self.up_up.get_min() is not None:
+                candidates.append((self.up_up.get_min(), 'up_up'))
+
+            # 3. FALLBACK: Check 'down_up' (Requests that wanted UP but were below us).
+            # If we reset or moved, some might now be ABOVE us.
+            du_val = self.down_up.get_min()
+            if du_val is not None and du_val > self.current_floor:
+                candidates.append((du_val, 'down_up'))
+
+            # Select the Closest Target (Min floor for UP)
+            if candidates:
+                target, source = min(candidates, key=lambda x: x[0])
+                
+                if delete:
+                    if source == 'internal_up': self.internal_up.extract_min()
+                    elif source == 'up_up': self.up_up.extract_min()
+                    elif source == 'down_up': self.down_up.extract_min()
+                return target
+            
+            if only_same_direction:
+                return None
+
+            # Phase 2: Turnaround Requests (Going UP but want DOWN)
+            target = self.up_down.get_max()
+            if target is not None:
+                if delete: self.up_down.extract_max()
+                return target
+
+            # Phase 3: Switch Direction
+            if self.down_down.get_max() or self.down_up.get_min() or self.internal_down.get_max():
                 self.direction = Direction.DOWN
-            return
-
-        # MOVING UP
-        if eff_dir == Direction.UP:
-            if floor > self.current_floor:
-                self.up_stops.insert(floor)
-            else:
-                self.down_stops.insert(floor)
-            return
-
-        # MOVING DOWN
-        if eff_dir == Direction.DOWN:
-            if floor < self.current_floor:
-                self.down_stops.insert(floor)
-            else:
-                self.up_stops.insert(floor)
-
-    def get_next_stop(self, delete: bool = True):
-        eff_dir = self.get_effective_direction()
-
-        if eff_dir == Direction.UP:
-            next_up = self.up_stops.get_min()
-            if next_up is not None:
-                if delete:
-                    self.up_stops.extract_min()
-                return next_up
-            
-            next_down = self.down_stops.get_max()
-            if next_down is not None:
-                if delete:
-                    self.down_stops.extract_max()
-                return next_down
+                return self.get_next_stop(delete, only_same_direction)
             
             return None
 
-        if eff_dir == Direction.DOWN:
-            next_down = self.down_stops.get_max()
-            if next_down is not None:
-                if delete:
-                    self.down_stops.extract_max()
-                return next_down
+        # --- DOWNWARD LOGIC ---
+        if self.direction == Direction.DOWN:
+            # Phase 1: Check Internal, Same-Direction, AND "Misplaced" Turnaround requests
+            candidates = []
+
+            # 1. Internal Requests
+            if self.internal_down.get_max() is not None:
+                candidates.append((self.internal_down.get_max(), 'internal_down'))
             
-            next_up = self.up_stops.get_min()
-            if next_up is not None:
+            # 2. Standard DOWN Requests
+            if self.down_down.get_max() is not None:
+                candidates.append((self.down_down.get_max(), 'down_down'))
+
+            # 3. FALLBACK: Check 'up_down' (Requests that wanted DOWN but were above us).
+            # CRITICAL FIX: If we are at 5 and 3 is in up_down, 3 is valid (3 < 5).
+            ud_val = self.up_down.get_max()
+            if ud_val is not None and ud_val < self.current_floor:
+                candidates.append((ud_val, 'up_down'))
+
+            # Select the Closest Target (Max floor for DOWN)
+            if candidates:
+                target, source = max(candidates, key=lambda x: x[0])
+                
                 if delete:
-                    self.up_stops.extract_min()
-                return next_up
-            
+                    if source == 'internal_down': self.internal_down.extract_max()
+                    elif source == 'down_down': self.down_down.extract_max()
+                    elif source == 'up_down': self.up_down.extract_max()
+                return target
+
+            if only_same_direction:
+                return None
+
+            # Phase 2: Turnaround Requests (Going DOWN but want UP)
+            target = self.down_up.get_min()
+            if target is not None:
+                if delete: self.down_up.extract_min()
+                return target
+
+            # Phase 3: Switch Direction
+            if self.up_up.get_min() or self.up_down.get_max() or self.internal_up.get_min():
+                self.direction = Direction.UP
+                return self.get_next_stop(delete, only_same_direction)
+
             return None
-        
-        # IDLE - prefer up
-        next_up = self.up_stops.get_min()
-        if next_up is not None:
-            if delete:
-                self.up_stops.extract_min()
-            return next_up
-        
-        next_down = self.down_stops.get_max()
-        if next_down is not None:
-            if delete:
-                self.down_stops.extract_max()
-            return next_down
-        
-        return None
