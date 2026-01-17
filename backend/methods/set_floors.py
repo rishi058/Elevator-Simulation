@@ -1,6 +1,6 @@
 from helper.models import BuildingModel, ResponseMessage
 from helper import global_elevator
-from elevator.elevator import Elevator
+from elevator.elevator_system import Elevator
 from helper.websocket_manager import ws_manager
 import asyncio
 

@@ -1,0 +1,53 @@
+Current Floor : 0
+Press Sequence : 3U, 3D, 5D
+and at 3U -> internal-stop 7 is added. 
+Generally lift should stop at 5, when it is going downwards.
+But based on SCAN algo lift stops at 5 when going upwards. 
+
+----------------------------------------------------------------------
+
+What you are observing is a known limitation of a naïve SCAN (Elevator) algorithm when it is applied without request classification and dynamic reordering.
+
+Why this happens (root cause)
+
+In classic SCAN:
+The elevator continues in its current direction
+It services all requests in that direction, regardless of when they arrive
+Newly added requests are merged blindly into the active scan list
+
+Your scenario (step-by-step)
+Current floor: 0
+Requests: 3U, 3D, 5D
+Elevator starts UP
+At floor 3U, an internal stop 7 is added
+Active UP scan now becomes: 3 → 7
+
+Because SCAN does not re-evaluate direction-specific intent, floor 5D is incorrectly serviced while moving up
+This violates real elevator semantics, even though it is SCAN-correct.
+
+Correct principle used in real elevators
+Real elevators use LOOK + Directional Intent Filtering, not pure SCAN.
+A request must only be serviced if its intent matches the current direction.
+
+Correct solution (production-grade)
+1. Split queues by directional intent
+
+Maintain four queues, not two:
+External UP calls
+External DOWN calls
+Internal requests (neutral)
+Active direction queue
+
+2. Direction-aware admission rule
+
+While moving UP:
+Accept:
+External UP where floor ≥ current
+Internal where floor ≥ current
+
+Defer:
+All DOWN requests
+
+3. Use LOOK, not SCAN
+Do not go to artificial extremes. Reverse only when:
+No more valid requests exist in the current direction
