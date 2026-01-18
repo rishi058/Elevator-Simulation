@@ -70,12 +70,14 @@ class StopScheduler(BaseElevator):
     def get_next_stop(self, delete: bool = True, only_same_direction: bool = False):
         """
         Determines the next floor to visit.
-        FIX: Now compares all valid candidates by proximity to ensure we don't skip floors
-        stuck in 'Turnaround' heaps that are actually ahead of us.
+        FIX: Explicitly checks 'is not None' to handle Floor 0 correctly.
         """
         # IDLE: Logic remains same
         if self.direction == Direction.IDLE:
-            target = self.up_up.get_min() or self.down_down.get_max()
+            target = self.up_up.get_min() if self.up_up.get_min() is not None else self.down_down.get_max()
+            # Note: The original 'or' logic there was also risky if up_up had 0, 
+            # but up_up usually has floors > current.
+            
             if target is not None:
                 if delete:
                     if target == self.up_up.get_min(): self.up_up.extract_min()
@@ -96,16 +98,14 @@ class StopScheduler(BaseElevator):
             if self.up_up.get_min() is not None:
                 candidates.append((self.up_up.get_min(), 'up_up'))
 
-            # 3. FALLBACK: Check 'down_up' (Requests that wanted UP but were below us).
-            # If we reset or moved, some might now be ABOVE us.
+            # 3. FALLBACK: Check 'down_up'
             du_val = self.down_up.get_min()
             if du_val is not None and du_val > self.current_floor:
                 candidates.append((du_val, 'down_up'))
 
-            # Select the Closest Target (Min floor for UP)
+            # Select the Closest Target
             if candidates:
                 target, source = min(candidates, key=lambda x: x[0])
-                
                 if delete:
                     if source == 'internal_up': self.internal_up.extract_min()
                     elif source == 'up_up': self.up_up.extract_min()
@@ -121,8 +121,12 @@ class StopScheduler(BaseElevator):
                 if delete: self.up_down.extract_max()
                 return target
 
-            # Phase 3: Switch Direction
-            if self.down_down.get_max() or self.down_up.get_min() or self.internal_down.get_max():
+            # Phase 3: Switch Direction (THE FIX IS HERE)
+            # We must check 'is not None' because Floor 0 evaluates to False
+            if (self.down_down.get_max() is not None or 
+                self.down_up.get_min() is not None or 
+                self.internal_down.get_max() is not None):
+                
                 self.direction = Direction.DOWN
                 return self.get_next_stop(delete, only_same_direction)
             
@@ -141,16 +145,14 @@ class StopScheduler(BaseElevator):
             if self.down_down.get_max() is not None:
                 candidates.append((self.down_down.get_max(), 'down_down'))
 
-            # 3. FALLBACK: Check 'up_down' (Requests that wanted DOWN but were above us).
-            # CRITICAL FIX: If we are at 5 and 3 is in up_down, 3 is valid (3 < 5).
+            # 3. FALLBACK: Check 'up_down'
             ud_val = self.up_down.get_max()
             if ud_val is not None and ud_val < self.current_floor:
                 candidates.append((ud_val, 'up_down'))
 
-            # Select the Closest Target (Max floor for DOWN)
+            # Select the Closest Target
             if candidates:
                 target, source = max(candidates, key=lambda x: x[0])
-                
                 if delete:
                     if source == 'internal_down': self.internal_down.extract_max()
                     elif source == 'down_down': self.down_down.extract_max()
@@ -166,8 +168,11 @@ class StopScheduler(BaseElevator):
                 if delete: self.down_up.extract_min()
                 return target
 
-            # Phase 3: Switch Direction
-            if self.up_up.get_min() or self.up_down.get_max() or self.internal_up.get_min():
+            # Phase 3: Switch Direction (THE FIX IS HERE)
+            if (self.up_up.get_min() is not None or 
+                self.up_down.get_max() is not None or 
+                self.internal_up.get_min() is not None):
+                
                 self.direction = Direction.UP
                 return self.get_next_stop(delete, only_same_direction)
 
