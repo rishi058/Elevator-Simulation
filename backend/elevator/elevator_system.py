@@ -51,9 +51,8 @@ class Elevator(UIStateManager):
                 await asyncio.sleep(1)
                 continue  
             
-            # --- FIX 1: Handle "Already Here" Case ---
+            # Handle "Already Here" Case[Just open door]
             if stop == self.current_floor:
-                # We are already at the target. Just open door.
                 # Do NOT change direction (keep previous moving direction logic if needed)
                 pass 
             else:
@@ -68,20 +67,46 @@ class Elevator(UIStateManager):
             
             # Move loop
             while self.current_floor != stop: 
-                # Check for interruptions (Phase 1 logic)
                 new_stop = self.get_next_stop(delete=False, only_same_direction=True)
                 
+                # --- LOGIC START: INTERRUPTION HANDLING ---
+                interrupt = False
                 if new_stop is not None:
-                    # Logic: If we are going UP, and new_stop is closer (and above us), take it.
                     if self.direction == Direction.UP and new_stop < stop and new_stop > self.current_floor:
-                        self.get_next_stop(delete=True, only_same_direction=True) 
-                        self.add_stop(stop) 
-                        stop = new_stop
-                    
+                        interrupt = True
                     elif self.direction == Direction.DOWN and new_stop > stop and new_stop < self.current_floor:
-                        self.get_next_stop(delete=True, only_same_direction=True) 
+                        interrupt = True
+                
+                if interrupt:
+                    # 1. Consume the new closer stop
+                    self.get_next_stop(delete=True, only_same_direction=True)
+                    
+                    # 2. Re-queue the OLD 'stop' correctly
+                    # FIX: Don't blindly use add_stop(). Check where it belongs.
+                    requeued = False
+                    
+                    # If it was an internal request, keep it internal
+                    if stop in self.ui_internal_requests:
                         self.add_stop(stop)
-                        stop = new_stop
+                        requeued = True
+                    
+                    # If it was an external DOWN request, put it back as DOWN
+                    if stop in self.ui_external_down_requests:
+                        self.add_request(stop, Direction.DOWN)
+                        requeued = True
+                        
+                    # If it was an external UP request, put it back as UP
+                    if stop in self.ui_external_up_requests:
+                        self.add_request(stop, Direction.UP)
+                        requeued = True
+                    
+                    # Fallback (Safety net)
+                    if not requeued:
+                        self.add_stop(stop)
+
+                    # 3. Update target
+                    stop = new_stop
+                # --- LOGIC END ---
 
                 self.current_floor += 0.2 if self.direction == Direction.UP else -0.2
                 self.current_floor = round(self.current_floor, 1)
@@ -91,10 +116,8 @@ class Elevator(UIStateManager):
             # Arrival Logic
             self.is_door_open = True
             
-            # --- FIX 2: Maintain Direction State on Arrival ---
-            # Don't immediately set IDLE. Let the scheduler decide next loop.
-            # self.moving_direction can be used for UI indicators (arrows)
-            self.moving_direction = self.direction            
+            # Maintain Direction State on Arrival [Don't immediately set IDLE] Let the scheduler decide next loop.
+            self.moving_direction = self.direction  # used for UI indicators (arrows)       
             
             self.update_ui_requests() 
             await self.broadcast_state()
@@ -109,7 +132,17 @@ class Elevator(UIStateManager):
         self.direction = Direction.IDLE
         self.is_door_open = False
         self.moving_direction = Direction.IDLE
-        self.up_stops = None
-        self.down_stops = None
+        #----------------------------------------
+        self.up_up = None
+        self.down_down = None
+        self.up_down = None
+        self.down_up = None
+        self.internal_up = None
+        self.internal_down = None
+        #----------------------------------------
+        self.ui_external_up_requests = None
+        self.ui_external_down_requests = None
+        self.ui_internal_requests = None
+        #----------------------------------------
         self.ws_manager = None
         self.prev_state = None

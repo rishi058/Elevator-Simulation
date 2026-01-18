@@ -12,98 +12,97 @@ class StopScheduler(BaseElevator):
         self.internal_down = MaxHeap()
 
         # --- External Requests (Hall Buttons) ---
-        # Phase 1: Main Sweep (e.g., Going UP, picking up UP requests)
-        self.up_up = MinHeap()     # [Floor > Curr] Want UP
-        self.down_down = MaxHeap() # [Floor < Curr] Want DOWN
+        self.up_up = MinHeap()     # [Phase 1] Going UP, want UP
+        self.down_down = MaxHeap() # [Phase 1] Going DOWN, want DOWN
         
-        # Phase 2: Secondary Sweep (e.g., Going UP, picking up DOWN requests at top)
-        self.up_down = MaxHeap()   # [Floor > Curr] Want DOWN
-        self.down_up = MinHeap()   # [Floor < Curr] Want UP
+        self.up_down = MaxHeap()   # [Phase 2] Going UP, want DOWN (Turnaround)
+        self.down_up = MinHeap()   # [Phase 2] Going DOWN, want UP (Turnaround)
 
     def add_request(self, input_floor: int, input_dir: str):
-        """Sorts external requests into the correct Phase queue"""
         curr = self.current_floor
         eff_dir = self.get_effective_direction()
         
-        # If IDLE, assign based on simple proximity/direction
+        # FIX: Even if IDLE, check Direction to sort into Turnaround queues
         if eff_dir == Direction.IDLE:
             if input_floor > curr:
-                self.up_up.insert(input_floor)
+                if input_dir == Direction.UP:
+                    self.up_up.insert(input_floor)
+                else:
+                    self.up_down.insert(input_floor) # 2D goes here!
                 self.direction = Direction.UP
             elif input_floor < curr:
-                self.down_down.insert(input_floor)
+                if input_dir == Direction.DOWN:
+                    self.down_down.insert(input_floor)
+                else:
+                    self.down_up.insert(input_floor)
                 self.direction = Direction.DOWN
             else:
                 if not self.is_door_open: asyncio.create_task(self.open_door())
             return
 
-        # LOGIC MAP: Decide which queue this request belongs to
+        # Standard Logic
         if eff_dir == Direction.UP:
             if input_floor >= curr:
                 if input_dir == Direction.UP: 
-                    self.up_up.insert(input_floor)   # Standard: On our way
+                    self.up_up.insert(input_floor)
                 else: 
-                    self.up_down.insert(input_floor) # Turnaround: Pick up on way down
+                    self.up_down.insert(input_floor)
             else:
-                self.down_up.insert(input_floor)     # Missed: Behind us (Phase 4)
+                self.down_up.insert(input_floor)
 
         elif eff_dir == Direction.DOWN:
             if input_floor <= curr:
                 if input_dir == Direction.DOWN: 
-                    self.down_down.insert(input_floor) # Standard: On our way
+                    self.down_down.insert(input_floor)
                 else: 
-                    self.down_up.insert(input_floor)   # Turnaround: Pick up on way up
+                    self.down_up.insert(input_floor)
             else:
-                self.up_down.insert(input_floor)       # Missed: Behind us (Phase 4)
+                self.up_down.insert(input_floor)
 
     def add_stop(self, floor: int):
-        """Internal car buttons always go to internal heaps"""
         if floor > self.current_floor:
             self.internal_up.insert(floor)
-            if self.direction == Direction.IDLE:
-                self.direction = Direction.UP
+            if self.direction == Direction.IDLE: self.direction = Direction.UP
         elif floor < self.current_floor:
             self.internal_down.insert(floor)
-            if self.direction == Direction.IDLE:
-                self.direction = Direction.DOWN
+            if self.direction == Direction.IDLE: self.direction = Direction.DOWN
 
     def get_next_stop(self, delete: bool = True, only_same_direction: bool = False):
-        """
-        Determines the next floor to visit.
-        FIX: Explicitly checks 'is not None' to handle Floor 0 correctly.
-        """
-        # IDLE: Logic remains same
+        # IDLE: Check all queues
         if self.direction == Direction.IDLE:
-            target = self.up_up.get_min() if self.up_up.get_min() is not None else self.down_down.get_max()
-            # Note: The original 'or' logic there was also risky if up_up had 0, 
-            # but up_up usually has floors > current.
-            
-            if target is not None:
-                if delete:
-                    if target == self.up_up.get_min(): self.up_up.extract_min()
-                    else: self.down_down.extract_max()
-                return target
+            up_target = self.up_up.get_min()
+            down_target = self.down_down.get_max()
+            up_turnaround = self.up_down.get_max()
+            down_turnaround = self.down_up.get_min()
+
+            if up_target is not None:
+                if delete: self.up_up.extract_min()
+                return up_target
+            if down_target is not None:
+                if delete: self.down_down.extract_max()
+                return down_target
+            # Handle Turnaround starts from IDLE
+            if up_turnaround is not None:
+                self.direction = Direction.UP
+                return self.get_next_stop(delete, only_same_direction)
+            if down_turnaround is not None:
+                self.direction = Direction.DOWN
+                return self.get_next_stop(delete, only_same_direction)
             return None
 
-        # --- UPWARD LOGIC ---
+        # UP LOGIC
         if self.direction == Direction.UP:
-            # Phase 1: Check Internal, Same-Direction, AND "Misplaced" Turnaround requests
             candidates = []
-
-            # 1. Internal Requests
             if self.internal_up.get_min() is not None:
                 candidates.append((self.internal_up.get_min(), 'internal_up'))
-            
-            # 2. Standard UP Requests
             if self.up_up.get_min() is not None:
                 candidates.append((self.up_up.get_min(), 'up_up'))
-
-            # 3. FALLBACK: Check 'down_up'
+            
+            # Fallback for "Missed" requests below us
             du_val = self.down_up.get_min()
             if du_val is not None and du_val > self.current_floor:
                 candidates.append((du_val, 'down_up'))
 
-            # Select the Closest Target
             if candidates:
                 target, source = min(candidates, key=lambda x: x[0])
                 if delete:
@@ -112,45 +111,34 @@ class StopScheduler(BaseElevator):
                     elif source == 'down_up': self.down_up.extract_min()
                 return target
             
-            if only_same_direction:
-                return None
+            if only_same_direction: return None
 
-            # Phase 2: Turnaround Requests (Going UP but want DOWN)
+            # Phase 2: Turnaround
             target = self.up_down.get_max()
             if target is not None:
                 if delete: self.up_down.extract_max()
                 return target
 
-            # Phase 3: Switch Direction (THE FIX IS HERE)
-            # We must check 'is not None' because Floor 0 evaluates to False
+            # Phase 3: Switch Direction (The original Fix)
             if (self.down_down.get_max() is not None or 
                 self.down_up.get_min() is not None or 
                 self.internal_down.get_max() is not None):
-                
                 self.direction = Direction.DOWN
                 return self.get_next_stop(delete, only_same_direction)
-            
             return None
 
-        # --- DOWNWARD LOGIC ---
+        # DOWN LOGIC
         if self.direction == Direction.DOWN:
-            # Phase 1: Check Internal, Same-Direction, AND "Misplaced" Turnaround requests
             candidates = []
-
-            # 1. Internal Requests
             if self.internal_down.get_max() is not None:
                 candidates.append((self.internal_down.get_max(), 'internal_down'))
-            
-            # 2. Standard DOWN Requests
             if self.down_down.get_max() is not None:
                 candidates.append((self.down_down.get_max(), 'down_down'))
-
-            # 3. FALLBACK: Check 'up_down'
+            
             ud_val = self.up_down.get_max()
             if ud_val is not None and ud_val < self.current_floor:
                 candidates.append((ud_val, 'up_down'))
 
-            # Select the Closest Target
             if candidates:
                 target, source = max(candidates, key=lambda x: x[0])
                 if delete:
@@ -159,21 +147,16 @@ class StopScheduler(BaseElevator):
                     elif source == 'up_down': self.up_down.extract_max()
                 return target
 
-            if only_same_direction:
-                return None
+            if only_same_direction: return None
 
-            # Phase 2: Turnaround Requests (Going DOWN but want UP)
             target = self.down_up.get_min()
             if target is not None:
                 if delete: self.down_up.extract_min()
                 return target
 
-            # Phase 3: Switch Direction (THE FIX IS HERE)
             if (self.up_up.get_min() is not None or 
                 self.up_down.get_max() is not None or 
                 self.internal_up.get_min() is not None):
-                
                 self.direction = Direction.UP
                 return self.get_next_stop(delete, only_same_direction)
-
             return None
