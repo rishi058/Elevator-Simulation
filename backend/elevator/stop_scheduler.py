@@ -22,42 +22,34 @@ class StopScheduler(BaseElevator):
         curr = self.current_floor
         eff_dir = self.get_effective_direction()
         
-        # FIX: Even if IDLE, check Direction to sort into Turnaround queues
+        # IDLE: Sort based on intent
         if eff_dir == Direction.IDLE:
             if input_floor > curr:
-                if input_dir == Direction.UP:
-                    self.up_up.insert(input_floor)
-                else:
-                    self.up_down.insert(input_floor) # 2D goes here!
+                if input_dir == Direction.UP: self.up_up.insert(input_floor)
+                else: self.up_down.insert(input_floor)
                 self.direction = Direction.UP
             elif input_floor < curr:
-                if input_dir == Direction.DOWN:
-                    self.down_down.insert(input_floor)
-                else:
-                    self.down_up.insert(input_floor)
+                if input_dir == Direction.DOWN: self.down_down.insert(input_floor)
+                else: self.down_up.insert(input_floor)
                 self.direction = Direction.DOWN
             else:
                 if not self.is_door_open: asyncio.create_task(self.open_door())
             return
 
-        # Standard Logic
+        # MOVING: Sort based on Phase 1 (Standard) vs Phase 2 (Turnaround)
         if eff_dir == Direction.UP:
             if input_floor >= curr:
-                if input_dir == Direction.UP: 
-                    self.up_up.insert(input_floor)
-                else: 
-                    self.up_down.insert(input_floor)
+                if input_dir == Direction.UP: self.up_up.insert(input_floor)
+                else: self.up_down.insert(input_floor)
             else:
-                self.down_up.insert(input_floor)
+                self.down_up.insert(input_floor) # Missed
 
         elif eff_dir == Direction.DOWN:
             if input_floor <= curr:
-                if input_dir == Direction.DOWN: 
-                    self.down_down.insert(input_floor)
-                else: 
-                    self.down_up.insert(input_floor)
+                if input_dir == Direction.DOWN: self.down_down.insert(input_floor)
+                else: self.down_up.insert(input_floor)
             else:
-                self.up_down.insert(input_floor)
+                self.up_down.insert(input_floor) # Missed
 
     def add_stop(self, floor: int):
         if floor > self.current_floor:
@@ -68,20 +60,25 @@ class StopScheduler(BaseElevator):
             if self.direction == Direction.IDLE: self.direction = Direction.DOWN
 
     def get_next_stop(self, delete: bool = True, only_same_direction: bool = False):
-        # IDLE: Check all queues
+        # Priority Constants (Lower is better)
+        PRIO_INTERNAL = 0
+        PRIO_EXTERNAL = 1
+        PRIO_MISSED = 2
+
+        # IDLE
         if self.direction == Direction.IDLE:
             up_target = self.up_up.get_min()
             down_target = self.down_down.get_max()
             up_turnaround = self.up_down.get_max()
             down_turnaround = self.down_up.get_min()
 
+            # Pick the first available (Prioritizing Phase 1)
             if up_target is not None:
                 if delete: self.up_up.extract_min()
                 return up_target
             if down_target is not None:
                 if delete: self.down_down.extract_max()
                 return down_target
-            # Handle Turnaround starts from IDLE
             if up_turnaround is not None:
                 self.direction = Direction.UP
                 return self.get_next_stop(delete, only_same_direction)
@@ -92,19 +89,23 @@ class StopScheduler(BaseElevator):
 
         # UP LOGIC
         if self.direction == Direction.UP:
-            candidates = []
+            candidates = [] # Tuples of (Floor, Priority, QueueName)
+
             if self.internal_up.get_min() is not None:
-                candidates.append((self.internal_up.get_min(), 'internal_up'))
-            if self.up_up.get_min() is not None:
-                candidates.append((self.up_up.get_min(), 'up_up'))
+                candidates.append((self.internal_up.get_min(), PRIO_INTERNAL, 'internal_up'))
             
-            # Fallback for "Missed" requests below us
+            if self.up_up.get_min() is not None:
+                candidates.append((self.up_up.get_min(), PRIO_EXTERNAL, 'up_up'))
+
+            # Fallback: Check 'down_up' (Missed requests)
             du_val = self.down_up.get_min()
             if du_val is not None and du_val > self.current_floor:
-                candidates.append((du_val, 'down_up'))
+                candidates.append((du_val, PRIO_MISSED, 'down_up'))
 
             if candidates:
-                target, source = min(candidates, key=lambda x: x[0])
+                # min() sorts by Floor first, then Priority
+                target, _, source = min(candidates, key=lambda x: (x[0], x[1]))
+                
                 if delete:
                     if source == 'internal_up': self.internal_up.extract_min()
                     elif source == 'up_up': self.up_up.extract_min()
@@ -119,10 +120,11 @@ class StopScheduler(BaseElevator):
                 if delete: self.up_down.extract_max()
                 return target
 
-            # Phase 3: Switch Direction (The original Fix)
+            # Phase 3: Switch Direction
             if (self.down_down.get_max() is not None or 
                 self.down_up.get_min() is not None or 
                 self.internal_down.get_max() is not None):
+                
                 self.direction = Direction.DOWN
                 return self.get_next_stop(delete, only_same_direction)
             return None
@@ -130,17 +132,24 @@ class StopScheduler(BaseElevator):
         # DOWN LOGIC
         if self.direction == Direction.DOWN:
             candidates = []
+
             if self.internal_down.get_max() is not None:
-                candidates.append((self.internal_down.get_max(), 'internal_down'))
-            if self.down_down.get_max() is not None:
-                candidates.append((self.down_down.get_max(), 'down_down'))
+                candidates.append((self.internal_down.get_max(), PRIO_INTERNAL, 'internal_down'))
             
+            if self.down_down.get_max() is not None:
+                candidates.append((self.down_down.get_max(), PRIO_EXTERNAL, 'down_down'))
+
             ud_val = self.up_down.get_max()
             if ud_val is not None and ud_val < self.current_floor:
-                candidates.append((ud_val, 'up_down'))
+                candidates.append((ud_val, PRIO_MISSED, 'up_down'))
 
             if candidates:
-                target, source = max(candidates, key=lambda x: x[0])
+                # max() for DOWN: Picks Highest Floor. 
+                # If floors equal, we want LOWEST Priority (0). 
+                # Python's max() on tuples (floor, prio) favors Higher Prio number. 
+                # We need a custom key: (floor, -priority) to favor Internal (0) on ties.
+                target, _, source = max(candidates, key=lambda x: (x[0], -x[1]))
+                
                 if delete:
                     if source == 'internal_down': self.internal_down.extract_max()
                     elif source == 'down_down': self.down_down.extract_max()
@@ -157,6 +166,7 @@ class StopScheduler(BaseElevator):
             if (self.up_up.get_min() is not None or 
                 self.up_down.get_max() is not None or 
                 self.internal_up.get_min() is not None):
+                
                 self.direction = Direction.UP
                 return self.get_next_stop(delete, only_same_direction)
             return None
