@@ -46,17 +46,17 @@ class Elevator(UIStateManager):
 
             stop = self.get_next_stop()
             if stop is None:
+                # --- FIX: Clean State Reset on IDLE ---
                 self.direction = Direction.IDLE
+                self.moving_direction = Direction.IDLE
+                # Ensure door is closed logic if needed, usually managed by is_door_open
+                
                 await self.broadcast_state()
                 await asyncio.sleep(1)
                 continue  
             
-            # Handle "Already Here" Case[Just open door]
-            if stop == self.current_floor:
-                # Do NOT change direction (keep previous moving direction logic if needed)
-                pass 
-            else:
-                # Only set direction if we actually need to move
+            # Decide initial direction
+            if stop != self.current_floor:
                 self.direction = Direction.UP if stop > self.current_floor else Direction.DOWN
             
             await self.broadcast_state()
@@ -65,13 +65,14 @@ class Elevator(UIStateManager):
             while self.is_door_open:
                 await asyncio.sleep(1)
             
-            # Move loop
+            # --- MOVE LOOP ---
             while self.current_floor != stop: 
+                # Check for interruptions (Phase 1 logic)
                 new_stop = self.get_next_stop(delete=False, only_same_direction=True)
                 
-                # --- LOGIC START: INTERRUPTION HANDLING ---
                 interrupt = False
                 if new_stop is not None:
+                    # Logic: If we are going UP, and new_stop is closer (and above us), take it.
                     if self.direction == Direction.UP and new_stop < stop and new_stop > self.current_floor:
                         interrupt = True
                     elif self.direction == Direction.DOWN and new_stop > stop and new_stop < self.current_floor:
@@ -82,46 +83,51 @@ class Elevator(UIStateManager):
                     self.get_next_stop(delete=True, only_same_direction=True)
                     
                     # 2. Re-queue the OLD 'stop' correctly
-                    # FIX: Don't blindly use add_stop(). Check where it belongs.
                     requeued = False
                     
-                    # If it was an internal request, keep it internal
+                    # Check UI state to restore requests to correct heaps
                     if stop in self.ui_internal_requests:
                         self.add_stop(stop)
                         requeued = True
                     
-                    # If it was an external DOWN request, put it back as DOWN
+                    # FIX: Handle sets carefully. 
+                    # If it was an external DOWN request, put it back as DOWN (Phase 2 Turnaround)
                     if stop in self.ui_external_down_requests:
                         self.add_request(stop, Direction.DOWN)
                         requeued = True
                         
-                    # If it was an external UP request, put it back as UP
                     if stop in self.ui_external_up_requests:
                         self.add_request(stop, Direction.UP)
                         requeued = True
                     
-                    # Fallback (Safety net)
+                    # Fallback
                     if not requeued:
                         self.add_stop(stop)
 
                     # 3. Update target
                     stop = new_stop
-                # --- LOGIC END ---
+                    
+                    # 4. Broadcast immediately to reflect target change
+                    await self.broadcast_state()
 
+                # Simulation Step
                 self.current_floor += 0.2 if self.direction == Direction.UP else -0.2
                 self.current_floor = round(self.current_floor, 1)
                 await self.broadcast_state()
                 await asyncio.sleep(1)
 
-            # Arrival Logic
+            # --- ARRIVAL LOGIC ---
             self.is_door_open = True
             
-            # Maintain Direction State on Arrival [Don't immediately set IDLE] Let the scheduler decide next loop.
-            self.moving_direction = self.direction  # used for UI indicators (arrows)       
+            # Capture the direction we arrived in for UI indicators
+            self.moving_direction = self.direction            
             
             self.update_ui_requests() 
             await self.broadcast_state()
+            
+            # Open door time
             await asyncio.sleep(5) 
+            
             self.is_door_open = False
             await self.broadcast_state()
 
