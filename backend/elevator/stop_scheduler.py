@@ -105,20 +105,28 @@ class StopScheduler(BaseElevator):
 
     def has_requests_above(self, floor: int) -> bool:
         """Check if any requests exist above the given floor."""
-        min_int = self._peek_floor(self.internal_up.get_min())
-        min_ext = self._peek_floor(self.up_up.get_min())
-        
-        if min_int is not None and min_int > floor: return True
-        if min_ext is not None and min_ext > floor: return True
+        # internal_up (MinHeap)
+        if self.internal_up.get_max_value() is not None and self.internal_up.get_max_value() > floor: return True
+        # up_up (MinHeap)
+        if self.up_up.get_max_value() is not None and self.up_up.get_max_value() > floor: return True
+        # up_down (MaxHeap) - Critical for Turnaround logic
+        if self.up_down.get_max_value() is not None and self.up_down.get_max_value() > floor: return True
+        # down_up (MinHeap) - Edge cases
+        if self.down_up.get_max_value() is not None and self.down_up.get_max_value() > floor: return True
+
         return False
 
     def has_requests_below(self, floor: int) -> bool:
         """Check if any requests exist below the given floor."""
-        max_int = self._peek_floor(self.internal_down.get_max())
-        max_ext = self._peek_floor(self.down_down.get_max())
+        # internal_down (MaxHeap)
+        if self.internal_down.get_min_value() is not None and self.internal_down.get_min_value() < floor: return True
+        # down_down (MaxHeap)
+        if self.down_down.get_min_value() is not None and self.down_down.get_min_value() < floor: return True
+        # down_up (MinHeap) - Critical for Turnaround logic
+        if self.down_up.get_min_value() is not None and self.down_up.get_min_value() < floor: return True
+        # up_down (MaxHeap) - Edge cases
+        if self.up_down.get_min_value() is not None and self.up_down.get_min_value() < floor: return True
         
-        if max_int is not None and max_int < floor: return True
-        if max_ext is not None and max_ext < floor: return True
         return False
 
     # --- STOP SELECTION LOGIC ---
