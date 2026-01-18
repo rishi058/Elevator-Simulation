@@ -1,37 +1,79 @@
 import heapq
 
 class MinHeap:
+    # ... (init, insert, extract_min, get_min, get_min_value, get_max_value remain same) ...
     def __init__(self):
         self.heap = []
     
-    def insert(self, val):
-        if val not in self.heap:
-            heapq.heappush(self.heap, val)
+    def insert(self, floor, uuid):
+        for item in self.heap:
+            if item[1] == uuid: return 
+        heapq.heappush(self.heap, (floor, uuid))
 
     def extract_min(self):
-        if not self.heap:
-            return None
-        return heapq.heappop(self.heap)  # Pop the smallest item off the heap,
+        if not self.heap: return None
+        return heapq.heappop(self.heap)
     
     def get_min(self):
-        if not self.heap:
-            return None
-        return self.heap[0]  # The smallest item is at the root of the heap  
+        if not self.heap: return None
+        return self.heap[0] 
     
+    def get_min_value(self):
+        if not self.heap: return None
+        return self.heap[0][0]
+
+    def get_max_value(self):
+        if not self.heap: return None
+        return max(self.heap, key=lambda x: x[0])[0]
+
+    def remove_by_uuid(self, uuid):
+        """Removes item by UUID and returns the floor (int) or None."""
+        for i, item in enumerate(self.heap):
+            if item[1] == uuid:
+                val = self.heap.pop(i)
+                heapq.heapify(self.heap)
+                return val[0] # Return the floor
+        return None
+    
+    def __len__(self):
+        return len(self.heap)
+
 class MaxHeap:
+    # ... (init, insert, extract_max, get_max, get_max_value, get_min_value remain same) ...
     def __init__(self):
         self.heap = []
     
-    def insert(self, val):
-        if -val not in self.heap:
-            heapq.heappush(self.heap, -val)  # Invert value for max-heap behavior
+    def insert(self, floor, uuid):
+        for item in self.heap:
+            if item[1] == uuid: return
+        heapq.heappush(self.heap, (-floor, uuid))
 
     def extract_max(self):
-        if not self.heap:
-            return None
-        return -heapq.heappop(self.heap)  # Pop the largest item off the heap,
+        if not self.heap: return None
+        val = heapq.heappop(self.heap)
+        return (-val[0], val[1])
     
     def get_max(self):
-        if not self.heap:
-            return None
-        return -self.heap[0]  # The largest item is at the root of the heap
+        if not self.heap: return None
+        val = self.heap[0]
+        return (-val[0], val[1]) 
+    
+    def get_max_value(self):
+        if not self.heap: return None
+        return -self.heap[0][0]
+
+    def get_min_value(self):
+        if not self.heap: return None
+        return -max(self.heap, key=lambda x: x[0])[0]
+
+    def remove_by_uuid(self, uuid):
+        """Removes item by UUID and returns the positive floor (int) or None."""
+        for i, item in enumerate(self.heap):
+            if item[1] == uuid:
+                val = self.heap.pop(i)
+                heapq.heapify(self.heap)
+                return -val[0] # Return positive floor (it was stored as negative)
+        return None
+
+    def __len__(self):
+        return len(self.heap)

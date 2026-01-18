@@ -4,8 +4,8 @@ import asyncio
 class BaseElevator:
     """Core elevator state and door operations"""
     
-    def __init__(self, elevator_id: int, total_floors=10):
-        self.id = elevator_id
+    def __init__(self, id: int, total_floors=10):
+        self.id = id
         self.total_floors = total_floors  #! Useless 
         self.current_floor = 0
         self.direction = Direction.IDLE
