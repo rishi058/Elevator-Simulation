@@ -6,7 +6,7 @@ class BaseElevator:
     
     def __init__(self, id: int, total_floors=10):
         self.id = id
-        self.total_floors = total_floors  #! Useless 
+        self.total_floors = total_floors
         self.current_floor = 0
         self.direction = Direction.IDLE
         self.is_door_open = False
