@@ -1,5 +1,6 @@
 from .direction import Direction
 from .stop_scheduler import StopScheduler
+import uuid
 
 class UIStateManager(StopScheduler):
     """Manages UI state for button lighting"""
@@ -10,15 +11,13 @@ class UIStateManager(StopScheduler):
         self.ui_external_down_requests = set()
         self.ui_internal_requests = set()
     
-    # 1. Update signature to accept request_uuid
-    def add_request(self, input_floor: int, input_dir: str, request_uuid: str = None):
-        # ... (Existing UI Logic: Turn on lights) ...
+    def add_request(self, input_floor: int, input_dir: str):
         if input_dir == Direction.UP:
             self.ui_external_up_requests.add(input_floor)
         else:
             self.ui_external_down_requests.add(input_floor)
-
-        # 2. CRITICAL: Pass uuid to super() and RETURN the result
+        
+        request_uuid = str(uuid.uuid4())
         return super().add_request(input_floor, input_dir, request_uuid)
     
     def add_stop(self, floor: int):
@@ -27,11 +26,8 @@ class UIStateManager(StopScheduler):
         return super().add_stop(floor)
 
     def remove_request(self, request_uuid: str):
-        """
-        Overrides StopScheduler.remove_request to also clear the UI state.
-        """
         # Call Parent: Returns (floor, direction) or None
-        result = super().remove_request(request_uuid)
+        result = super().remove_request(request_uuid)  # returns (floor, direction)
         
         if result is not None:
             floor, direction = result
@@ -48,10 +44,6 @@ class UIStateManager(StopScheduler):
         return False
     
     def update_ui_requests(self):
-        """
-        Clears satisfied requests based on arrival state.
-        Simplified to use Scheduler helpers.
-        """
         if not self.is_door_open:
             return
         

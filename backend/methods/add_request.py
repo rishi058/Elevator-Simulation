@@ -19,9 +19,9 @@ async def add_request(req: RequestModel):
         raise HTTPException(status_code=400, detail=f"Floor must be between 0 and {controller.total_floors}")
     
     # Dispatch to best elevator using Collective Control
-    controller.add_request(floor, direction)
+    elevator_id = controller.add_request(floor, direction)
     
     return ResponseMessage(
-        message=f"Request '{floor}{direction}' is successfully added to the system.",
+        message=f"Request '{floor}{direction}' raised successfully.\nTemporarily assigned to E{elevator_id+1}",
         success=True
     )

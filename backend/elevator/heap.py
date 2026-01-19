@@ -1,7 +1,6 @@
 import heapq
 
 class MinHeap:
-    # ... (init, insert, extract_min, get_min, get_min_value, get_max_value remain same) ...
     def __init__(self):
         self.heap = []
     
@@ -19,8 +18,8 @@ class MinHeap:
         return self.heap[0] 
     
     def get_min_value(self):
-        if not self.heap: return None
-        return self.heap[0][0]
+        val = self.get_min()
+        return val[0] if val else None
 
     def get_max_value(self):
         if not self.heap: return None
@@ -39,7 +38,6 @@ class MinHeap:
         return len(self.heap)
 
 class MaxHeap:
-    # ... (init, insert, extract_max, get_max, get_max_value, get_min_value remain same) ...
     def __init__(self):
         self.heap = []
     
@@ -59,8 +57,8 @@ class MaxHeap:
         return (-val[0], val[1]) 
     
     def get_max_value(self):
-        if not self.heap: return None
-        return -self.heap[0][0]
+        val = self.get_max()
+        return val[0] if val else None
 
     def get_min_value(self):
         if not self.heap: return None

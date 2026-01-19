@@ -5,7 +5,7 @@ import asyncio
 # Collective Control Dispatch System
 STOP_TIME = 5         # Seconds penalty per stop
 TRAVEL_TIME = 5       # Seconds to move one floor
-TURN_AROUND_PENALTY = 500  # Heavy penalty (seconds) to discourage switching direction mid-trip
+TURN_AROUND_PENALTY = 15  # penalty (seconds) to discourage switching direction mid-trip
 
 class CollectiveDispatchController:
     def __init__(self, total_floors: int = 10, total_elevators: int = 3):
@@ -53,6 +53,17 @@ class CollectiveDispatchController:
     # ─────────────────────────────────────────────────────────────
 
     def add_request(self, floor: int, direction: str):
+        # Here, We can check if the request is already assigned to an elevator
+        # If yes, then we can return the elevator id
+        # If no, then we can assign the request to the best elevator
+        if (floor, direction) in self.dynamic_requests_queue:
+            return self.dynamic_requests_queue[(floor, direction)]["id"]
+            
+        # Check if any elevator is already handling this request (redundancy check)
+        for elevator in self.elevators:
+            if elevator.is_request_active(floor, direction):
+                return elevator.id
+        
         best_id, cost = self._get_best_elevator(floor, direction)   
         
         req_uuid = self.elevators[best_id].add_request(floor, direction)
@@ -62,6 +73,7 @@ class CollectiveDispatchController:
             "uuid": req_uuid,
             "cost": cost
         }
+
         return best_id
 
     def add_stop(self, id: int, floor: int):
@@ -69,97 +81,84 @@ class CollectiveDispatchController:
             raise ValueError(f"Invalid elevator ID: {id}")
         self.elevators[id].add_stop(floor)
 
-    def _select_elevator(self, floor: int, direction: str) -> Elevator:
-        best_id, _ = self._get_best_elevator(floor, direction)
-        return self.elevators[best_id]
-
     # ─────────────────────────────────────────────────────────────
     # COST CALCULATION (FIXED)
     # ─────────────────────────────────────────────────────────────
 
-    def _get_best_elevator(self, floor: int, direction: str) -> tuple:
-        # Returns (best_id, cost)
-        # Using simple min with key
-        best_elev = min(
-            self.elevators, 
-            key=lambda e: self._calculate_elevator_cost(e, floor, direction)
-        )
-        return (best_elev.id, self._calculate_elevator_cost(best_elev, floor, direction))
+    def _get_best_elevator(self, floor: int, direction: str) -> tuple:  # Returns (best_id, cost)
+        costs = []
+        for elevator in self.elevators:
+            costs.append((elevator.id, self._calculate_elevator_cost(elevator, floor, direction)))
+        costs = sorted(costs, key=lambda x: x[1])
+        # print(costs)
+        return (costs[0][0], costs[0][1])
 
-    def _calculate_elevator_cost(self, elevator: Elevator, floor: int, direction: str) -> float:
-        # 1. Prevent duplicate assignment
-        if elevator.is_request_already_assigned(floor, direction):
-            return float('inf')
+    def _calculate_elevator_cost(self, elevator: Elevator, req_floor: int, req_dir: str) -> float:
+        elev_pos = int(elevator.current_floor)
+        elev_dir = elevator.get_effective_direction() 
 
-        curr_floor = int(elevator.current_floor)
-        elev_dir = elevator.get_effective_direction()
+        # IDLE: Simple distance * Time
+        if elev_dir == Direction.IDLE:
+            return abs(req_floor - elev_pos) * TRAVEL_TIME    
         
-        # 2. Fix: Check direction instead of .state attribute
-        is_moving_at_floor = (elev_dir != Direction.IDLE and curr_floor == floor)
-
-        # 3. Get extremes (default to current floor if empty)
+        # 3. Get extremes (default to current req_floor if empty)
         lowest_stop = elevator.get_lowest_stop()
         highest_stop = elevator.get_highest_stop()
         
-        if lowest_stop is None: lowest_stop = curr_floor
-        if highest_stop is None: highest_stop = curr_floor
-
-        # --- COST LOGIC ---
-        
-        # IDLE: Simple distance * Time
-        if elev_dir == Direction.IDLE:
-            return abs(floor - curr_floor) * TRAVEL_TIME
+        if lowest_stop is None: lowest_stop = elev_pos
+        if highest_stop is None: highest_stop = elev_pos
 
         # Request wants UP
-        if direction == Direction.UP:
+        if req_dir == Direction.UP:
             if elev_dir == Direction.UP:
                 # Normal: Elevator is below target
-                if curr_floor <= floor and not is_moving_at_floor:
-                    stops_between = elevator.count_stops_in_range(curr_floor, floor, Direction.UP)
-                    return (floor - curr_floor) * TRAVEL_TIME + STOP_TIME * stops_between
+                if elev_pos <= req_floor:
+                    stops_between = elevator.count_stops_in_range(elev_pos, req_floor, Direction.UP)
+                    return (req_floor - elev_pos) * TRAVEL_TIME + (STOP_TIME * stops_between)
                 
                 # Passed Target: Must go Top -> Turn -> Bottom -> Turn -> Target
-                else:
-                    turn_point = max(highest_stop, curr_floor)
-                    # Dist: (curr -> turn) + (turn -> floor)
-                    dist = (turn_point - curr_floor) + (turn_point - floor)
+                else: 
+                    # Dist: (curr -> turn) + (turn -> bottom) + (bottom -> req_floor)
+                    # Edge case : req_floor < lowest_stop 
+                    dist = (highest_stop - elev_pos) + (highest_stop - lowest_stop) + abs(req_floor - lowest_stop)
                     total_stops = elevator.get_total_stop_count()
-                    return dist * TRAVEL_TIME + STOP_TIME * total_stops + TURN_AROUND_PENALTY
+                    return (dist * TRAVEL_TIME) + (STOP_TIME * total_stops) + TURN_AROUND_PENALTY
             
             else:  # elev_dir == Direction.DOWN
-                # Turning Point at bottom is min of (Lowest Scheduled, Target Floor)
-                turn_point = min(lowest_stop, floor)
-                
-                dist = (curr_floor - turn_point) + (floor - turn_point)
-                stops_in_down = elevator.count_stops_in_range(turn_point, curr_floor, Direction.DOWN)
-                stops_in_up = elevator.count_stops_in_range(turn_point, floor, Direction.UP)
+                # Must go curr -> Bottom -> Turn -> req_floor
+                # Dist: (curr -> bottom) + (bottom -> req_floor)
+                turn_point = min(lowest_stop, req_floor)
+
+                dist = (elev_pos - turn_point) + (req_floor - turn_point)
+                stops_in_down = elevator.count_stops_in_range(turn_point, elev_pos, Direction.DOWN)
+                stops_in_up = elevator.count_stops_in_range(turn_point, req_floor, Direction.UP)
                 
                 # Penalty applied because we are relying on it turning around
-                return dist * TRAVEL_TIME + STOP_TIME * (stops_in_down + stops_in_up) + TURN_AROUND_PENALTY
+                return (dist * TRAVEL_TIME) + (STOP_TIME * (stops_in_down + stops_in_up)) + TURN_AROUND_PENALTY
 
         # Request wants DOWN
         else:
-            if elev_dir == Direction.DOWN:
+            if elev_dir == Direction.DOWN: 
                 # Normal: Elevator is above target
-                if curr_floor >= floor and not is_moving_at_floor:
-                    stops_between = elevator.count_stops_in_range(floor, curr_floor, Direction.DOWN)
-                    return (curr_floor - floor) * TRAVEL_TIME + STOP_TIME * stops_between
+                if elev_pos >= req_floor:
+                    stops_between = elevator.count_stops_in_range(req_floor, elev_pos, Direction.DOWN)
+                    return (elev_pos - req_floor) * TRAVEL_TIME + (STOP_TIME * stops_between)
                 
-                # Passed Target: Must go Bottom -> Turn -> Top -> Turn -> Target
+                # Passed Target: Must go Bottom -> Turn -> Top -> Turn -> Target 
+                # Edge case : req_floor > highest_stop
                 else:
-                    turn_point = min(lowest_stop, curr_floor)
-                    dist = (curr_floor - turn_point) + (floor - turn_point)
+                    dist = (elev_pos - lowest_stop) + (highest_stop - lowest_stop) + abs(highest_stop - req_floor)
                     total_stops = elevator.get_total_stop_count()
-                    return dist * TRAVEL_TIME + STOP_TIME * total_stops + TURN_AROUND_PENALTY
+                    return (dist * TRAVEL_TIME) + (STOP_TIME * total_stops) + TURN_AROUND_PENALTY
             
             else:  # elev_dir == Direction.UP
-                turn_point = max(highest_stop, floor)
+                turn_point = max(highest_stop, req_floor)
                 
-                dist = (turn_point - curr_floor) + (turn_point - floor)
-                stops_in_up = elevator.count_stops_in_range(curr_floor, turn_point, Direction.UP)
-                stops_in_down = elevator.count_stops_in_range(floor, turn_point, Direction.DOWN)
+                dist = (turn_point - elev_pos) + (turn_point - req_floor)
+                stops_in_up = elevator.count_stops_in_range(elev_pos, turn_point, Direction.UP)
+                stops_in_down = elevator.count_stops_in_range(req_floor, turn_point, Direction.DOWN)
                 
-                return dist * TRAVEL_TIME + STOP_TIME * (stops_in_up + stops_in_down) + TURN_AROUND_PENALTY
+                return (dist * TRAVEL_TIME) + (STOP_TIME * (stops_in_up + stops_in_down)) + TURN_AROUND_PENALTY
 
     # ─────────────────────────────────────────────────────────────
     # DYNAMIC REQUEST HANDLER
@@ -205,6 +204,7 @@ class CollectiveDispatchController:
             "elevators": [elevator.get_status() for elevator in self.elevators]
         }
 
+    #! elevator param is neccessary...
     async def _on_elevator_state_change(self, elevator):
         await self._broadcast_state()
 

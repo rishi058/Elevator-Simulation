@@ -7,7 +7,6 @@ import uuid
 class StopScheduler(BaseElevator):    
     def __init__(self, id: int, total_floors=10):
         super().__init__(id, total_floors)
-        
         # All heaps now store (floor, uuid)
         self.internal_up = MinHeap()
         self.internal_down = MaxHeap()
@@ -16,17 +15,9 @@ class StopScheduler(BaseElevator):
         self.up_down = MaxHeap()
         self.down_up = MinHeap()
 
-    def add_request(self, input_floor: int, input_dir: str, request_uuid: str = None):
-        """
-        Returns the UUID of the request for tracking.
-        """
-        if request_uuid is None:
-            request_uuid = str(uuid.uuid4())
-
+    def add_request(self, input_floor: int, input_dir: str, request_uuid: str):
         curr = self.current_floor
         eff_dir = self.get_effective_direction()
-        
-        # --- Logic matches original, but passes (floor, uuid) to heaps ---
         
         # IDLE
         if eff_dir == Direction.IDLE:
@@ -61,9 +52,6 @@ class StopScheduler(BaseElevator):
         return request_uuid
 
     def remove_request(self, request_uuid: str):
-        """
-        Removes a request and returns (floor, direction) if found, else None.
-        """
         # 1. Check UP_UP (Going UP, Want UP)
         f = self.up_up.remove_by_uuid(request_uuid)
         if f is not None: return (f, Direction.UP)
@@ -98,10 +86,6 @@ class StopScheduler(BaseElevator):
 
     # --- HELPERS FOR UI STATE MANAGER ---
     # These abstract the tuple logic so UIStateManager doesn't need to know about UUIDs
-    
-    def _peek_floor(self, heap_val):
-        """Extract just the floor integer from a (floor, uuid) tuple."""
-        return heap_val[0] if heap_val else None
 
     def has_requests_above(self, floor: int) -> bool:
         """Check if any requests exist above the given floor."""

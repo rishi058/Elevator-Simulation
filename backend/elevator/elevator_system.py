@@ -103,7 +103,7 @@ class Elevator(UIStateManager):
     # COST CALCULATION HELPERS
     # ─────────────────────────────────────────────────────────────
 
-    def is_request_already_assigned(self, floor: int, direction: str) -> bool:
+    def is_request_active(self, floor: int, direction: str) -> bool:
         """Checks if the elevator already has this exact floor in its schedule."""
         # Helper to check if floor exists in the internal heap list
         def in_min_heap(heap, val): return any(item[0] == val for item in heap.heap)
@@ -112,11 +112,9 @@ class Elevator(UIStateManager):
         if direction == Direction.UP:
             if in_min_heap(self.up_up, floor): return True
             if in_min_heap(self.down_up, floor): return True
-            if in_min_heap(self.internal_up, floor): return True
         else:
             if in_max_heap(self.down_down, floor): return True
             if in_max_heap(self.up_down, floor): return True
-            if in_max_heap(self.internal_down, floor): return True
         return False
 
     def get_lowest_stop(self) -> int | None:
