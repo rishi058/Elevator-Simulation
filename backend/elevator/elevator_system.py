@@ -63,40 +63,38 @@ class Elevator(UIStateManager):
             
             # --- MOVE LOOP ---
             while self.current_floor != stop: 
-                new_stop = self.get_next_stop(delete=False, only_same_direction=True)
-                interrupt = False
+                new_stop = self.get_next_stop(delete=False)
                 
                 # Robust Interrupt Check
                 if new_stop is not None:
+                    interrupt = False
                     if self.direction == Direction.UP and new_stop < stop and new_stop > self.current_floor:
                         interrupt = True
                     elif self.direction == Direction.DOWN and new_stop > stop and new_stop < self.current_floor:
                         interrupt = True
                 
-                if interrupt:
-                    self.get_next_stop(delete=True, only_same_direction=True)
-                    
-                    # Robust Re-queueing
-                    requeued_any = False
-                    
-                    if stop in self.ui_internal_requests:
-                        self.add_stop(stop)
-                        requeued_any = True
-                    
-                    if stop in self.ui_external_down_requests:
-                        self.add_request(stop, Direction.DOWN)
-                        requeued_any = True
+                    if interrupt:
+                        self.get_next_stop(delete=True)  # delete the new stop
+                        requeued_any = False             # Robust Re-queueing
                         
-                    if stop in self.ui_external_up_requests:
-                        self.add_request(stop, Direction.UP)
-                        requeued_any = True
-                    
-                    # Fallback: If not found in UI sets (rare), default to Internal
-                    if not requeued_any:
-                        self.add_stop(stop)
-                    
-                    stop = new_stop
-                    await self.broadcast_state()
+                        # --- Add back old stop ---
+                        if stop in self.ui_internal_requests:
+                            self.add_stop(stop)  
+                            requeued_any = True
+                        
+                        if stop in self.ui_external_down_requests:
+                            self.add_request(stop, Direction.DOWN)
+                            requeued_any = True
+                            
+                        if stop in self.ui_external_up_requests:
+                            self.add_request(stop, Direction.UP)
+                            requeued_any = True
+                        
+                        # Fallback: If not found in UI sets (rare), default to Internal
+                        if not requeued_any: self.add_stop(stop)
+                        
+                        stop = new_stop  # Update to new stop
+                        await self.broadcast_state()
 
                 self.current_floor += 0.2 if self.direction == Direction.UP else -0.2
                 self.current_floor = round(self.current_floor, 1)
