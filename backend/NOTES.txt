@@ -49,3 +49,7 @@ never reaching floor 10.
 
 Real World Logic: Requests usually have a "timestamp" or "age". If a request ages beyond a threshold (e.g., 60 seconds), it enters "Emergency Priority" mode,
 overriding the proximity logic to force the elevator to serve that floor.
+
+
+--------------------------------------------------------------------------
+

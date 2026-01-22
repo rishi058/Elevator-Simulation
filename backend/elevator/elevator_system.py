@@ -1,6 +1,6 @@
 from .direction import Direction
 from .ui_state_manager import UIStateManager
-import asyncio, copy
+import asyncio
 
 class Elevator(UIStateManager):    
     def __init__(self, total_floors=10):
