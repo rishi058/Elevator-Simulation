@@ -1,5 +1,5 @@
 
-### **Test Case 1: The "User's Bug" (Interruption + Turnaround)**
+### **Test Case 1: 
 
 *This tests the specific fix we just implemented: ensuring a Down request doesn't get converted into an Internal stop when interrupted.*
 

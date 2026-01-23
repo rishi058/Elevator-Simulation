@@ -1,6 +1,6 @@
-from .direction import Direction
-from .base_elevator import BaseElevator
-from .avl_tree import AVLTree
+from elevator.direction import Direction
+from elevator.base_elevator import BaseElevator
+from elevator.avl_tree import AVLTree
 import asyncio
 
 class StopScheduler(BaseElevator):    
