@@ -3,8 +3,7 @@
 A real-time elevator visualization built with React, TypeScript, and Tailwind CSS featuring WebSocket integration and smooth animations.
 
 ## 📸 DEMO 
-
-![Elevator System Demo](https://github.com/rishi058/Elevator-Simulation/tree/single-elevator/frontend/public/demo.gif) 
+![Elevator System Demo](https://github.com/user-attachments/assets/69bcbe19-32ef-43d7-9169-055935ae29aa)
 
 ## 📁 Folder Structure
 
