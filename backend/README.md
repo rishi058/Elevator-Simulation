@@ -48,16 +48,12 @@ backend/
 
 2. **Install dependencies:**
    ```powershell
-   pip install fastapi uvicorn
+   pip install fastapi uvicorn pydantic asyncio
    ```
 
 3. **Run the server:**
    ```powershell
    python main.py
-   ```
-   Or with Uvicorn directly:
-   ```powershell
-   uvicorn main:app --reload --port 8000
    ```
 
 4. **Access the API:**
@@ -112,7 +108,6 @@ backend/
 - **Lifespan Manager** - Handles elevator task startup/shutdown
 - **CORS Middleware** - Enables cross-origin requests
 - **Async Elevator Loop** - Runs continuously in background
-- **AVL Tree** - O(log n) floor insertion/lookup
 - **WebSocket Broadcasting** - Real-time state updates to all clients
 
 ## 📡 API Documentation
@@ -140,7 +135,8 @@ Add an external floor request with direction.
 **Request Body:**
 ```json
 {
-  "request": "7U"  // Floor 7, going Up
+  "floor": 7,
+  "direction" : "U"  // 'U' means UP direction, Use 'D' for DOWN.
 }
 ```
 
@@ -160,7 +156,7 @@ Add an internal elevator stop.
 **Request Body:**
 ```json
 {
-  "stop": 8  // Go to floor 8
+  "floor": 8  // Go to floor 8
 }
 ```
 
@@ -216,8 +212,11 @@ This backend implements a production-grade elevator control system with:
 
 - **4 Scheduling Algorithms** (FCFS, SSTF, LOOK, Elevator-LOOK)
 - **Interrupt Handling** - Dynamic stop re-prioritization
-- **Efficient Data Structures** - AVL tree for O(log n) operations
 - **Async Architecture** - Non-blocking operations with FastAPI
 - **Scalable Design** - Singleton pattern for global state management
+
+Copy-Paste different Schedular Algorithms from elevator/scheduling_algorithms to elevator/stop_schedular.py to test them.
+NOTE: Fix the imports after copy-pasting.
+Default is set to Elevator_LOOK
 
 The system simulates realistic elevator behavior with door delays, gradual movement (0.2 floors/tick), and smart scheduling that minimizes wait times while preventing starvation.

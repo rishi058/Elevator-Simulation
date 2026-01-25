@@ -49,3 +49,18 @@ class StopScheduler(BaseElevator):
             self.direction = Direction.IDLE
             
         return next_stop
+    
+    # --- HELPERS FOR UI STATE MANAGER ---
+
+    def has_requests_above(self, floor: int) -> bool:
+        if any(f > floor for f in self.queue):
+            return True
+        
+        return False
+
+
+    def has_requests_below(self, floor: int) -> bool:
+        if any(f < floor for f in self.queue):
+            return True
+        
+        return False

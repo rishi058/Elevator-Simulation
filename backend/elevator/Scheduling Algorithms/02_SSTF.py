@@ -28,10 +28,7 @@ class StopScheduler(BaseElevator):
             return None
         
         # --- THE CORE LOGIC ---
-        # Find the floor in the queue with the minimum absolute difference 
-        # from the current floor.
-        
-        # lambda function: for every 'floor' in queue, calculate abs(floor - current)
+        # Find the floor in the queue with the minimum absolute difference from the current floor.
         next_stop = min(self.queue, key=lambda floor: abs(floor - self.current_floor))
         
         if delete: self.queue.remove(next_stop)
@@ -45,3 +42,18 @@ class StopScheduler(BaseElevator):
             self.direction = Direction.IDLE
             
         return next_stop
+    
+    # --- HELPERS FOR UI STATE MANAGER ---
+
+    def has_requests_above(self, floor: int) -> bool:
+        if any(f > floor for f in self.queue):
+            return True
+        
+        return False
+
+
+    def has_requests_below(self, floor: int) -> bool:
+        if any(f < floor for f in self.queue):
+            return True
+        
+        return False

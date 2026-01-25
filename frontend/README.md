@@ -2,6 +2,10 @@
 
 A real-time elevator visualization built with React, TypeScript, and Tailwind CSS featuring WebSocket integration and smooth animations.
 
+## 📸 DEMO 
+
+![Elevator System Demo](https://github.com/rishi058/Elevator-Simulation/tree/single-elevator/frontend/public/demo.gif) 
+
 ## 📁 Folder Structure
 
 ```
@@ -45,7 +49,6 @@ frontend/
 - **Zustand** - Lightweight state management
 - **Axios** - HTTP client for API calls
 - **React Router** - Client-side routing
-- **Framer Motion** - Smooth animations
 - **React Toastify** - Toast notifications
 
 ## 🚀 Setup Instructions
@@ -68,12 +71,6 @@ frontend/
 4. **Access the application:**
    - Open browser: `http://localhost:5173`
    - Ensure backend is running on `http://localhost:8000`
-
-5. **Build for production:**
-   ```powershell
-   npm run build
-   npm run preview
-   ```
 
 ## 🏗️ Architecture
 
@@ -181,35 +178,4 @@ frontend/
 - **Floor Highlighting** - Highlights current floor in real-time
 - **Door Animation** - Realistic open/close transitions
 - **Request Queue Display** - Shows pending requests on buttons
-
-## 📸 Screenshots
-
-> **Note:** Add screenshots here showing:
-> - Main elevator interface
-> - Button states (active/inactive)
-> - Elevator in motion
-> - Floor selection panel
->
-> Example:
-> ```markdown
-> ![Elevator UI](./screenshots/elevator-ui.png)
-> ![Floor Panel](./screenshots/floor-panel.png)
-> ```
-
 ---
-
-**Tech Stack ASCII:**
-```
-    React 19 + TypeScript
-           │
-    ┌──────┴──────┐
-    │             │
-  Zustand      Vite
- (State)     (Build)
-    │             │
-    └──────┬──────┘
-           │
-    Tailwind CSS
-    Framer Motion
-    React Router
-```

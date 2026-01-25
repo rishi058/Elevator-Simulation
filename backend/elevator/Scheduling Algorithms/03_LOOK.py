@@ -1,3 +1,4 @@
+from math import floor
 from elevator.direction import Direction
 from elevator.base_elevator import BaseElevator
 import asyncio
@@ -160,3 +161,25 @@ class StopScheduler(BaseElevator):
             return next_down
         
         return None
+    
+    # --- HELPERS FOR UI STATE MANAGER ---
+
+    def has_requests_above(self, floor: int) -> bool:
+        max_down = self.down_stops.get_max()
+        if max_down is not None and max_down > floor:
+            return True
+        
+        if any(f > floor for f in self.up_stops.heap):
+            return True 
+  
+        return False 
+
+    def has_requests_below(self, floor: int) -> bool:
+        min_up = self.up_stops.get_min()
+        if min_up is not None and min_up < floor:
+            return True 
+        
+        if any(-f_neg < floor for f_neg in self.down_stops.heap):
+            return True
+            
+        return False
