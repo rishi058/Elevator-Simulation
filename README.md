@@ -3,8 +3,7 @@
 A full-stack elevator simulation system implementing real-world scheduling algorithms, built with FastAPI and React.
 
 ## 📸 DEMO 
-
-![Elevator System Demo](https://github.com/rishi058/Elevator-Simulation/tree/single-elevator/frontend/public/demo.gif)
+![Elevator System Demo](https://github.com/user-attachments/assets/69bcbe19-32ef-43d7-9169-055935ae29aa)
 
 ## 📋 Project Summary
 
