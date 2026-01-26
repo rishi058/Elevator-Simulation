@@ -1,19 +1,19 @@
 from .direction import Direction
 from .base_elevator import BaseElevator
-from .heap import MinHeap, MaxHeap
+from .avl_tree import AVLTree
 import asyncio
-import uuid
 
 class StopScheduler(BaseElevator):    
     def __init__(self, id: int, total_floors=10):
         super().__init__(id, total_floors)
-        # All heaps now store (floor, uuid)
-        self.internal_up = MinHeap()
-        self.internal_down = MaxHeap()
-        self.up_up = MinHeap()
-        self.down_down = MaxHeap()
-        self.up_down = MaxHeap()
-        self.down_up = MinHeap()
+        self.internal_up = AVLTree()
+        self.internal_down = AVLTree()
+        self.up_up = AVLTree()
+        self.down_down = AVLTree()
+        self.up_down = AVLTree()
+        self.down_up = AVLTree()
+
+#!----------------------------------------------------------------------------------------------------
 
     def add_request(self, input_floor: int, input_dir: str, request_uuid: str):
         curr = self.current_floor
@@ -50,33 +50,10 @@ class StopScheduler(BaseElevator):
                 self.up_down.insert(input_floor, request_uuid) # Missed/Turnaround
         
         return request_uuid
+    
+#!----------------------------------------------------------------------------------------------------
 
-    def remove_request(self, request_uuid: str):
-        # 1. Check UP_UP (Going UP, Want UP)
-        f = self.up_up.remove_by_uuid(request_uuid)
-        if f is not None: return (f, Direction.UP)
-        
-        # 2. Check DOWN_DOWN (Going DOWN, Want DOWN)
-        f = self.down_down.remove_by_uuid(request_uuid)
-        if f is not None: return (f, Direction.DOWN)
-        
-        # 3. Check UP_DOWN (Phase 2: Going UP, Want DOWN - Turnaround)
-        # The request itself is DOWN, even if the car is currently moving UP to get there.
-        f = self.up_down.remove_by_uuid(request_uuid)
-        if f is not None: return (f, Direction.DOWN)
-
-        # 4. Check DOWN_UP (Phase 2: Going DOWN, Want UP - Turnaround)
-        # The request itself is UP.
-        f = self.down_up.remove_by_uuid(request_uuid)
-        if f is not None: return (f, Direction.UP)
-        
-        return None
-
-    def add_stop(self, floor: int):
-        # Internal stops (pressed inside car) usually don't need tracking UUIDs
-        # We assign a dummy one or internal one if needed
-        dummy_uuid = f"int_{floor}_{uuid.uuid4().hex[:4]}"
-        
+    def add_stop(self, floor: int, dummy_uuid: str):
         if floor > self.current_floor:
             self.internal_up.insert(floor, dummy_uuid)
             if self.direction == Direction.IDLE: self.direction = Direction.UP
@@ -84,137 +61,157 @@ class StopScheduler(BaseElevator):
             self.internal_down.insert(floor, dummy_uuid)
             if self.direction == Direction.IDLE: self.direction = Direction.DOWN
 
-    # --- HELPERS FOR UI STATE MANAGER ---
-    # These abstract the tuple logic so UIStateManager doesn't need to know about UUIDs
+#!----------------------------------------------------------------------------------------------------
 
-    def has_requests_above(self, floor: int) -> bool:
-        """Check if any requests exist above the given floor."""
-        # internal_up (MinHeap)
-        if self.internal_up.get_max_value() is not None and self.internal_up.get_max_value() > floor: return True
-        # up_up (MinHeap)
-        if self.up_up.get_max_value() is not None and self.up_up.get_max_value() > floor: return True
-        # up_down (MaxHeap) - Critical for Turnaround logic
-        if self.up_down.get_max_value() is not None and self.up_down.get_max_value() > floor: return True
-        # down_up (MinHeap) - Edge cases
-        if self.down_up.get_max_value() is not None and self.down_up.get_max_value() > floor: return True
-
-        return False
-
-    def has_requests_below(self, floor: int) -> bool:
-        """Check if any requests exist below the given floor."""
-        # internal_down (MaxHeap)
-        if self.internal_down.get_min_value() is not None and self.internal_down.get_min_value() < floor: return True
-        # down_down (MaxHeap)
-        if self.down_down.get_min_value() is not None and self.down_down.get_min_value() < floor: return True
-        # down_up (MinHeap) - Critical for Turnaround logic
-        if self.down_up.get_min_value() is not None and self.down_up.get_min_value() < floor: return True
-        # up_down (MaxHeap) - Edge cases
-        if self.up_down.get_min_value() is not None and self.up_down.get_min_value() < floor: return True
+    def remove_request(self, request_uuid: str):
+        # 1. Check UP_UP (Going UP, Want UP)
+        f = self.up_up.delete_by_id(request_uuid)
+        if f is not None: return (f, Direction.UP)
         
-        return False
+        # 2. Check DOWN_DOWN (Going DOWN, Want DOWN)
+        f = self.down_down.delete_by_id(request_uuid)
+        if f is not None: return (f, Direction.DOWN)
+        
+        # 3. Check UP_DOWN (Phase 2: Going UP, Want DOWN - Turnaround)
+        # The request itself is DOWN, even if the car is currently moving UP to get there.
+        f = self.up_down.delete_by_id(request_uuid)
+        if f is not None: return (f, Direction.DOWN)
 
-    # --- STOP SELECTION LOGIC ---
+        # 4. Check DOWN_UP (Phase 2: Going DOWN, Want UP - Turnaround)
+        # The request itself is UP.
+        f = self.down_up.delete_by_id(request_uuid)
+        if f is not None: return (f, Direction.UP)
+        
+        return None
 
-    def get_next_stop(self, delete: bool = True, only_same_direction: bool = False):
-        """
-        Retrieves the next floor (int). Unpacks the (floor, uuid) tuple.
-        """
-        # Helper to safely extract floor from tuple or return None
-        def peek_floor(heap_tuple):
-            return heap_tuple[0] if heap_tuple else None
+#!----------------------------------------------------------------------------------------------------
 
-        # Priority Constants
-        PRIO_INTERNAL = 0
-        PRIO_EXTERNAL = 1
-        PRIO_MISSED = 2
+    # external RUN loop likely relies on the function returning None to trigger state changes (like going to IDLE)
 
+    def get_next_stop(self, delete:bool = True):
         # --- IDLE LOGIC ---
         if self.direction == Direction.IDLE:
-            up_target = peek_floor(self.up_up.get_min())
-            down_target = peek_floor(self.down_down.get_max())
-            up_turn = peek_floor(self.up_down.get_max())
-            down_turn = peek_floor(self.down_up.get_min())
+            
+            # 1. Check for ANY motivation to go UP (Internal OR External)
+            iu = self.internal_up.get_min()[0]
+            uu = self.up_up.get_min()[0]
 
-            if up_target is not None:
-                if delete: self.up_up.extract_min()
-                return up_target
-            if down_target is not None:
-                if delete: self.down_down.extract_max()
-                return down_target
-            if up_turn is not None:
+            if iu is not None or uu is not None:
                 self.direction = Direction.UP
-                return self.get_next_stop(delete, only_same_direction)
-            if down_turn is not None:
+                # We call the helper to ensure we pick the closest stop (Priority 0 vs 1)
+                return self._process_up_logic(delete, only_same_direction=False)
+            
+            # 2. Check for ANY motivation to go DOWN (Internal OR External)
+            id_ = self.internal_down.get_max()[0]
+            dd = self.down_down.get_max()[0]
+  
+            if id_ is not None or dd is not None:
                 self.direction = Direction.DOWN
-                return self.get_next_stop(delete, only_same_direction)
-            return None
+                # We call the helper to ensure we pick the closest stop
+                return self._process_down_logic(delete, only_same_direction=False)
 
-        # --- UP LOGIC ---
+
+            # Phase 2: Handle Turnarounds
+            ud = self.up_down.get_max()[0]
+            if ud is not None:
+                self.direction = Direction.UP
+                return self._process_up_logic(delete, only_same_direction=False)
+            
+            du = self.down_up.get_min()[0]
+            if du is not None:
+                self.direction = Direction.DOWN
+                return self._process_down_logic(delete, only_same_direction=False)
+            
+            return None, None
+
+        # --- ACTIVE LOGIC ---
         if self.direction == Direction.UP:
-            candidates = []
-
-            # Unwrap tuples: (floor, uuid) -> Use floor for sorting
-            if self.internal_up.get_min():
-                candidates.append((self.internal_up.get_min()[0], PRIO_INTERNAL, 'internal_up'))
-            if self.up_up.get_min():
-                candidates.append((self.up_up.get_min()[0], PRIO_EXTERNAL, 'up_up'))
-            
-            du = self.down_up.get_min()
-            if du and du[0] > self.current_floor:
-                candidates.append((du[0], PRIO_MISSED, 'down_up'))
-
-            if candidates:
-                target_floor, _, source = min(candidates, key=lambda x: (x[0], x[1]))
-                if delete:
-                    if source == 'internal_up': self.internal_up.extract_min()
-                    elif source == 'up_up': self.up_up.extract_min()
-                    elif source == 'down_up': self.down_up.extract_min()
-                return target_floor # Return INT
-
-            if only_same_direction: return None
-
-            # Turnaround
-            target = self.up_down.get_max()
-            if target:
-                if delete: self.up_down.extract_max()
-                return target[0] # Return INT
-
-            # Switch Direction
-            if (len(self.down_down) > 0 or len(self.down_up) > 0 or len(self.internal_down) > 0):
-                self.direction = Direction.DOWN
-                return self.get_next_stop(delete, only_same_direction)
-            return None
-
-        # --- DOWN LOGIC ---
+            return self._process_up_logic(delete, only_same_direction=True)
+        
         if self.direction == Direction.DOWN:
-            candidates = []
+            return self._process_down_logic(delete, only_same_direction=True)
+        
+        return None, None
 
-            if self.internal_down.get_max():
-                candidates.append((self.internal_down.get_max()[0], PRIO_INTERNAL, 'internal_down'))
-            if self.down_down.get_max():
-                candidates.append((self.down_down.get_max()[0], PRIO_EXTERNAL, 'down_down'))
-            
-            ud = self.up_down.get_max()
-            if ud and ud[0] < self.current_floor:
-                candidates.append((ud[0], PRIO_MISSED, 'up_down'))
+    def _process_up_logic(self, delete: bool, only_same_direction: bool):
+        PRIO_INTERNAL, PRIO_EXTERNAL, PRIO_MISSED = 0, 1, 2
 
-            if candidates:
-                # Custom Max key: Highest Floor, then Lowest Priority
-                target_floor, _, source = max(candidates, key=lambda x: (x[0], -x[1]))
-                if delete:
-                    if source == 'internal_down': self.internal_down.extract_max()
-                    elif source == 'down_down': self.down_down.extract_max()
-                    elif source == 'up_down': self.up_down.extract_max()
-                return target_floor
+        iu = self.internal_up.get_min()[0]
+        uu = self.up_up.get_min()[0]
+        du = self.down_up.get_min()[0]
 
-            if only_same_direction: return None
+        candidates = []
+        # Phase 1: Standard UP requests
+        if iu is not None: candidates.append((iu, PRIO_INTERNAL))
+        if uu is not None: candidates.append((uu, PRIO_EXTERNAL))
+        if du is not None and du > self.current_floor:           # Check for 'Missed' requests (down_up > current_floor)
+            candidates.append((du, PRIO_MISSED))
 
-            target = self.down_up.get_min()
-            if target:
-                if delete: self.down_up.extract_min()
-                return target[0]
+        if candidates:
+            target, priority = min(candidates, key=lambda x: (x[0], x[1]))
+            if delete:
+                if priority == PRIO_INTERNAL: self.internal_up.delete_min()
+                elif priority == PRIO_EXTERNAL: self.up_up.delete_min()
+                else: self.down_up.delete_min()   # PRIO_MISSED
+            return target, Direction.UP
 
-            if (len(self.up_up) > 0 or len(self.up_down) > 0 or len(self.internal_up) > 0):
-                self.direction = Direction.UP
-                return self.get_next_stop(delete, only_same_direction)
-            return None
+        #! THE BARRIER: Stops here if NOT called from IDLE state
+        if only_same_direction: return None, None
+
+        # Phase 2: Turnaround
+        ud = self.up_down.get_max()[0]
+        if ud is not None:
+            if delete: self.up_down.delete_max()
+            return ud, Direction.DOWN # Request wants DOWN
+
+
+        # Phase 3: Switch Direction (Auto-switch)
+        dd = self.down_down.get_max()[0]
+        id_ = self.internal_down.get_max()[0]
+        if dd is not None or du is not None or id_ is not None:
+            self.direction = Direction.DOWN
+            return self._process_down_logic(delete, only_same_direction=False) # [only_same_direction] remains False
+        
+        return None, None
+
+    def _process_down_logic(self, delete: bool, only_same_direction: bool):
+        PRIO_INTERNAL, PRIO_EXTERNAL, PRIO_MISSED = 0, 1, 2
+
+        id_ = self.internal_down.get_max()[0]
+        dd = self.down_down.get_max()[0]
+        ud = self.up_down.get_max()[0]
+
+        candidates = []
+        # Phase 1: Standard DOWN requests
+        if id_ is not None: candidates.append((id_, PRIO_INTERNAL))
+        if dd is not None: candidates.append((dd, PRIO_EXTERNAL))
+        if ud is not None and ud < self.current_floor:          # Check for 'Missed' requests (up_down < current_floor)
+            candidates.append((ud, PRIO_MISSED)) # Wanting to go DOWN.
+
+        if candidates:
+            # Sort by Floor (Descending), lowest Priority wins ties
+            target, priority = max(candidates, key=lambda x: (x[0], -x[1]))
+            if delete:
+                if priority == PRIO_INTERNAL: self.internal_down.delete_max()
+                elif priority == PRIO_EXTERNAL: self.down_down.delete_max()
+                else: self.up_down.delete_max()  # PRIO_MISSED
+            return target, Direction.DOWN 
+
+        #! THE BARRIER: Stops here if NOT called from IDLE state
+        if only_same_direction: return None, None
+
+        # Phase 2: Turnaround
+        du = self.down_up.get_min()[0]
+        if du is not None:
+            if delete: self.down_up.delete_min()
+            return du, Direction.UP # Request wants UP
+
+        # Phase 3: Switch Direction (Auto-switch)
+        uu = self.up_up.get_min()[0]
+        iu = self.internal_up.get_min()[0]
+        if uu is not None or ud is not None or iu is not None:
+            self.direction = Direction.UP
+            return self._process_up_logic(delete, only_same_direction=False) # [only_same_direction] remains False
+        
+        return None, None
+    

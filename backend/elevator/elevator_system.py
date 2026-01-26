@@ -1,25 +1,31 @@
 from .direction import Direction
 from .ui_state_manager import UIStateManager
-import asyncio, copy
+import asyncio
 
 class Elevator(UIStateManager):    
     def __init__(self, id: int, total_floors=10):
         super().__init__(id, total_floors)
         self.on_state_change = None  # Callback for state change notifications
+        #! (floor, direction) tracking for active movement
+        self.active_request_target = None
         
     async def run(self):
         while True:
             self.update_ui_requests()
 
-            stop = self.get_next_stop()
+            stop, req_dir = self.get_next_stop()
             if stop is None:
                 # Clean reset when IDLE
                 self.direction = Direction.IDLE
                 self.moving_direction = Direction.IDLE
+                self.active_request_target = None # Reset active target
                 await self._notify_state_change()
                 await asyncio.sleep(1)
                 continue  
             
+            #! Set Active Target
+            if req_dir is not None: self.active_request_target = (stop, req_dir)
+
             if stop != self.current_floor:
                 self.direction = Direction.UP if stop > self.current_floor else Direction.DOWN
             
@@ -30,40 +36,39 @@ class Elevator(UIStateManager):
             
             # --- MOVE LOOP ---
             while self.current_floor != stop: 
-                new_stop = self.get_next_stop(delete=False, only_same_direction=True)
-                interrupt = False
+                new_stop, new_req_dir = self.get_next_stop(delete=False)
                 
                 # Robust Interrupt Check
                 if new_stop is not None:
+                    interrupt = False
                     if self.direction == Direction.UP and new_stop < stop and new_stop > self.current_floor:
                         interrupt = True
                     elif self.direction == Direction.DOWN and new_stop > stop and new_stop < self.current_floor:
                         interrupt = True
                 
-                if interrupt:
-                    self.get_next_stop(delete=True, only_same_direction=True)
-                    
-                    # Robust Re-queueing
-                    requeued_any = False
-                    
-                    if stop in self.ui_internal_requests:
-                        self.add_stop(stop)
-                        requeued_any = True
-                    
-                    if stop in self.ui_external_down_requests:
-                        self.add_request(stop, Direction.DOWN)
-                        requeued_any = True
+                    if interrupt:
+                        self.get_next_stop(delete=True)
+                        requeued_any = False # Robust Re-queueing
                         
-                    if stop in self.ui_external_up_requests:
-                        self.add_request(stop, Direction.UP)
-                        requeued_any = True
-                    
-                    # Fallback: If not found in UI sets (rare), default to Internal
-                    if not requeued_any:
-                        self.add_stop(stop)
-                    
-                    stop = new_stop
-                    await self._notify_state_change()
+                        if stop in self.ui_internal_requests:
+                            self.add_stop(stop)
+                            requeued_any = True
+                        
+                        if stop in self.ui_external_down_requests:
+                            self.add_request(stop, Direction.DOWN)
+                            requeued_any = True
+                            
+                        if stop in self.ui_external_up_requests:
+                            self.add_request(stop, Direction.UP)
+                            requeued_any = True
+                        
+                        # Fallback: If not found in UI sets (rare), default to Internal
+                        if not requeued_any: self.add_stop(stop)
+                        
+                        stop = new_stop
+                        #! Update Active Target
+                        if new_req_dir: self.active_request_target = (stop, new_req_dir) 
+                        await self._notify_state_change()
 
                 self.current_floor += 0.2 if self.direction == Direction.UP else -0.2
                 self.current_floor = round(self.current_floor, 1)
@@ -72,6 +77,8 @@ class Elevator(UIStateManager):
 
             # --- ARRIVAL ---
             self.is_door_open = True
+            # Clear active target upon arrival
+            self.active_request_target = None 
             self.moving_direction = self.direction            
             self.update_ui_requests() 
             await self._notify_state_change()
@@ -79,8 +86,9 @@ class Elevator(UIStateManager):
             self.is_door_open = False
             await self._notify_state_change()
 
-
-    #!---------------------------------------------------------------------------------
+    # ─────────────────────────────────────────────────────────────
+    # STATUS & WEBSOCKET
+    # ───────────────────────────────────────────────────────────── 
     
     async def _notify_state_change(self): # Notify Controller about state change
         if self.on_state_change:
@@ -97,63 +105,86 @@ class Elevator(UIStateManager):
             "internal_requests": list(self.ui_internal_requests),
         }
     
-    #!---------------------------------------------------------------------------------
-    
     # ─────────────────────────────────────────────────────────────
     # COST CALCULATION HELPERS
     # ─────────────────────────────────────────────────────────────
 
     def is_request_active(self, floor: int, direction: str) -> bool:
         """Checks if the elevator already has this exact floor in its schedule."""
-        # Helper to check if floor exists in the internal heap list
-        def in_min_heap(heap, val): return any(item[0] == val for item in heap.heap)
-        def in_max_heap(heap, val): return any(-item[0] == val for item in heap.heap)
-
+        if self.active_request_target == (floor, direction): return True
+        
         if direction == Direction.UP:
-            if in_min_heap(self.up_up, floor): return True
-            if in_min_heap(self.down_up, floor): return True
+            if self.up_up.find(floor) is not None: return True
+            if self.down_up.find(floor) is not None: return True
         else:
-            if in_max_heap(self.down_down, floor): return True
-            if in_max_heap(self.up_down, floor): return True
+            if self.down_down.find(floor) is not None: return True
+            if self.up_down.find(floor) is not None: return True
         return False
 
     def get_lowest_stop(self) -> int | None:
         candidates = []
-        if self.down_down.get_max() is not None: candidates.append(self.down_down.get_min_value())
-        if self.internal_down.get_max() is not None: candidates.append(self.internal_down.get_min_value())
-        if self.up_down.get_max() is not None: candidates.append(self.up_down.get_min_value())
+
+        if self.active_request_target is not None:
+            candidates.append(self.active_request_target[0])
+
+        uu = self.up_up.get_min()[0]
+        if uu is not None: candidates.append(uu)
+
+        dd = self.down_down.get_min()[0]
+        if dd is not None: candidates.append(dd)
+
+        id_ = self.internal_down.get_min()[0]
+        if id_ is not None: candidates.append(id_)
+
+        iu = self.internal_up.get_min()[0]
+        if iu is not None: candidates.append(iu)
+
+        ud = self.up_down.get_min()[0]
+        if ud is not None: candidates.append(ud)
         
-        # down_up is MinHeap. get_min() returns (floor, uuid)
-        dup = self.down_up.get_min()
-        if dup is not None: candidates.append(dup[0])
-        
+        du = self.down_up.get_min()[0]
+        if du is not None: candidates.append(du)
+
         return min(candidates) if candidates else None
 
     def get_highest_stop(self) -> int | None:
         candidates = []
-        if self.up_up.get_min() is not None: candidates.append(self.up_up.get_max_value())
-        if self.internal_up.get_min() is not None: candidates.append(self.internal_up.get_max_value())
-        if self.down_up.get_min() is not None: candidates.append(self.down_up.get_max_value())
-        
-        # up_down is MaxHeap. get_max() returns (floor, uuid)
-        ud = self.up_down.get_max()
-        if ud is not None: candidates.append(ud[0])
-        
+
+        if self.active_request_target is not None:
+            candidates.append(self.active_request_target[0])
+
+        uu = self.up_up.get_max()[0]
+        if uu is not None: candidates.append(uu)
+
+        dd = self.down_down.get_max()[0]
+        if dd is not None: candidates.append(dd)
+
+        id_ = self.internal_down.get_max()[0]
+        if id_ is not None: candidates.append(id_)
+
+        iu = self.internal_up.get_max()[0]
+        if iu is not None: candidates.append(iu)
+
+        ud = self.up_down.get_max()[0]
+        if ud is not None: candidates.append(ud)
+
+        du = self.down_up.get_max()[0]
+        if du is not None: candidates.append(du)
+
         return max(candidates) if candidates else None
 
     def count_stops_in_range(self, low: int, high: int, direction: str) -> int:
         count = 0
-        def count_min(heap, l, h): return sum(1 for x in heap.heap if l <= x[0] <= h)
-        def count_max(heap, l, h): return sum(1 for x in heap.heap if l <= -x[0] <= h)
 
         if direction == Direction.UP:
-            count += count_min(self.internal_up, low, high)
-            count += count_min(self.up_up, low, high)
-            count += count_min(self.down_up, low, high)
+            count += self.internal_up.count_nodes_in_range(low, high)
+            count += self.up_up.count_nodes_in_range(low, high)
+            count += self.up_down.count_nodes_in_range(low, high) # up_down stops are hit in TURN-AROUND
         else:
-            count += count_max(self.internal_down, low, high)
-            count += count_max(self.down_down, low, high)
-            count += count_max(self.up_down, low, high)
+            count += self.internal_down.count_nodes_in_range(low, high)
+            count += self.down_down.count_nodes_in_range(low, high)
+            count += self.down_up.count_nodes_in_range(low, high) # down_up stops are hit in TURN-AROUND
+    
         return count
 
     def get_total_stop_count(self) -> int:
