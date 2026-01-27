@@ -6,6 +6,8 @@ The **Multi-Elevator System** is an advanced, full-stack simulation of a modern 
 
 This project is not just a visual demo; it is a **distributed system** composed of independent microservices (Frontend & Backend) communicating in real-time. It solves the **"Knapsack-like" optimization problem** of assigning passengers to cars to minimize average wait time (AWT) and system energy consumption.
 
+## 📸 DEMO 
+
 **Key Technical Highlights:**
 - **Asynchronous IO:** Handles 1000+ concurrent requests using Python's `asyncio` loop.
 - **Data Structure Optimization:** Uses AVL Trees for `O(log n)` stop insertion, preventing performance degradation as queues grow.

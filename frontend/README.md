@@ -27,6 +27,8 @@ It provides immediate visual feedback on:
 - **Optimized Re-renders**: Components only re-render when their specific data slice changes.
 - **Responsive Animations**: Uses `Framer Motion` for fluid transitions, making the 500ms server ticks look like continuous movement.
 
+## 📸 DEMO 
+
 ---
 
 ## 🏗 Architecture & Design
