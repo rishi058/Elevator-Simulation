@@ -69,18 +69,6 @@ single-elevator-system/
 - Node.js 18+
 - npm or yarn
 
-## 🎥 Demo
-
-> **Example Usage:**
-> 
-> ![Elevator Demo](./demo.gif)
-> 
-> *Add a GIF showing:*
-> - Elevator moving between floors
-> - Button states changing
-> - Real-time request handling
-> - Door open/close animations
-
 ## 🛠️ Technology Stack
 
 ### Backend

@@ -71,18 +71,23 @@ class StopScheduler(BaseElevator):
 
         # --- IDLE LOGIC ---
         if self.direction == Direction.IDLE:
-            # Phase 1: Pick first available Same-Direction target
+            # 1. Check for ANY motivation to go UP (Internal OR External)
+            iu = self.internal_up.get_min()
             uu = self.up_up.get_min()
-            if uu is not None:
+
+            if iu is not None or uu is not None:
                 self.direction = Direction.UP
-                if delete: self.up_up.delete_min()
-                return uu
+                # We call the helper to ensure we pick the closest stop (Priority 0 vs 1)
+                return self._process_up_logic(delete, only_same_direction=False)
             
+            # 2. Check for ANY motivation to go DOWN (Internal OR External)
+            id_ = self.internal_down.get_max()
             dd = self.down_down.get_max()
-            if dd is not None:
+  
+            if id_ is not None or dd is not None:
                 self.direction = Direction.DOWN
-                if delete: self.down_down.delete_max()
-                return dd
+                # We call the helper to ensure we pick the closest stop
+                return self._process_down_logic(delete, only_same_direction=False)
 
             # Phase 2: Handle Turnarounds
             # If we wake up for a turnaround, we must manually bypass the "same direction" barrier

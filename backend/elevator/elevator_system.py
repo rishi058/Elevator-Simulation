@@ -7,6 +7,7 @@ class Elevator(UIStateManager):
         super().__init__(total_floors)
         self.ws_manager = None
         self.prev_state = None
+        self.prev_stop = None  # Track previous stop to avoid double door open
     
     def set_websocket_manager(self, ws_manager):
         self.ws_manager = ws_manager
@@ -58,6 +59,7 @@ class Elevator(UIStateManager):
             
             await self.broadcast_state()
 
+            # Prevents Moving Elevator Just After We Click Internal Buttons
             while self.is_door_open:
                 await asyncio.sleep(1)
             
@@ -102,6 +104,12 @@ class Elevator(UIStateManager):
                 await asyncio.sleep(1)
 
             # --- ARRIVAL ---
+            # Skip door open if we just stopped at this floor (handles external + internal same floor)
+            if self.prev_stop == stop:
+                self.prev_stop = None  # Reset to allow future stops at this floor
+                continue
+            
+            self.prev_stop = stop
             self.is_door_open = True
             self.moving_direction = self.direction            
             self.update_ui_requests() 
@@ -131,3 +139,4 @@ class Elevator(UIStateManager):
         #----------------------------------------
         self.ws_manager = None
         self.prev_state = None
+        self.prev_stop = None
