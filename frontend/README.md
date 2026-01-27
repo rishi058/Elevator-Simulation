@@ -1,5 +1,10 @@
 # 🖥️ Multi-Elevator System - Frontend Application
 
+The **Frontend Application** acts as the visual dashboard and control center for the elevator system. Because the backend is "headless" (pure API), this React application is crucial for observing the complex dispatch logic in real-time.
+
+## 📸 DEMO 
+![multi-elevator-demo](https://github.com/user-attachments/assets/d59294bb-16c7-40a4-a35b-b2df1aeacb91)
+
 ## 📖 Table of Contents
 1. [Overview](#-overview)
 2. [Architecture & Design](#-architecture--design)
@@ -14,8 +19,6 @@
 
 ## 📖 Overview
 
-The **Frontend Application** acts as the visual dashboard and control center for the elevator system. Because the backend is "headless" (pure API), this React application is crucial for observing the complex dispatch logic in real-time.
-
 It provides immediate visual feedback on:
 - **Elevator Position**: Smoothly interpolated movement between floors.
 - **Door Status**: Visual cues for opening/closing/open states.
@@ -26,8 +29,6 @@ It provides immediate visual feedback on:
 - **Zero-Polling Updates**: Uses WebSockets for push-based state synchronization.
 - **Optimized Re-renders**: Components only re-render when their specific data slice changes.
 - **Responsive Animations**: Uses `Framer Motion` for fluid transitions, making the 500ms server ticks look like continuous movement.
-
-## 📸 DEMO 
 
 ---
 
