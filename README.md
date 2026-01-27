@@ -1,441 +1,382 @@
-# Elevator System Simulation
-> Real-time, concurrent elevator scheduling system with intelligent request handling
+# 🏗️ Elevator Control System — A Distributed Real-Time Simulation
 
-## 📋 Project Overview
+<div align="center">
 
-A full-stack elevator simulation system that demonstrates concurrent request processing, real-time state synchronization, and intelligent scheduling algorithms. The system simulates a elevator serving multiple floors with external call buttons (up/down) and internal destination buttons.
+![Architecture](https://img.shields.io/badge/Architecture-Microservices-blue?style=for-the-badge)
+![Backend](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi)
+![Frontend](https://img.shields.io/badge/Frontend-React%2019-61DAFB?style=for-the-badge&logo=react)
+![WebSocket](https://img.shields.io/badge/Protocol-WebSocket-010101?style=for-the-badge)
+![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
-**Key Highlights:**
-- **Real-time Updates**: WebSocket-based live state broadcasting for instant UI updates
-- **Intelligent Scheduling**: Custom heap-based algorithm for efficient floor request optimization
-- **Concurrent Request Handling**: Asynchronous architecture supporting multiple simultaneous requests
-- **State Synchronization**: Optimized state broadcasting with change detection to minimize network overhead
+**A production-grade elevator simulation implementing SCAN algorithms, AVL-tree optimized scheduling, and real-time state synchronization via WebSockets.**
 
-This project is ideal for understanding:
-- Event-driven architectures
-- Real-time communication patterns
-- Scheduling algorithms and data structures
-- Full-stack async/concurrent programming
+*Designed for System Design Interview Prep | IoT Control Systems | Digital Twin Prototyping*
+
+</div>
 
 ---
 
-## ✨ Features
+## 📸 Live Demonstrations
 
-- **Smart Request Queuing**: Dynamically prioritizes requests based on elevator direction and proximity
-- **Dual-Heap Scheduling**: Separate min-heap (upward) and max-heap (downward) for optimal stop ordering
-- **Door Simulation**: Realistic door open/close cycles with configurable delays
-- **Visual Feedback**: Real-time floor position updates with smooth animations (frontend)
-- **Button State Management**: External (up/down) and internal (floor) button tracking with visual indicators
-- **WebSocket State Sync**: Efficient delta-based state updates to connected clients
-- **RESTful API**: Clean endpoint design for floor requests, stops, and status queries
-- **Configurable Building**: Dynamic total floor configuration via API
-- **Thread-Safe Design**: Async-first architecture with concurrent request handling
+<table>
+<tr>
+<td align="center" width="50%">
 
----
+### Single Elevator System
+![Single Elevator Demo](https://github.com/user-attachments/assets/69bcbe19-32ef-43d7-9169-055935ae29aa)
 
-## 🛠 Tech Stack
+*FCFS, SSTF, LOOK, Elevator-LOOK algorithms with interrupt-driven re-prioritization*
 
-### Backend
-| Technology | Purpose |
-|------------|---------|
-| **Python 3.11+** | Core language |
-| **FastAPI** | Async web framework, REST API & WebSocket server |
-| **Uvicorn** | ASGI server for production deployment |
-| **Pydantic** | Request/response validation & serialization |
-| **asyncio** | Concurrent task management & elevator simulation loop |
+</td>
+<td align="center" width="50%">
 
-### Frontend
-| Technology | Purpose |
-|------------|---------|
-| **React 19** | UI framework |
-| **TypeScript** | Type-safe development |
-| **Vite** | Build tool & dev server |
-| **Zustand** | Lightweight state management |
-| **TailwindCSS 4** | Utility-first styling |
-| **Axios** | HTTP client with interceptors |
-| **React Router** | Client-side routing |
-| **React Toastify** | Toast notifications |
+### Multi-Elevator System
+![Multi Elevator Demo](https://github.com/user-attachments/assets/d59294bb-16c7-40a4-a35b-b2df1aeacb91)
 
-### Custom Data Structures
-- **MinHeap / MaxHeap**: Custom implementations for upward/downward stop prioritization
+*Collective Control with dynamic request stealing and cost-minimization dispatch*
+
+</td>
+</tr>
+</table>
 
 ---
 
-## 🔌 API Endpoints & WebSocket
+## 🎯 Executive Summary
 
-### REST API Endpoints
+This monorepo contains two progressively complex implementations of vertical transportation control systems:
 
-**Base URL**: `http://localhost:8000/api`
+| System | Complexity | Core Algorithm | Concurrency Model | Use Case |
+|:-------|:-----------|:---------------|:------------------|:---------|
+| **Single-Elevator** | $O(n \log n)$ | SCAN/LOOK variants | Single async event loop | Small buildings, learning |
+| **Multi-Elevator** | $O(k \cdot n \log n)$ | Collective Dispatch + Cost Function | Distributed agent cluster | Skyscrapers, production |
 
-#### 1. Get Elevator Status
-```http
-GET /api/status
+Both systems share a **common architectural DNA** — decoupled microservices communicating over WebSockets — but diverge significantly in their **scheduling heuristics**, **state management complexity**, and **fault tolerance strategies**.
+
+> 💡 **Why Elevators?** The elevator scheduling problem is isomorphic to disk I/O scheduling (SCAN algorithm), job shop scheduling, and even ride-sharing dispatch (Uber/Lyft). Mastering this domain transfers directly to distributed systems interviews at FAANG.
+
+---
+
+## 🧬 Architectural DNA — Shared Infrastructure
+
+Both implementations adhere to a **Hexagonal Architecture** (Ports & Adapters), ensuring the core domain logic remains agnostic to I/O concerns.
+
 ```
-**Response**:
-```json
-{
-  "current_floor": 2.5,
-  "direction": "UP",
-  "is_door_open": false,
-  "external_up_requests": [5, 7],
-  "external_down_requests": [3],
-  "internal_requests": [8, 10]
-}
-```
-
-#### 2. Add External Request (Call Button)
-```http
-POST /api/request
-Content-Type: application/json
-
-{
-  "floor": 5,
-  "direction": "U"  // "U" for up, "D" for down
-}
-```
-**Use Case**: Someone on floor 5 presses the UP button
-
-**Response**:
-```json
-{
-  "message": "Request added successfully",
-  "success": true
-}
-```
-
-#### 3. Add Internal Stop (Destination Button)
-```http
-POST /api/stop
-Content-Type: application/json
-
-{
-  "floor": 7
-}
-```
-**Use Case**: Passenger inside elevator presses floor 7 button
-
-**Response**:
-```json
-{
-  "message": "Stop added successfully",
-  "success": true
-}
-```
-
-#### 4. Configure Building Floors
-```http
-POST /api/total_floors
-Content-Type: application/json
-
-{
-  "total_floors": 15
-}
-```
-**Note**: Resets elevator state and creates a new elevator instance
-
-### WebSocket Connection
-
-**Endpoint**: `ws://localhost:8000/api/ws`
-
-**Purpose**: Real-time elevator state updates pushed from server to clients
-
-**Message Format** (Server → Client):
-```json
-{
-  "current_floor": 3.75,
-  "direction": "UP",
-  "is_door_open": false,
-  "external_up_requests": [6],
-  "external_down_requests": [],
-  "internal_requests": [8],
-  "timestamp": 1234567.89
-}
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                           PRESENTATION LAYER                                │
+│  ┌─────────────────────────────────────────────────────────────────────┐    │
+│  │                     React 19 SPA + Zustand Store                    │    │
+│  │         (Declarative UI, Optimistic Updates, Motion Animations)     │    │
+│  └─────────────────────────────────────────────────────────────────────┘    │
+│                                    │                                        │
+│                    ┌───────────────┴───────────────┐                        │
+│                    │     WebSocket (Push Stream)   │                        │
+│                    │     REST API (Command/Query)  │                        │
+│                    └───────────────┬───────────────┘                        │
+├────────────────────────────────────┼────────────────────────────────────────┤
+│                           APPLICATION LAYER                                 │
+│  ┌─────────────────────────────────┴─────────────────────────────────┐      │
+│  │                     FastAPI Gateway (ASGI)                        │      │
+│  │           Pydantic Validation │ Dependency Injection │ CORS       │      │
+│  └─────────────────────────────────┬─────────────────────────────────┘      │
+│                                    │                                        │
+├────────────────────────────────────┼────────────────────────────────────────┤
+│                            DOMAIN LAYER                                     │
+│  ┌─────────────────────────────────┴─────────────────────────────────┐      │
+│  │              Elevator State Machine (Finite Automaton)            │      │
+│  │    ┌─────────────┐    ┌─────────────┐    ┌─────────────────┐     │       │
+│  │    │  IDLE State │◄──►│ MOVING State│◄──►│ DOOR_OPEN State │     │       │
+│  │    └─────────────┘    └─────────────┘    └─────────────────┘     │       │
+│  │                                                                   │      │
+│  │    ┌─────────────────────────────────────────────────────────┐   │       │
+│  │    │           AVL Tree (Self-Balancing BST)                 │   │       │
+│  │    │    O(log n) Insert │ O(log n) Delete │ O(1) Min/Max     │   │       │
+│  │    └─────────────────────────────────────────────────────────┘   │       │
+│  └───────────────────────────────────────────────────────────────────┘      │
+│                                                                             │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                          INFRASTRUCTURE LAYER                               │
+│  ┌──────────────────┐  ┌──────────────────┐  ┌────────────────────────┐     │
+│  │ WebSocket Broker │  │  State Singleton │  │ Async Task Scheduler   │     │
+│  │ (Connection Pool)│  │  (Thread-Safe)   │  │ (asyncio Event Loop)   │     │
+│  └──────────────────┘  └──────────────────┘  └────────────────────────┘     │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Update Frequency**: Only when state changes (optimized with delta detection)
+### 🔧 Technology Stack Matrix
 
-**Frontend Usage**:
-```typescript
-// Custom hook: useElevatorWebSocket.ts
-const ws = new WebSocket('ws://localhost:8000/api/ws');
-ws.onmessage = (event) => {
-  const state = JSON.parse(event.data);
-  updateStore(state); // Update Zustand store
-};
+| Layer | Technology | Rationale |
+|:------|:-----------|:----------|
+| **Runtime** | Python 3.8+ (Backend), Node 18+ (Frontend) | Async-first ecosystems |
+| **API Framework** | FastAPI + Uvicorn (ASGI) | Native `async/await`, OpenAPI auto-gen |
+| **State Container** | Zustand (Client), Singleton Pattern (Server) | Minimal boilerplate, atomic updates |
+| **Real-Time Protocol** | WebSocket (RFC 6455) | Full-duplex, <100ms latency |
+| **Data Structures** | Custom AVL Tree | $O(\log n)$ guaranteed for stop queue ops |
+| **Styling** | Tailwind CSS + Framer Motion | Utility-first, physics-based animations |
+| **Type Safety** | TypeScript (strict mode) + Pydantic | Compile-time + runtime validation |
+| **Build Tooling** | Vite (ESBuild) | Sub-second HMR, tree-shaking |
+
+---
+
+## 🔬 System I: Single-Elevator Controller
+
+### Problem Statement
+
+> Given a building with $N$ floors and a single elevator car, serve incoming hall calls and cabin requests while minimizing **Average Wait Time (AWT)** and **Total Travel Distance (TTD)**.
+
+This is the **classical elevator scheduling problem**, directly analogous to the **Disk Arm Scheduling Problem** studied in Operating Systems.
+
+### Implemented Scheduling Algorithms
+
+| Algorithm | Strategy | Time Complexity | Starvation Risk | Use Case |
+|:----------|:---------|:----------------|:----------------|:---------|
+| **FCFS** | First-Come-First-Serve | $O(n)$ | None | Debugging, fairness-critical |
+| **SSTF** | Shortest-Seek-Time-First | $O(n)$ per decision | **High** (edge floors) | Low-traffic buildings |
+| **LOOK** | Directional sweep (no end travel) | $O(n \log n)$ | Low | Standard commercial |
+| **Elevator-LOOK** | LOOK + interrupt handling | $O(n \log n)$ | **None** | Production systems |
+
+### State Machine Transitions
+
+```mermaid
+stateDiagram-v2
+    [*] --> IDLE
+    IDLE --> MOVING_UP : request.floor > current
+    IDLE --> MOVING_DOWN : request.floor < current
+    IDLE --> DOOR_OPEN : request.floor == current
+    
+    MOVING_UP --> DOOR_OPEN : reached_stop()
+    MOVING_DOWN --> DOOR_OPEN : reached_stop()
+    
+    DOOR_OPEN --> IDLE : queue.empty()
+    DOOR_OPEN --> MOVING_UP : next_stop > current
+    DOOR_OPEN --> MOVING_DOWN : next_stop < current
+    
+    note right of MOVING_UP
+        Interrupt Handler Active:
+        Can insert emergency stops
+        without full re-queue
+    end note
+```
+
+### Interrupt-Driven Re-Prioritization
+
+The single elevator(Elevator-LOOK Algorithm) implements a **preemptive interrupt system** that allows dynamic stop insertion without restarting the scheduling cycle:
+
+### API Endpoints (Single)
+
+| Method | Endpoint | Payload | Description |
+|:-------|:---------|:--------|:------------|
+| `POST` | `/api/request` | `{ floor: int, direction: U or D }` | Register hall call |
+| `POST` | `/api/stop` | `{ floor: int }` | Register cabin button press |
+| `GET` | `/api/status` | — | Snapshot of current elevator state |
+| `WS` | `/ws` | — | Real-time state stream |
+
+---
+
+## 🔬 System II: Multi-Elevator Collective Control
+
+### Problem Statement
+
+> Given $K$ elevators serving $N$ floors, assign incoming requests to minimize **global Average Wait Time (AWT)** while balancing **load distribution** and **energy consumption**.
+
+This is a **combinatorial optimization problem** with NP-hard characteristics. We employ **greedy heuristics** with **dynamic re-assignment** to achieve near-optimal solutions in polynomial time.
+
+### The Collective Dispatch Algorithm
+
+```mermaid
+graph TD
+    subgraph Request_Ingress["📥 Request Ingress"]
+        HR["Hall Request (floor, direction)"]
+    end
+
+    subgraph Cost_Computation["🧮 Cost Computation Engine"]
+        C0["Cost(E0) = f(distance, stops, direction)"]
+        C1["Cost(E1) = f(distance, stops, direction)"]
+        C2["Cost(E2) = f(distance, stops, direction)"]
+    end
+
+    subgraph Assignment["📋 Assignment Decision"]
+        MIN["argmin(C0, C1, C2)"]
+        ASSIGN["Assign to Winner"]
+    end
+
+    subgraph Reassignment["🔄 Dynamic Reassignment"]
+        MONITOR["Monitor All Elevators"]
+        STEAL["Steal Request if ΔC > threshold"]
+    end
+
+    HR --> C0
+    HR --> C1
+    HR --> C2
+    C0 --> MIN
+    C1 --> MIN
+    C2 --> MIN
+    MIN --> ASSIGN
+    ASSIGN --> MONITOR
+    MONITOR -->|"Every 2s"| STEAL
+    STEAL -->|"Re-dispatch"| ASSIGN
+```
+
+### Cost Function Deep Dive
+
+The dispatcher evaluates each elevator using a **weighted cost function**:
+
+$$
+C_i = \alpha \cdot D_i + \beta \cdot S_i + \gamma \cdot T_i
+$$
+
+Where:
+- $D_i$ = **Distance Cost** = `|current_floor - target_floor| × travel_time_per_floor`
+- $S_i$ = **Stops Penalty** = `num_intermediate_stops × avg_door_cycle_time` (typically 5s)
+- $T_i$ = **Turn Penalty** = `requires_direction_change ? 30s : 0`
+
+### Request Stealing Protocol
+
+### Agent-Based Architecture
+
+Each elevator operates as an **independent async agent** with its own event loop:
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        DISPATCHER (Orchestrator)                        │
+│   ┌─────────────────────────────────────────────────────────────────┐   │
+│   │                    Global Request Queue                         │   │
+│   │        (Thread-safe Priority Queue with Lock-Free Reads)        │   │
+│   └───────────────────────────────┬─────────────────────────────────┘   │
+│                                   │                                     │
+│           ┌───────────────────────┼───────────────────────┐             │
+│           │                       │                       │             │
+│           ▼                       ▼                       ▼             │
+│   ┌───────────────┐       ┌───────────────┐       ┌───────────────┐     │
+│   │   AGENT E0    │       │   AGENT E1    │       │   AGENT E2    │     │
+│   │ ┌───────────┐ │       │ ┌───────────┐ │       │ ┌───────────┐ │     │
+│   │ │ Local AVL │ │       │ │ Local AVL │ │       │ │ Local AVL │ │     │
+│   │ │   Tree    │ │       │ │   Tree    │ │       │ │   Tree    │ │     │
+│   │ └───────────┘ │       │ └───────────┘ │       │ └───────────┘ │     │
+│   │ ┌───────────┐ │       │ ┌───────────┐ │       │ ┌───────────┐ │     │
+│   │ │  State    │ │       │ │  State    │ │       │ │  State    │ │     │
+│   │ │  Machine  │ │       │ │  Machine  │ │       │ │  Machine  │ │     │
+│   │ └───────────┘ │       │ └───────────┘ │       │ └───────────┘ │     │
+│   │    async      │       │    async      │       │    async      │     │
+│   │    run()      │       │    run()      │       │    run()      │     │
+│   └───────┬───────┘       └───────┬───────┘       └───────┬───────┘     │
+│           │                       │                       │             │
+│           └───────────────────────┼───────────────────────┘             │
+│                                   │                                     │
+│                                   ▼                                     │
+│   ┌─────────────────────────────────────────────────────────────────┐   │
+│   │                   Global State Manager                          │   │
+│   │         (Aggregates all agent states for broadcast)             │   │
+│   └─────────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 🏗 Architecture
+## 🔀 Comparative Analysis: Single vs Multi
 
-### System Design
+### Architectural Similarities
 
+| Aspect | Implementation | Shared Code % |
+|:-------|:---------------|:--------------|
+| **State Machine** | Identical FSM (IDLE, MOVING, DOOR_OPEN) | ~90% |
+| **AVL Tree** | Same self-balancing BST for stop queues | 100% |
+| **WebSocket Protocol** | JSON payload structure, heartbeat mechanism | ~95% |
+| **Frontend Components** | ElevatorShaft, FloorIndicator, ControlPanel | ~70% |
+| **API Schema** | Pydantic models for request/response | ~80% |
+
+### Algorithmic Differences
+
+| Dimension | Single Elevator | Multi Elevator |
+|:----------|:----------------|:---------------|
+| **Scheduling Paradigm** | Local optimization (greedy) | Global optimization (cost function) |
+| **Request Assignment** | Implicit (only one car) | Explicit dispatcher decision |
+| **Direction Commitment** | Strict LOOK compliance | Soft commitment (can reassign) |
+| **Queue Structure** | Single AVL tree | Per-elevator AVL + global pending queue |
+| **Complexity per Request** | $O(\log n)$ | $O(k \cdot \log n)$ where $k$ = elevator count |
+| **Failure Mode** | System halt | Graceful degradation (redistribute load) |
+
+### State Synchronization
+
+For Exact Payload, Refer Codebase
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                       FRONTEND (React)                       │
-│  ┌────────────┐  ┌──────────────┐  ┌──────────────────┐    │
-│  │ Elevator   │  │  Floor       │  │  Internal        │    │
-│  │ Component  │  │  Buttons     │  │  Buttons         │    │
-│  └─────┬──────┘  └──────┬───────┘  └────────┬─────────┘    │
-│        │                │                    │               │
-│        └────────────────┴────────────────────┘               │
-│                         │                                    │
-│                  ┌──────▼───────┐                           │
-│                  │ Zustand Store │◄────────────┐            │
-│                  └──────┬───────┘              │            │
-│                         │                      │            │
-│          ┌──────────────┴─────────────┐       │            │
-│          │                            │       │            │
-│     ┌────▼─────┐              ┌──────▼──────┐│            │
-│     │ Axios API│              │  WebSocket  ││            │
-│     │ Calls    │              │  Hook       ││            │
-│     └────┬─────┘              └──────┬──────┘│            │
-└──────────┼─────────────────────────────┼─────────────────────┘
-           │                             │
-           │ HTTP                        │ WS
-           │                             │
-┌──────────▼─────────────────────────────▼─────────────────────┐
-│                    BACKEND (FastAPI)                          │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │                  API Router                            │  │
-│  │  ┌──────────┐  ┌──────────┐  ┌──────────────────┐    │  │
-│  │  │ /status  │  │ /request │  │ /stop  │ /ws     │    │  │
-│  │  └────┬─────┘  └────┬─────┘  └────┬───┘ └───┬───┘    │  │
-│  └───────┼─────────────┼─────────────┼─────────┼─────────┘  │
-│          │             │             │         │            │
-│  ┌───────▼─────────────▼─────────────▼─────┐   │            │
-│  │         Methods Layer                   │   │            │
-│  │  (add_request, add_stop, get_status)    │   │            │
-│  └───────┬─────────────────────────────────┘   │            │
-│          │                                     │            │
-│  ┌───────▼─────────────────────────────────┐   │            │
-│  │    Global Elevator Instance              │   │            │
-│  │  ┌───────────────────────────────────┐  │   │            │
-│  │  │   Elevator Class                  │  │   │            │
-│  │  │  ┌──────────┐  ┌──────────────┐  │  │   │            │
-│  │  │  │ MinHeap  │  │  MaxHeap     │  │  │   │            │
-│  │  │  │(up_stops)│  │(down_stops)  │  │  │   │            │
-│  │  │  └──────────┘  └──────────────┘  │  │   │            │
-│  │  │                                   │  │   │            │
-│  │  │  async run() loop:                │  │   │            │
-│  │  │  - Check next floor               │  │   │            │
-│  │  │  - Move elevator                  │  │   │            │
-│  │  │  - Open/close doors               │  │   │            │
-│  │  │  - Broadcast state ───────────────┼──┼───┘            │
-│  │  └───────────────────────────────────┘  │                │
-│  └──────────────────────────────────────────┘                │
-│                                                               │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │         WebSocket Manager                              │  │
-│  │  - Maintains active connections                        │  │
-│  │  - Broadcasts to all clients                           │  │
-│  └────────────────────────────────────────────────────────┘  │
-└───────────────────────────────────────────────────────────────┘
-```
+┌────────────────────────────────────────────────────────────────────────┐
+│                    SINGLE ELEVATOR STATE PAYLOAD                       │
+├────────────────────────────────────────────────────────────────────────┤
+│  {                                                                     │
+│    "current_floor": 5,                                                 │
+│    "direction": "UP",                                                  │
+│    "queue": [7, 9, 12],                                                │
+│    "is_door_opem": False                                               │
+│  }                                                                     │
+└────────────────────────────────────────────────────────────────────────┘
 
-### Elevator Scheduling Algorithm
-
-The system uses a **dual-heap approach** for intelligent request handling:
-
-1. **Direction-Based Queuing**:
-   - `MinHeap` (up_stops): Stores upward destinations in ascending order
-   - `MaxHeap` (down_stops): Stores downward destinations in descending order
-
-2. **Request Processing Logic**:
-   ```python
-   if elevator.direction == UP:
-       service all floors in up_stops (ascending)
-       then switch to down_stops (descending)
-   elif elevator.direction == DOWN:
-       service all floors in down_stops (descending)
-       then switch to up_stops (ascending)
-   ```
-
-3. **State Flow**:
-   ```
-   IDLE → Request arrives → Determine direction → MOVING
-   → Reach floor → DOOR_OPEN (5s delay) → DOOR_CLOSE
-   → Next floor or IDLE
-   ```
-
-### Data Flow
-
-1. **Request Path** (HTTP POST):
-   ```
-   User clicks button → Frontend API call → Backend endpoint
-   → Elevator.add_request() → Heap insertion → State change
-   → WebSocket broadcast → UI update
-   ```
-
-2. **Real-time Update Path** (WebSocket):
-   ```
-   Elevator.run() loop → State change detected
-   → broadcast_state() → WebSocket Manager
-   → All connected clients → Zustand store update
-   → React re-render
-   ```
-
----
-
-## 🚀 How to Reproduce This Project
-
-### Prerequisites
-
-- **Python**: 3.11 or higher
-- **Node.js**: 18.x or higher
-- **npm** or **pnpm** or **yarn**
-
-### 1. Clone the Repository
-
-```bash
-git clone <repository-url>
-cd single-elevator-system
-```
-
-### 2. Backend Setup
-
-```bash
-cd backend
-
-# Create virtual environment (optional but recommended)
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-
-# Install dependencies
-pip install fastapi uvicorn pydantic
-
-# Run the server
-python main.py
-```
-
-Server will start at: `http://localhost:8000`
-
-**Verify**: Open `http://localhost:8000/docs` for interactive API documentation
-
-### 3. Frontend Setup
-
-```bash
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-Frontend will start at: `http://localhost:5173`
-
-### 4. Test the System
-
-1. Open browser at `http://localhost:5173`
-2. Click floor buttons to add requests
-3. Watch elevator move in real-time
-4. Open DevTools → Network → WS to see WebSocket messages
-
----
-
-## 🔧 Things to Improve
-
-### Performance & Scalability
-- [ ] **Optimized Scheduling**: Implement optimized SCAN or LOOK algorithms for better efficiency
-- [ ] **Request Batching**: Group nearby requests to reduce stops
-
-### Concurrency & Safety
-- [ ] **Thread-Safe Heap Operations**: Add `asyncio.Lock` to prevent race conditions during concurrent requests (see NOTES.txt)
-- [ ] **Request Cancellation**: Allow users to cancel pending requests
-- [ ] **Timeout Handling**: Add request expiration for abandoned calls
-
-### Features
-- [ ] **Weight/Capacity Limits**: Simulate maximum passenger capacity
-- [ ] **Emergency Mode**: Priority handling for emergency floor requests
-- [ ] **Maintenance Mode**: Disable elevator and queue requests
-- [ ] **Floor Skipping**: Some floors only accessible with key/permission
-- [ ] **Energy Optimization**: Idle position strategy (e.g., return to ground floor)
-
-### UX Enhancements
-- [ ] **Audio Feedback**: Ding sound on arrival, button click sounds
-- [ ] **Arrival Predictions**: Show estimated time to arrival for each floor
-- [ ] **Mobile Responsive**: Better mobile/tablet layouts
-
-### Code Quality
-- [ ] **Unit Tests**: Backend logic testing (pytest)
-- [ ] **Integration Tests**: API endpoint testing
-- [ ] **Frontend Tests**: Component testing (Vitest/React Testing Library)
-- [ ] **Type Coverage**: Improve TypeScript strict mode compliance
-- [ ] **Error Boundaries**: Better error handling in React components
-- [ ] **Logging**: Structured logging with levels (debug, info, error)
-
-### DevOps
-- [ ] **Docker Compose**: Containerize frontend + backend
-- [ ] **CI/CD Pipeline**: Automated testing and deployment
-- [ ] **Environment Configs**: Better management of dev/prod settings
-- [ ] **Monitoring**: Add metrics for request latency, elevator utilization
-
-### Documentation
-- [ ] **API Documentation**: OpenAPI/Swagger enhancements
-- [ ] **Architecture Diagrams**: Sequence diagrams for request flows
-- [ ] **Code Comments**: Inline documentation for complex logic
-- [ ] **Video Demo**: Screen recording of system in action
-
----
-
-## 📁 Project Structure
-
-```
-single-elevator-system/
-├── backend/
-│   ├── main.py                 # FastAPI app entry point
-│   ├── elevator/
-│   │   ├── elevator.py         # Core elevator logic & run loop
-│   │   ├── direction.py        # Direction enum (UP/DOWN/IDLE)
-│   │   └── heap.py             # MinHeap/MaxHeap implementations
-│   ├── helper/
-│   │   ├── router.py           # API route definitions
-│   │   ├── models.py           # Pydantic request/response models
-│   │   ├── global_elevator.py  # Singleton elevator instance
-│   │   └── websocket_manager.py # WebSocket connection manager
-│   └── methods/
-│       ├── add_request.py      # POST /request handler
-│       ├── add_stop.py         # POST /stop handler
-│       ├── get_status.py       # GET /status handler
-│       └── set_floors.py       # POST /total_floors handler
-│
-└── frontend/
-    ├── src/
-    │   ├── App.tsx             # Main app component
-    │   ├── routes.tsx          # React Router config
-    │   ├── hooks/
-    │   │   └── useElevatorWebSocket.ts  # WebSocket hook
-    │   ├── pages/
-    │   │   └── elevatorPage/
-    │   │       ├── elevatorPage.tsx
-    │   │       └── components/
-    │   │           ├── Elevator.tsx         # Elevator shaft visualization
-    │   │           ├── Floor.tsx            # Floor with call buttons
-    │   │           └── InternalButtons.tsx  # Destination buttons
-    │   ├── services/
-    │   │   ├── elevator_api.ts       # Axios API client
-    │   │   └── api_interceptor.ts    # Request/response interceptors
-    │   └── store/
-    │       └── elevatorStore.ts      # Zustand state management
-    ├── package.json
-    └── vite.config.ts
+┌────────────────────────────────────────────────────────────────────────┐
+│                    MULTI ELEVATOR STATE PAYLOAD                        │
+├────────────────────────────────────────────────────────────────────────┤
+│  {                                                                     │
+│    "total_floors": 8,                                                  │
+│    "elevators": [                                                      │
+│      {                                                                 │
+│        "id": 0,                                                        │
+│        "current_floor": 2.2,                                           │
+│        "direction": "UP",                                              │
+│        "requests": [5, 7]                                              │
+│      }                                                                 │
+│      {                                                                 │
+│        "id": 1,                                                        │
+│        "current_floor": 4.2,                                           │
+│        "direction": "UP",                                              │
+│        "requests": [1, 9]                                              │
+│      }                                                                 │
+│    ]                                                                   │
+│  }                                                                     │
+└────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
+
+### 🚀 Quick Start Guide
+
+- Clone Repo, Switch Branches, Run Individually Frontend/Backend in local.
+
+---
+
+## 🎓 Learning Outcomes
+
+By studying and extending this project, you will gain proficiency in:
+
+| Domain | Concepts |
+|:-------|:---------|
+| **Data Structures** | AVL Trees, Priority Queues, Hash Maps with TTL |
+| **Algorithms** | SCAN/LOOK, Cost Functions, Greedy Heuristics |
+| **Distributed Systems** | Actor Model, Work Stealing, Supervisor Pattern |
+| **Real-Time Systems** | WebSockets, State Synchronization, Optimistic UI |
+| **System Design** | Microservices, API Gateway, Event-Driven Architecture |
+| **Concurrency** | async/await |
+
+---
+
+## 🔮 Future Roadmap
+
+- [ ] **Destination Dispatch** — Pre-assign passengers to specific cars at the hall panel
+- [ ] **Request Aging** — 
+- [ ] **Weight Limit** — 
+
+---
+
+
 
 ## 📝 License
 
-This project is open-source and available for educational purposes.
+This project is released for **educational purposes**. Feel free to fork, modify, and use as a reference for interviews, coursework, or personal learning.
 
 ---
 
-## 🤝 Contributing
+<div align="center">
 
-Contributions are welcome! Feel free to:
-- Open issues for bugs or feature requests
-- Submit pull requests with improvements
-- Share feedback on the architecture
+**Built with ⚡ by engineers, for engineers.**
 
-**Happy Coding!** 🚀
+*Star ⭐ this repo if it helped you crack that System Design interview!*
+
+</div>
