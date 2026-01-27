@@ -48,24 +48,62 @@ class UIStateManager(StopScheduler):
         return False
     
     def update_ui_requests(self):
-        floor = self.current_floor
+        if not self.is_door_open:
+            return
         
+        dir = self.get_effective_direction()
+        floor = self.current_floor
+
         # Always clear internal request for this floor
         self.ui_internal_requests.discard(floor)
+        
+        if dir == Direction.IDLE:
+            self.ui_external_up_requests.discard(floor)
+            self.ui_external_down_requests.discard(floor)
+            return
 
-        # Check UP External Requests
-        # If it's in UI set but NOT in Scheduler trees, it means it was handled/removed.
-        if floor in self.ui_external_up_requests:
-            in_up_up = self.up_up.find(floor) is not None
-            in_down_up = self.down_up.find(floor) is not None
-            
-            if not in_up_up and not in_down_up:
+        # UP ARRIVAL
+        if dir == Direction.UP:
+            if floor in self.ui_external_up_requests:
                 self.ui_external_up_requests.discard(floor)
+            
+            # Turnaround Logic: Clear DOWN request if no more UP stops exist
+            if floor in self.ui_external_down_requests:
+                if not self.has_requests_above(floor):
+                    self.ui_external_down_requests.discard(floor)
 
-        # Check DOWN External Requests
-        if floor in self.ui_external_down_requests:
-            in_down_down = self.down_down.find(floor) is not None
-            in_up_down = self.up_down.find(floor) is not None
-
-            if not in_down_down and not in_up_down:
+        # DOWN ARRIVAL
+        elif dir == Direction.DOWN:
+            if floor in self.ui_external_down_requests:
                 self.ui_external_down_requests.discard(floor)
+            
+            # Turnaround Logic: Clear UP request if no more DOWN stops exist
+            if floor in self.ui_external_up_requests:
+                if not self.has_requests_below(floor):
+                    self.ui_external_up_requests.discard(floor)
+
+    def sync_ui_state(self):
+        """
+        Synchronize UI state with scheduler trees.
+        Remove any floors from UI sets that are no longer in any scheduler tree.
+        This prevents ghost values from race conditions between get_next_stop and remove_request.
+        """
+        # Check UP requests - floor should exist in up_up or down_up trees
+        floors_to_remove_up = []
+        for floor in self.ui_external_up_requests:
+            if (self.up_up.find(floor) is None and 
+                self.down_up.find(floor) is None):
+                floors_to_remove_up.append(floor)
+        
+        for floor in floors_to_remove_up:
+            self.ui_external_up_requests.discard(floor)
+        
+        # Check DOWN requests - floor should exist in down_down or up_down trees
+        floors_to_remove_down = []
+        for floor in self.ui_external_down_requests:
+            if (self.down_down.find(floor) is None and 
+                self.up_down.find(floor) is None):
+                floors_to_remove_down.append(floor)
+        
+        for floor in floors_to_remove_down:
+            self.ui_external_down_requests.discard(floor)

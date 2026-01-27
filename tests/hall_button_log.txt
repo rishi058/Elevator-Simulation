@@ -1,0 +1,1816 @@
+Starting Ghost Value Test with Random Permutations...
+This will test 3 random permutations to find ghost button states.
+
+Total permutations available: 5040
+Selected 3 random permutations for testing.
+
+
+============================================================
+PERMUTATION 1: [(3, 'D'), (3, 'U'), (4, 'D'), (5, 'U'), (4, 'U'), (5, 'D'), (6, 'D')]
+============================================================
+Adding requests...
+E1: 15, E2: 15, E3: 15, 
+Requesting: 3 D -> Assigned to E0
+E1: 15, E2: 15, E3: 15, 
+Requesting: 3 U -> Assigned to E0
+E2: 20, E3: 20, E1: 30, 
+Requesting: 4 D -> Assigned to E1
+E3: 25, E2: 30, E1: 35, 
+Requesting: 5 U -> Assigned to E2
+E2: 20, E3: 20, E1: 30, 
+Requesting: 4 U -> Assigned to E1
+E3: 30, E1: 35, E2: 35, 
+Requesting: 5 D -> Assigned to E2
+E1: 40, E2: 40, E3: 40, 
+Requesting: 6 D -> Assigned to E0
+Requests added. Waiting for elevators to handle them...
+
+[Second 1] Hall Button State:
+  E0: Floor=0, Dir=U, UP=[3], DOWN=[3, 6], INT=[]
+  E1: Floor=0, Dir=U, UP=[4], DOWN=[4], INT=[]
+  E2: Floor=0, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 59.0, E3: 69.0, E1: 79.0, 
+[Re-Assigning Elevator] Request:3D, Old:E1, New:E2
+3U == E1: 14.0, E2: 14.0, E3: 14.0, 
+4D == E2: 29.0, E3: 64.0, E1: 74.0, 
+5U == E1: 24.0, E3: 24.0, E2: 34.0, 
+4U == E1: 19.0, E3: 19.0, E2: 24.0, 
+5D == E3: 29.0, E2: 34.0, E1: 69.0, 
+6D == E1: 34.0, E3: 34.0, E2: 39.0, 
+3D == E2: 59.0, E3: 69.0, E1: 79.0, 
+3U == E1: 14.0, E2: 14.0, E3: 14.0, 
+4D == E2: 29.0, E3: 64.0, E1: 74.0, 
+5U == E1: 24.0, E3: 24.0, E2: 34.0, 
+4U == E1: 19.0, E3: 19.0, E2: 24.0, 
+5D == E3: 29.0, E2: 34.0, E1: 69.0, 
+6D == E1: 34.0, E3: 34.0, E2: 39.0, 
+
+[Second 2] Hall Button State:
+  E0: Floor=0.2, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=0.2, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=0.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 58.0, E3: 68.0, E1: 78.0, 
+3U == E1: 13.0, E2: 13.0, E3: 13.0, 
+4D == E2: 28.0, E3: 63.0, E1: 73.0, 
+5U == E1: 23.0, E3: 23.0, E2: 33.0, 
+4U == E1: 18.0, E3: 18.0, E2: 23.0, 
+5D == E3: 28.0, E2: 33.0, E1: 68.0, 
+6D == E1: 33.0, E3: 33.0, E2: 38.0, 
+3D == E2: 58.0, E3: 68.0, E1: 78.0, 
+3U == E1: 13.0, E2: 13.0, E3: 13.0, 
+4D == E2: 28.0, E3: 63.0, E1: 73.0, 
+5U == E1: 23.0, E3: 23.0, E2: 33.0, 
+4U == E1: 18.0, E3: 18.0, E2: 23.0, 
+5D == E3: 28.0, E2: 33.0, E1: 68.0, 
+6D == E1: 33.0, E3: 33.0, E2: 38.0, 
+
+[Second 3] Hall Button State:
+  E0: Floor=0.4, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=0.4, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=0.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 57.0, E3: 67.0, E1: 77.0, 
+3U == E1: 12.0, E2: 12.0, E3: 12.0, 
+4D == E2: 27.0, E3: 62.0, E1: 72.0, 
+5U == E1: 22.0, E3: 22.0, E2: 32.0, 
+4U == E1: 17.0, E3: 17.0, E2: 22.0, 
+5D == E3: 27.0, E2: 32.0, E1: 67.0, 
+6D == E1: 32.0, E3: 32.0, E2: 37.0, 
+3D == E2: 57.0, E3: 67.0, E1: 77.0, 
+3U == E1: 12.0, E2: 12.0, E3: 12.0, 
+4D == E2: 27.0, E3: 62.0, E1: 72.0, 
+5U == E1: 22.0, E3: 22.0, E2: 32.0, 
+4U == E1: 17.0, E3: 17.0, E2: 22.0, 
+5D == E3: 27.0, E2: 32.0, E1: 67.0, 
+6D == E1: 32.0, E3: 32.0, E2: 37.0, 
+
+[Second 4] Hall Button State:
+  E0: Floor=0.6, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=0.6, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=0.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 56.0, E3: 66.0, E1: 76.0, 
+3U == E1: 11.0, E2: 11.0, E3: 11.0, 
+4D == E2: 26.0, E3: 61.0, E1: 71.0, 
+5U == E1: 21.0, E3: 21.0, E2: 31.0, 
+4U == E1: 16.0, E3: 16.0, E2: 21.0, 
+5D == E3: 26.0, E2: 31.0, E1: 66.0, 
+6D == E1: 31.0, E3: 31.0, E2: 36.0, 
+3D == E2: 56.0, E3: 66.0, E1: 76.0, 
+3U == E1: 11.0, E2: 11.0, E3: 11.0, 
+4D == E2: 26.0, E3: 61.0, E1: 71.0, 
+5U == E1: 21.0, E3: 21.0, E2: 31.0, 
+4U == E1: 16.0, E3: 16.0, E2: 21.0, 
+5D == E3: 26.0, E2: 31.0, E1: 66.0, 
+6D == E1: 31.0, E3: 31.0, E2: 36.0, 
+
+[Second 5] Hall Button State:
+  E0: Floor=0.8, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=0.8, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=0.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 55.0, E3: 65.0, E1: 75.0, 
+3U == E1: 10.0, E2: 10.0, E3: 10.0, 
+4D == E2: 25.0, E3: 60.0, E1: 70.0, 
+5U == E1: 20.0, E3: 20.0, E2: 30.0, 
+4U == E1: 15.0, E3: 15.0, E2: 20.0, 
+5D == E3: 25.0, E2: 30.0, E1: 65.0, 
+6D == E1: 30.0, E3: 30.0, E2: 35.0, 
+3D == E2: 55.0, E3: 65.0, E1: 75.0, 
+3U == E1: 10.0, E2: 10.0, E3: 10.0, 
+4D == E2: 25.0, E3: 60.0, E1: 70.0, 
+5U == E1: 20.0, E3: 20.0, E2: 30.0, 
+4U == E1: 15.0, E3: 15.0, E2: 20.0, 
+5D == E3: 25.0, E2: 30.0, E1: 65.0, 
+6D == E1: 30.0, E3: 30.0, E2: 35.0, 
+
+[Second 6] Hall Button State:
+  E0: Floor=1.0, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.0, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 54.0, E3: 64.0, E1: 74.0, 
+3U == E1: 9.0, E2: 9.0, E3: 9.0, 
+4D == E2: 24.0, E3: 59.0, E1: 69.0, 
+5U == E1: 19.0, E3: 19.0, E2: 29.0, 
+4U == E1: 14.0, E3: 14.0, E2: 19.0, 
+5D == E3: 24.0, E2: 29.0, E1: 64.0, 
+6D == E1: 29.0, E3: 29.0, E2: 34.0, 
+3D == E2: 54.0, E3: 64.0, E1: 74.0, 
+3U == E1: 9.0, E2: 9.0, E3: 9.0, 
+4D == E2: 24.0, E3: 59.0, E1: 69.0, 
+5U == E1: 19.0, E3: 19.0, E2: 29.0, 
+4U == E1: 14.0, E3: 14.0, E2: 19.0, 
+5D == E3: 24.0, E2: 29.0, E1: 64.0, 
+6D == E1: 29.0, E3: 29.0, E2: 34.0, 
+
+[Second 7] Hall Button State:
+  E0: Floor=1.2, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.2, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 53.0, E3: 63.0, E1: 73.0, 
+3U == E1: 8.0, E2: 8.0, E3: 8.0, 
+4D == E2: 23.0, E3: 58.0, E1: 68.0, 
+5U == E1: 18.0, E3: 18.0, E2: 28.0, 
+4U == E1: 13.0, E3: 13.0, E2: 18.0, 
+5D == E3: 23.0, E2: 28.0, E1: 63.0, 
+6D == E1: 28.0, E3: 28.0, E2: 33.0, 
+3D == E2: 53.0, E3: 63.0, E1: 73.0, 
+3U == E1: 8.0, E2: 8.0, E3: 8.0, 
+4D == E2: 23.0, E3: 58.0, E1: 68.0, 
+5U == E1: 18.0, E3: 18.0, E2: 28.0, 
+4U == E1: 13.0, E3: 13.0, E2: 18.0, 
+5D == E3: 23.0, E2: 28.0, E1: 63.0, 
+6D == E1: 28.0, E3: 28.0, E2: 33.0, 
+
+[Second 8] Hall Button State:
+  E0: Floor=1.4, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.4, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 52.0, E3: 62.0, E1: 72.0, 
+3U == E1: 7.0, E2: 7.0, E3: 7.0, 
+4D == E2: 22.0, E3: 57.0, E1: 67.0, 
+5U == E1: 17.0, E3: 17.0, E2: 27.0, 
+4U == E1: 12.0, E3: 12.0, E2: 17.0, 
+5D == E3: 22.0, E2: 27.0, E1: 62.0, 
+6D == E1: 27.0, E3: 27.0, E2: 32.0, 
+3D == E2: 52.0, E3: 62.0, E1: 72.0, 
+3U == E1: 7.0, E2: 7.0, E3: 7.0, 
+4D == E2: 22.0, E3: 57.0, E1: 67.0, 
+5U == E1: 17.0, E3: 17.0, E2: 27.0, 
+4U == E1: 12.0, E3: 12.0, E2: 17.0, 
+5D == E3: 22.0, E2: 27.0, E1: 62.0, 
+6D == E1: 27.0, E3: 27.0, E2: 32.0, 
+
+[Second 9] Hall Button State:
+  E0: Floor=1.6, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.6, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 51.0, E3: 61.0, E1: 71.0, 
+3U == E1: 6.0, E2: 6.0, E3: 6.0, 
+4D == E2: 21.0, E3: 56.0, E1: 66.0, 
+5U == E1: 16.0, E3: 16.0, E2: 26.0, 
+4U == E1: 11.0, E3: 11.0, E2: 16.0, 
+5D == E3: 21.0, E2: 26.0, E1: 61.0, 
+6D == E1: 26.0, E3: 26.0, E2: 31.0, 
+3D == E2: 51.0, E3: 61.0, E1: 71.0, 
+3U == E1: 6.0, E2: 6.0, E3: 6.0, 
+4D == E2: 21.0, E3: 56.0, E1: 66.0, 
+5U == E1: 16.0, E3: 16.0, E2: 26.0, 
+4U == E1: 11.0, E3: 11.0, E2: 16.0, 
+5D == E3: 21.0, E2: 26.0, E1: 61.0, 
+6D == E1: 26.0, E3: 26.0, E2: 31.0, 
+
+[Second 10] Hall Button State:
+  E0: Floor=1.8, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.8, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 50.0, E3: 60.0, E1: 70.0, 
+3U == E1: 5.0, E2: 5.0, E3: 5.0, 
+4D == E2: 20.0, E3: 55.0, E1: 65.0, 
+5U == E1: 15.0, E3: 15.0, E2: 25.0, 
+4U == E1: 10.0, E3: 10.0, E2: 15.0, 
+5D == E3: 20.0, E2: 25.0, E1: 60.0, 
+6D == E1: 25.0, E3: 25.0, E2: 30.0, 
+3D == E2: 50.0, E3: 60.0, E1: 70.0, 
+4D == E2: 20.0, E3: 55.0, E1: 65.0, 
+5U == E1: 15.0, E3: 15.0, E2: 25.0, 
+4U == E1: 10.0, E3: 10.0, E2: 15.0, 
+5D == E3: 20.0, E2: 25.0, E1: 60.0, 
+6D == E1: 25.0, E3: 25.0, E2: 30.0, 
+
+[Second 11] Hall Button State:
+  E0: Floor=2.0, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.0, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 49.0, E3: 59.0, E1: 69.0, 
+4D == E2: 19.0, E3: 54.0, E1: 64.0, 
+5U == E1: 14.0, E3: 14.0, E2: 24.0, 
+4U == E1: 9.0, E3: 9.0, E2: 14.0, 
+5D == E3: 19.0, E2: 24.0, E1: 59.0, 
+6D == E1: 24.0, E3: 24.0, E2: 29.0, 
+3D == E2: 49.0, E3: 59.0, E1: 69.0, 
+4D == E2: 19.0, E3: 54.0, E1: 64.0, 
+5U == E1: 14.0, E3: 14.0, E2: 24.0, 
+4U == E1: 9.0, E3: 9.0, E2: 14.0, 
+5D == E3: 19.0, E2: 24.0, E1: 59.0, 
+6D == E1: 24.0, E3: 24.0, E2: 29.0, 
+
+[Second 12] Hall Button State:
+  E0: Floor=2.2, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.2, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 48.0, E3: 58.0, E1: 68.0, 
+4D == E2: 18.0, E3: 53.0, E1: 63.0, 
+5U == E1: 13.0, E3: 13.0, E2: 23.0, 
+4U == E1: 8.0, E3: 8.0, E2: 13.0, 
+5D == E3: 18.0, E2: 23.0, E1: 58.0, 
+6D == E1: 23.0, E3: 23.0, E2: 28.0, 
+3D == E2: 48.0, E3: 58.0, E1: 68.0, 
+4D == E2: 18.0, E3: 53.0, E1: 63.0, 
+5U == E1: 13.0, E3: 13.0, E2: 23.0, 
+4U == E1: 8.0, E3: 8.0, E2: 13.0, 
+5D == E3: 18.0, E2: 23.0, E1: 58.0, 
+6D == E1: 23.0, E3: 23.0, E2: 28.0, 
+
+[Second 13] Hall Button State:
+  E0: Floor=2.4, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.4, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 47.0, E3: 57.0, E1: 67.0, 
+4D == E2: 17.0, E3: 52.0, E1: 62.0, 
+5U == E1: 12.0, E3: 12.0, E2: 22.0, 
+4U == E1: 7.0, E3: 7.0, E2: 12.0, 
+5D == E3: 17.0, E2: 22.0, E1: 57.0, 
+6D == E1: 22.0, E3: 22.0, E2: 27.0, 
+3D == E2: 47.0, E3: 57.0, E1: 67.0, 
+4D == E2: 17.0, E3: 52.0, E1: 62.0, 
+5U == E1: 12.0, E3: 12.0, E2: 22.0, 
+4U == E1: 7.0, E3: 7.0, E2: 12.0, 
+5D == E3: 17.0, E2: 22.0, E1: 57.0, 
+6D == E1: 22.0, E3: 22.0, E2: 27.0, 
+
+[Second 14] Hall Button State:
+  E0: Floor=2.6, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.6, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 46.0, E3: 56.0, E1: 66.0, 
+4D == E2: 16.0, E3: 51.0, E1: 61.0, 
+5U == E1: 11.0, E3: 11.0, E2: 21.0, 
+4U == E1: 6.000000000000001, E3: 6.000000000000001, E2: 11.0, 
+5D == E3: 16.0, E2: 21.0, E1: 56.0, 
+6D == E1: 21.0, E3: 21.0, E2: 26.0, 
+3D == E2: 46.0, E3: 56.0, E1: 66.0, 
+4D == E2: 16.0, E3: 51.0, E1: 61.0, 
+5U == E1: 11.0, E3: 11.0, E2: 21.0, 
+4U == E1: 6.000000000000001, E3: 6.000000000000001, E2: 11.0, 
+5D == E3: 16.0, E2: 21.0, E1: 56.0, 
+6D == E1: 21.0, E3: 21.0, E2: 26.0, 
+
+[Second 15] Hall Button State:
+  E0: Floor=2.8, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.8, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 45.0, E3: 55.0, E1: 65.0, 
+4D == E2: 15.0, E3: 50.0, E1: 60.0, 
+5U == E1: 10.0, E3: 10.0, E2: 20.0, 
+4U == E1: 5.0, E3: 5.0, E2: 10.0, 
+5D == E3: 15.0, E2: 20.0, E1: 55.0, 
+6D == E1: 20.0, E3: 20.0, E2: 25.0, 
+3D == E2: 45.0, E3: 55.0, E1: 65.0, 
+4D == E2: 15.0, E3: 50.0, E1: 60.0, 
+5U == E1: 10.0, E3: 10.0, E2: 20.0, 
+4U == E1: 5.0, E3: 5.0, E2: 10.0, 
+5D == E3: 15.0, E2: 20.0, E1: 55.0, 
+6D == E1: 20.0, E3: 20.0, E2: 25.0, 
+
+[Second 16] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=3.0, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 39.0, E3: 54.0, E1: 65.0, 
+4D == E2: 9.0, E3: 49.0, E1: 60.0, 
+5U == E3: 9.0, E1: 10.0, E2: 14.0, 
+4U == E2: 3.999999999999999, E3: 3.999999999999999, E1: 5.0, 
+5D == E2: 14.0, E3: 14.0, E1: 55.0, 
+6D == E2: 19.0, E3: 19.0, E1: 20.0, 
+3D == E2: 39.0, E3: 54.0, E1: 65.0, 
+4D == E2: 9.0, E3: 49.0, E1: 60.0, 
+5U == E3: 9.0, E1: 10.0, E2: 14.0, 
+5D == E2: 14.0, E3: 14.0, E1: 55.0, 
+6D == E2: 19.0, E3: 19.0, E1: 20.0, 
+
+[Second 17] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=3.2, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 38.0, E3: 53.0, E1: 65.0, 
+4D == E2: 8.0, E3: 48.0, E1: 60.0, 
+5U == E3: 8.0, E1: 10.0, E2: 13.0, 
+5D == E2: 13.0, E3: 13.0, E1: 55.0, 
+6D == E2: 18.0, E3: 18.0, E1: 20.0, 
+3D == E2: 38.0, E3: 53.0, E1: 65.0, 
+4D == E2: 8.0, E3: 48.0, E1: 60.0, 
+5U == E3: 8.0, E1: 10.0, E2: 13.0, 
+5D == E2: 13.0, E3: 13.0, E1: 55.0, 
+6D == E2: 18.0, E3: 18.0, E1: 20.0, 
+
+[Second 18] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=3.4, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 37.0, E3: 52.0, E1: 65.0, 
+4D == E2: 7.0, E3: 47.0, E1: 60.0, 
+5U == E3: 7.0, E1: 10.0, E2: 12.0, 
+5D == E2: 12.0, E3: 12.0, E1: 55.0, 
+6D == E2: 17.0, E3: 17.0, E1: 20.0, 
+3D == E2: 37.0, E3: 52.0, E1: 65.0, 
+4D == E2: 7.0, E3: 47.0, E1: 60.0, 
+5U == E3: 7.0, E1: 10.0, E2: 12.0, 
+5D == E2: 12.0, E3: 12.0, E1: 55.0, 
+6D == E2: 17.0, E3: 17.0, E1: 20.0, 
+
+[Second 19] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=3.6, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 36.0, E3: 51.0, E1: 65.0, 
+4D == E2: 6.000000000000001, E3: 46.0, E1: 60.0, 
+5U == E3: 6.000000000000001, E1: 10.0, E2: 11.0, 
+5D == E2: 11.0, E3: 11.0, E1: 55.0, 
+6D == E2: 16.0, E3: 16.0, E1: 20.0, 
+3D == E2: 36.0, E3: 51.0, E1: 65.0, 
+4D == E2: 6.000000000000001, E3: 46.0, E1: 60.0, 
+5U == E3: 6.000000000000001, E1: 10.0, E2: 11.0, 
+5D == E2: 11.0, E3: 11.0, E1: 55.0, 
+6D == E2: 16.0, E3: 16.0, E1: 20.0, 
+
+[Second 20] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=3.8, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E2: 35.0, E3: 50.0, E1: 65.0, 
+4D == E2: 5.0, E3: 45.0, E1: 60.0, 
+5U == E3: 5.0, E1: 10.0, E2: 10.0, 
+5D == E2: 10.0, E3: 10.0, E1: 55.0, 
+6D == E2: 15.0, E3: 15.0, E1: 20.0, 
+3D == E2: 35.0, E3: 50.0, E1: 65.0, 
+5D == E2: 10.0, E3: 10.0, E1: 55.0, 
+6D == E2: 15.0, E3: 15.0, E1: 20.0, 
+
+[Second 21] Hall Button State:
+  E0: Floor=3.0, Dir=IDLE, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=4.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+3D == E1: 0.0, E2: 35.0, E3: 49.0, 
+[Re-Assigning Elevator] Request:3D, Old:E2, New:E1
+5D == E3: 9.0, E1: 10.0, E2: 10.0, 
+6D == E3: 14.0, E1: 15.0, E2: 15.0, 
+3D == E1: 0.0, E2: 40.0, E3: 49.0, 
+5D == E3: 9.0, E1: 10.0, E2: 10.0, 
+6D == E3: 14.0, E1: 15.0, E2: 15.0, 
+
+[Second 22] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 7.999999999999998, E2: 10.0, E1: 50.0, 
+6D == E3: 12.999999999999998, E1: 15.0, E2: 15.0, 
+5D == E3: 7.999999999999998, E2: 10.0, E1: 50.0, 
+6D == E3: 12.999999999999998, E1: 15.0, E2: 15.0, 
+
+[Second 23] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 7.000000000000002, E2: 10.0, E1: 50.0, 
+6D == E3: 12.000000000000002, E1: 15.0, E2: 15.0, 
+5D == E3: 7.000000000000002, E2: 10.0, E1: 50.0, 
+6D == E3: 12.000000000000002, E1: 15.0, E2: 15.0, 
+
+[Second 24] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 6.000000000000001, E2: 10.0, E1: 50.0, 
+6D == E3: 11.0, E1: 15.0, E2: 15.0, 
+5D == E3: 6.000000000000001, E2: 10.0, E1: 50.0, 
+6D == E3: 11.0, E1: 15.0, E2: 15.0, 
+
+[Second 25] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 5.0, E2: 10.0, E1: 50.0, 
+6D == E3: 10.0, E1: 15.0, E2: 15.0, 
+6D == E3: 10.0, E1: 15.0, E2: 15.0, 
+
+[Second 26] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 15.0, 
+6D == E2: 10.0, E3: 10.0, E1: 15.0, 
+
+[Second 27] Hall Button State:
+  E0: Floor=3.2, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 14.0, 
+6D == E2: 10.0, E3: 10.0, E1: 14.0, 
+
+[Second 28] Hall Button State:
+  E0: Floor=3.4, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 13.0, 
+6D == E2: 10.0, E3: 10.0, E1: 13.0, 
+
+[Second 29] Hall Button State:
+  E0: Floor=3.6, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 12.0, 
+6D == E2: 10.0, E3: 10.0, E1: 12.0, 
+
+[Second 30] Hall Button State:
+  E0: Floor=3.8, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 11.0, 
+6D == E2: 10.0, E3: 10.0, E1: 11.0, 
+
+[Second 31] Hall Button State:
+  E0: Floor=4.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 10.0, E2: 10.0, 
+6D == E3: 5.0, E1: 10.0, E2: 10.0, 
+
+[Second 32] Hall Button State:
+  E0: Floor=4.2, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 9.0, E2: 10.0, 
+6D == E3: 5.0, E1: 9.0, E2: 10.0, 
+
+[Second 33] Hall Button State:
+  E0: Floor=4.4, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 7.999999999999998, E2: 10.0, 
+6D == E3: 5.0, E1: 7.999999999999998, E2: 10.0, 
+
+[Second 34] Hall Button State:
+  E0: Floor=4.6, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 7.000000000000002, E2: 10.0, 
+6D == E3: 5.0, E1: 7.000000000000002, E2: 10.0, 
+
+[Second 35] Hall Button State:
+  E0: Floor=4.8, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 6.000000000000001, E2: 10.0, 
+6D == E1: 5.0, E3: 5.0, E2: 10.0, 
+
+[Second 36] Hall Button State:
+  E0: Floor=5.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 37] Hall Button State:
+  E0: Floor=5.2, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 38] Hall Button State:
+  E0: Floor=5.4, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 39] Hall Button State:
+  E0: Floor=5.6, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 40] Hall Button State:
+  E0: Floor=5.8, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 41] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 42] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 43] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 44] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 45] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 46] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 47] Hall Button State:
+  E0: Floor=6.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+*** All 6 scheduler trees are empty AND all elevators IDLE ***
+
+--- Simulation Finished (or Timed out) ---
+Checking for lingering requests and internal scheduler state...
+
+[Elevator 0]
+  Current Floor: 6.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+[Elevator 1]
+  Current Floor: 4.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+[Elevator 2]
+  Current Floor: 5.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+No bug found. All requests cleared.
+
+============================================================
+PERMUTATION 2: [(3, 'U'), (4, 'D'), (5, 'D'), (4, 'U'), (5, 'U'), (3, 'D'), (6, 'D')]
+============================================================
+Adding requests...
+E1: 15, E2: 15, E3: 15, 
+Requesting: 3 U -> Assigned to E0
+E2: 20, E3: 20, E1: 25, 
+Requesting: 4 D -> Assigned to E1
+E3: 25, E1: 30, E2: 30, 
+Requesting: 5 D -> Assigned to E2
+E2: 20, E3: 20, E1: 25, 
+Requesting: 4 U -> Assigned to E1
+E3: 25, E1: 30, E2: 35, 
+Requesting: 5 U -> Assigned to E2
+E1: 20, E2: 65, E3: 75, 
+Requesting: 3 D -> Assigned to E0
+E1: 40, E2: 40, E3: 40, 
+Requesting: 6 D -> Assigned to E0
+Requests added. Waiting for elevators to handle them...
+
+[Second 1] Hall Button State:
+  E0: Floor=0, Dir=U, UP=[3], DOWN=[3, 6], INT=[]
+  E1: Floor=0, Dir=U, UP=[4], DOWN=[4], INT=[]
+  E2: Floor=0, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 14.0, E2: 14.0, E3: 14.0, 
+4D == E2: 24.0, E3: 64.0, E1: 79.0, 
+5D == E2: 29.0, E3: 29.0, E1: 74.0, 
+4U == E2: 19.0, E3: 19.0, E1: 24.0, 
+5U == E3: 24.0, E1: 29.0, E2: 29.0, 
+3D == E2: 59.0, E3: 69.0, E1: 79.0, 
+[Re-Assigning Elevator] Request:3D, Old:E1, New:E2
+6D == E1: 34.0, E3: 34.0, E2: 39.0, 
+3U == E1: 14.0, E2: 14.0, E3: 14.0, 
+4D == E2: 29.0, E3: 64.0, E1: 74.0, 
+5D == E3: 29.0, E2: 34.0, E1: 69.0, 
+4U == E1: 19.0, E3: 19.0, E2: 24.0, 
+5U == E1: 24.0, E3: 24.0, E2: 34.0, 
+3D == E2: 59.0, E3: 69.0, E1: 79.0, 
+6D == E1: 34.0, E3: 34.0, E2: 39.0, 
+
+[Second 2] Hall Button State:
+  E0: Floor=0.2, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=0.2, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=0.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 13.0, E2: 13.0, E3: 13.0, 
+4D == E2: 28.0, E3: 63.0, E1: 73.0, 
+5D == E3: 28.0, E2: 33.0, E1: 68.0, 
+4U == E1: 18.0, E3: 18.0, E2: 23.0, 
+5U == E1: 23.0, E3: 23.0, E2: 33.0, 
+3D == E2: 58.0, E3: 68.0, E1: 78.0, 
+6D == E1: 33.0, E3: 33.0, E2: 38.0, 
+3U == E1: 13.0, E2: 13.0, E3: 13.0, 
+4D == E2: 28.0, E3: 63.0, E1: 73.0, 
+5D == E3: 28.0, E2: 33.0, E1: 68.0, 
+4U == E1: 18.0, E3: 18.0, E2: 23.0, 
+5U == E1: 23.0, E3: 23.0, E2: 33.0, 
+3D == E2: 58.0, E3: 68.0, E1: 78.0, 
+6D == E1: 33.0, E3: 33.0, E2: 38.0, 
+
+[Second 3] Hall Button State:
+  E0: Floor=0.4, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=0.4, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=0.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 12.0, E2: 12.0, E3: 12.0, 
+4D == E2: 27.0, E3: 62.0, E1: 72.0, 
+5D == E3: 27.0, E2: 32.0, E1: 67.0, 
+4U == E1: 17.0, E3: 17.0, E2: 22.0, 
+5U == E1: 22.0, E3: 22.0, E2: 32.0, 
+3D == E2: 57.0, E3: 67.0, E1: 77.0, 
+6D == E1: 32.0, E3: 32.0, E2: 37.0, 
+3U == E1: 12.0, E2: 12.0, E3: 12.0, 
+4D == E2: 27.0, E3: 62.0, E1: 72.0, 
+5D == E3: 27.0, E2: 32.0, E1: 67.0, 
+4U == E1: 17.0, E3: 17.0, E2: 22.0, 
+5U == E1: 22.0, E3: 22.0, E2: 32.0, 
+3D == E2: 57.0, E3: 67.0, E1: 77.0, 
+6D == E1: 32.0, E3: 32.0, E2: 37.0, 
+
+[Second 4] Hall Button State:
+  E0: Floor=0.6, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=0.6, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=0.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 11.0, E2: 11.0, E3: 11.0, 
+4D == E2: 26.0, E3: 61.0, E1: 71.0, 
+5D == E3: 26.0, E2: 31.0, E1: 66.0, 
+4U == E1: 16.0, E3: 16.0, E2: 21.0, 
+5U == E1: 21.0, E3: 21.0, E2: 31.0, 
+3D == E2: 56.0, E3: 66.0, E1: 76.0, 
+6D == E1: 31.0, E3: 31.0, E2: 36.0, 
+3U == E1: 11.0, E2: 11.0, E3: 11.0, 
+4D == E2: 26.0, E3: 61.0, E1: 71.0, 
+5D == E3: 26.0, E2: 31.0, E1: 66.0, 
+4U == E1: 16.0, E3: 16.0, E2: 21.0, 
+5U == E1: 21.0, E3: 21.0, E2: 31.0, 
+3D == E2: 56.0, E3: 66.0, E1: 76.0, 
+6D == E1: 31.0, E3: 31.0, E2: 36.0, 
+
+[Second 5] Hall Button State:
+  E0: Floor=0.8, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=0.8, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=0.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 10.0, E2: 10.0, E3: 10.0, 
+4D == E2: 25.0, E3: 60.0, E1: 70.0, 
+5D == E3: 25.0, E2: 30.0, E1: 65.0, 
+4U == E1: 15.0, E3: 15.0, E2: 20.0, 
+5U == E1: 20.0, E3: 20.0, E2: 30.0, 
+3D == E2: 55.0, E3: 65.0, E1: 75.0, 
+6D == E1: 30.0, E3: 30.0, E2: 35.0, 
+3U == E1: 10.0, E2: 10.0, E3: 10.0, 
+4D == E2: 25.0, E3: 60.0, E1: 70.0, 
+5D == E3: 25.0, E2: 30.0, E1: 65.0, 
+4U == E1: 15.0, E3: 15.0, E2: 20.0, 
+5U == E1: 20.0, E3: 20.0, E2: 30.0, 
+3D == E2: 55.0, E3: 65.0, E1: 75.0, 
+6D == E1: 30.0, E3: 30.0, E2: 35.0, 
+
+[Second 6] Hall Button State:
+  E0: Floor=1.0, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.0, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 9.0, E2: 9.0, E3: 9.0, 
+4D == E2: 24.0, E3: 59.0, E1: 69.0, 
+5D == E3: 24.0, E2: 29.0, E1: 64.0, 
+4U == E1: 14.0, E3: 14.0, E2: 19.0, 
+5U == E1: 19.0, E3: 19.0, E2: 29.0, 
+3D == E2: 54.0, E3: 64.0, E1: 74.0, 
+6D == E1: 29.0, E3: 29.0, E2: 34.0, 
+3U == E1: 9.0, E2: 9.0, E3: 9.0, 
+4D == E2: 24.0, E3: 59.0, E1: 69.0, 
+5D == E3: 24.0, E2: 29.0, E1: 64.0, 
+4U == E1: 14.0, E3: 14.0, E2: 19.0, 
+5U == E1: 19.0, E3: 19.0, E2: 29.0, 
+3D == E2: 54.0, E3: 64.0, E1: 74.0, 
+6D == E1: 29.0, E3: 29.0, E2: 34.0, 
+
+[Second 7] Hall Button State:
+  E0: Floor=1.2, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.2, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 8.0, E2: 8.0, E3: 8.0, 
+4D == E2: 23.0, E3: 58.0, E1: 68.0, 
+5D == E3: 23.0, E2: 28.0, E1: 63.0, 
+4U == E1: 13.0, E3: 13.0, E2: 18.0, 
+5U == E1: 18.0, E3: 18.0, E2: 28.0, 
+3D == E2: 53.0, E3: 63.0, E1: 73.0, 
+6D == E1: 28.0, E3: 28.0, E2: 33.0, 
+3U == E1: 8.0, E2: 8.0, E3: 8.0, 
+4D == E2: 23.0, E3: 58.0, E1: 68.0, 
+5D == E3: 23.0, E2: 28.0, E1: 63.0, 
+4U == E1: 13.0, E3: 13.0, E2: 18.0, 
+5U == E1: 18.0, E3: 18.0, E2: 28.0, 
+3D == E2: 53.0, E3: 63.0, E1: 73.0, 
+6D == E1: 28.0, E3: 28.0, E2: 33.0, 
+
+[Second 8] Hall Button State:
+  E0: Floor=1.4, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.4, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 7.0, E2: 7.0, E3: 7.0, 
+4D == E2: 22.0, E3: 57.0, E1: 67.0, 
+5D == E3: 22.0, E2: 27.0, E1: 62.0, 
+4U == E1: 12.0, E3: 12.0, E2: 17.0, 
+5U == E1: 17.0, E3: 17.0, E2: 27.0, 
+3D == E2: 52.0, E3: 62.0, E1: 72.0, 
+6D == E1: 27.0, E3: 27.0, E2: 32.0, 
+3U == E1: 7.0, E2: 7.0, E3: 7.0, 
+4D == E2: 22.0, E3: 57.0, E1: 67.0, 
+5D == E3: 22.0, E2: 27.0, E1: 62.0, 
+4U == E1: 12.0, E3: 12.0, E2: 17.0, 
+5U == E1: 17.0, E3: 17.0, E2: 27.0, 
+3D == E2: 52.0, E3: 62.0, E1: 72.0, 
+6D == E1: 27.0, E3: 27.0, E2: 32.0, 
+
+[Second 9] Hall Button State:
+  E0: Floor=1.6, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.6, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 6.0, E2: 6.0, E3: 6.0, 
+4D == E2: 21.0, E3: 56.0, E1: 66.0, 
+5D == E3: 21.0, E2: 26.0, E1: 61.0, 
+4U == E1: 11.0, E3: 11.0, E2: 16.0, 
+5U == E1: 16.0, E3: 16.0, E2: 26.0, 
+3D == E2: 51.0, E3: 61.0, E1: 71.0, 
+6D == E1: 26.0, E3: 26.0, E2: 31.0, 
+3U == E1: 6.0, E2: 6.0, E3: 6.0, 
+4D == E2: 21.0, E3: 56.0, E1: 66.0, 
+5D == E3: 21.0, E2: 26.0, E1: 61.0, 
+4U == E1: 11.0, E3: 11.0, E2: 16.0, 
+5U == E1: 16.0, E3: 16.0, E2: 26.0, 
+3D == E2: 51.0, E3: 61.0, E1: 71.0, 
+6D == E1: 26.0, E3: 26.0, E2: 31.0, 
+
+[Second 10] Hall Button State:
+  E0: Floor=1.8, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=1.8, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=1.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+3U == E1: 5.0, E2: 5.0, E3: 5.0, 
+4D == E2: 20.0, E3: 55.0, E1: 65.0, 
+5D == E3: 20.0, E2: 25.0, E1: 60.0, 
+4U == E1: 10.0, E3: 10.0, E2: 15.0, 
+5U == E1: 15.0, E3: 15.0, E2: 25.0, 
+3D == E2: 50.0, E3: 60.0, E1: 70.0, 
+6D == E1: 25.0, E3: 25.0, E2: 30.0, 
+4D == E2: 20.0, E3: 55.0, E1: 65.0, 
+5D == E3: 20.0, E2: 25.0, E1: 60.0, 
+4U == E1: 10.0, E3: 10.0, E2: 15.0, 
+5U == E1: 15.0, E3: 15.0, E2: 25.0, 
+3D == E2: 50.0, E3: 60.0, E1: 70.0, 
+6D == E1: 25.0, E3: 25.0, E2: 30.0, 
+
+[Second 11] Hall Button State:
+  E0: Floor=2.0, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.0, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 19.0, E3: 54.0, E1: 64.0, 
+5D == E3: 19.0, E2: 24.0, E1: 59.0, 
+4U == E1: 9.0, E3: 9.0, E2: 14.0, 
+5U == E1: 14.0, E3: 14.0, E2: 24.0, 
+3D == E2: 49.0, E3: 59.0, E1: 69.0, 
+6D == E1: 24.0, E3: 24.0, E2: 29.0, 
+4D == E2: 19.0, E3: 54.0, E1: 64.0, 
+5D == E3: 19.0, E2: 24.0, E1: 59.0, 
+4U == E1: 9.0, E3: 9.0, E2: 14.0, 
+5U == E1: 14.0, E3: 14.0, E2: 24.0, 
+3D == E2: 49.0, E3: 59.0, E1: 69.0, 
+6D == E1: 24.0, E3: 24.0, E2: 29.0, 
+
+[Second 12] Hall Button State:
+  E0: Floor=2.2, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.2, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 18.0, E3: 53.0, E1: 63.0, 
+5D == E3: 18.0, E2: 23.0, E1: 58.0, 
+4U == E1: 8.0, E3: 8.0, E2: 13.0, 
+5U == E1: 13.0, E3: 13.0, E2: 23.0, 
+3D == E2: 48.0, E3: 58.0, E1: 68.0, 
+6D == E1: 23.0, E3: 23.0, E2: 28.0, 
+4D == E2: 18.0, E3: 53.0, E1: 63.0, 
+5D == E3: 18.0, E2: 23.0, E1: 58.0, 
+4U == E1: 8.0, E3: 8.0, E2: 13.0, 
+5U == E1: 13.0, E3: 13.0, E2: 23.0, 
+3D == E2: 48.0, E3: 58.0, E1: 68.0, 
+6D == E1: 23.0, E3: 23.0, E2: 28.0, 
+
+[Second 13] Hall Button State:
+  E0: Floor=2.4, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.4, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 17.0, E3: 52.0, E1: 62.0, 
+5D == E3: 17.0, E2: 22.0, E1: 57.0, 
+4U == E1: 7.0, E3: 7.0, E2: 12.0, 
+5U == E1: 12.0, E3: 12.0, E2: 22.0, 
+3D == E2: 47.0, E3: 57.0, E1: 67.0, 
+6D == E1: 22.0, E3: 22.0, E2: 27.0, 
+4D == E2: 17.0, E3: 52.0, E1: 62.0, 
+5D == E3: 17.0, E2: 22.0, E1: 57.0, 
+4U == E1: 7.0, E3: 7.0, E2: 12.0, 
+5U == E1: 12.0, E3: 12.0, E2: 22.0, 
+3D == E2: 47.0, E3: 57.0, E1: 67.0, 
+6D == E1: 22.0, E3: 22.0, E2: 27.0, 
+
+[Second 14] Hall Button State:
+  E0: Floor=2.6, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.6, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 16.0, E3: 51.0, E1: 61.0, 
+5D == E3: 16.0, E2: 21.0, E1: 56.0, 
+4U == E1: 6.000000000000001, E3: 6.000000000000001, E2: 11.0, 
+5U == E1: 11.0, E3: 11.0, E2: 21.0, 
+3D == E2: 46.0, E3: 56.0, E1: 66.0, 
+6D == E1: 21.0, E3: 21.0, E2: 26.0, 
+4D == E2: 16.0, E3: 51.0, E1: 61.0, 
+5D == E3: 16.0, E2: 21.0, E1: 56.0, 
+4U == E1: 6.000000000000001, E3: 6.000000000000001, E2: 11.0, 
+5U == E1: 11.0, E3: 11.0, E2: 21.0, 
+3D == E2: 46.0, E3: 56.0, E1: 66.0, 
+6D == E1: 21.0, E3: 21.0, E2: 26.0, 
+
+[Second 15] Hall Button State:
+  E0: Floor=2.8, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=2.8, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=2.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 15.0, E3: 50.0, E1: 60.0, 
+5D == E3: 15.0, E2: 20.0, E1: 55.0, 
+4U == E1: 5.0, E3: 5.0, E2: 10.0, 
+5U == E1: 10.0, E3: 10.0, E2: 20.0, 
+3D == E2: 45.0, E3: 55.0, E1: 65.0, 
+6D == E1: 20.0, E3: 20.0, E2: 25.0, 
+4D == E2: 15.0, E3: 50.0, E1: 60.0, 
+5D == E3: 15.0, E2: 20.0, E1: 55.0, 
+4U == E1: 5.0, E3: 5.0, E2: 10.0, 
+5U == E1: 10.0, E3: 10.0, E2: 20.0, 
+3D == E2: 45.0, E3: 55.0, E1: 65.0, 
+6D == E1: 20.0, E3: 20.0, E2: 25.0, 
+
+[Second 16] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[3], DOWN=[6], INT=[]
+  E1: Floor=3.0, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 9.0, E3: 49.0, E1: 60.0, 
+5D == E2: 14.0, E3: 14.0, E1: 55.0, 
+4U == E2: 3.999999999999999, E3: 3.999999999999999, E1: 5.0, 
+5U == E3: 9.0, E1: 10.0, E2: 14.0, 
+3D == E2: 39.0, E3: 54.0, E1: 65.0, 
+6D == E2: 19.0, E3: 19.0, E1: 20.0, 
+4D == E2: 9.0, E3: 49.0, E1: 60.0, 
+5D == E2: 14.0, E3: 14.0, E1: 55.0, 
+5U == E3: 9.0, E1: 10.0, E2: 14.0, 
+3D == E2: 39.0, E3: 54.0, E1: 65.0, 
+6D == E2: 19.0, E3: 19.0, E1: 20.0, 
+
+[Second 17] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=3.2, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 8.0, E3: 48.0, E1: 60.0, 
+5D == E2: 13.0, E3: 13.0, E1: 55.0, 
+5U == E3: 8.0, E1: 10.0, E2: 13.0, 
+3D == E2: 38.0, E3: 53.0, E1: 65.0, 
+6D == E2: 18.0, E3: 18.0, E1: 20.0, 
+4D == E2: 8.0, E3: 48.0, E1: 60.0, 
+5D == E2: 13.0, E3: 13.0, E1: 55.0, 
+5U == E3: 8.0, E1: 10.0, E2: 13.0, 
+3D == E2: 38.0, E3: 53.0, E1: 65.0, 
+6D == E2: 18.0, E3: 18.0, E1: 20.0, 
+
+[Second 18] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=3.4, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 7.0, E3: 47.0, E1: 60.0, 
+5D == E2: 12.0, E3: 12.0, E1: 55.0, 
+5U == E3: 7.0, E1: 10.0, E2: 12.0, 
+3D == E2: 37.0, E3: 52.0, E1: 65.0, 
+6D == E2: 17.0, E3: 17.0, E1: 20.0, 
+4D == E2: 7.0, E3: 47.0, E1: 60.0, 
+5D == E2: 12.0, E3: 12.0, E1: 55.0, 
+5U == E3: 7.0, E1: 10.0, E2: 12.0, 
+3D == E2: 37.0, E3: 52.0, E1: 65.0, 
+6D == E2: 17.0, E3: 17.0, E1: 20.0, 
+
+[Second 19] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=3.6, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 6.000000000000001, E3: 46.0, E1: 60.0, 
+5D == E2: 11.0, E3: 11.0, E1: 55.0, 
+5U == E3: 6.000000000000001, E1: 10.0, E2: 11.0, 
+3D == E2: 36.0, E3: 51.0, E1: 65.0, 
+6D == E2: 16.0, E3: 16.0, E1: 20.0, 
+4D == E2: 6.000000000000001, E3: 46.0, E1: 60.0, 
+5D == E2: 11.0, E3: 11.0, E1: 55.0, 
+5U == E3: 6.000000000000001, E1: 10.0, E2: 11.0, 
+3D == E2: 36.0, E3: 51.0, E1: 65.0, 
+6D == E2: 16.0, E3: 16.0, E1: 20.0, 
+
+[Second 20] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=3.8, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=3.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+4D == E2: 5.0, E3: 45.0, E1: 60.0, 
+5D == E2: 10.0, E3: 10.0, E1: 55.0, 
+5U == E3: 5.0, E1: 10.0, E2: 10.0, 
+3D == E2: 35.0, E3: 50.0, E1: 65.0, 
+6D == E2: 15.0, E3: 15.0, E1: 20.0, 
+5D == E2: 10.0, E3: 10.0, E1: 55.0, 
+3D == E2: 35.0, E3: 50.0, E1: 65.0, 
+6D == E2: 15.0, E3: 15.0, E1: 20.0, 
+
+[Second 21] Hall Button State:
+  E0: Floor=3.0, Dir=IDLE, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[4], DOWN=[3, 4], INT=[]
+  E2: Floor=4.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 9.0, E1: 10.0, E2: 10.0, 
+3D == E1: 0.0, E2: 35.0, E3: 49.0, 
+[Re-Assigning Elevator] Request:3D, Old:E2, New:E1
+6D == E3: 14.0, E1: 15.0, E2: 15.0, 
+5D == E3: 9.0, E1: 10.0, E2: 10.0, 
+3D == E1: 0.0, E2: 40.0, E3: 49.0, 
+6D == E3: 14.0, E1: 15.0, E2: 15.0, 
+
+[Second 22] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.2, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 7.999999999999998, E2: 10.0, E1: 50.0, 
+6D == E3: 12.999999999999998, E1: 15.0, E2: 15.0, 
+5D == E3: 7.999999999999998, E2: 10.0, E1: 50.0, 
+6D == E3: 12.999999999999998, E1: 15.0, E2: 15.0, 
+
+[Second 23] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.4, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 7.000000000000002, E2: 10.0, E1: 50.0, 
+6D == E3: 12.000000000000002, E1: 15.0, E2: 15.0, 
+5D == E3: 7.000000000000002, E2: 10.0, E1: 50.0, 
+6D == E3: 12.000000000000002, E1: 15.0, E2: 15.0, 
+
+[Second 24] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.6, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 6.000000000000001, E2: 10.0, E1: 50.0, 
+6D == E3: 11.0, E1: 15.0, E2: 15.0, 
+5D == E3: 6.000000000000001, E2: 10.0, E1: 50.0, 
+6D == E3: 11.0, E1: 15.0, E2: 15.0, 
+
+[Second 25] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.8, Dir=U, UP=[5], DOWN=[5], INT=[]
+5D == E3: 5.0, E2: 10.0, E1: 50.0, 
+6D == E3: 10.0, E1: 15.0, E2: 15.0, 
+6D == E3: 10.0, E1: 15.0, E2: 15.0, 
+
+[Second 26] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[5], DOWN=[5], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 15.0, 
+6D == E2: 10.0, E3: 10.0, E1: 15.0, 
+
+[Second 27] Hall Button State:
+  E0: Floor=3.2, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 14.0, 
+6D == E2: 10.0, E3: 10.0, E1: 14.0, 
+
+[Second 28] Hall Button State:
+  E0: Floor=3.4, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 13.0, 
+6D == E2: 10.0, E3: 10.0, E1: 13.0, 
+
+[Second 29] Hall Button State:
+  E0: Floor=3.6, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 12.0, 
+6D == E2: 10.0, E3: 10.0, E1: 12.0, 
+
+[Second 30] Hall Button State:
+  E0: Floor=3.8, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 11.0, 
+6D == E2: 10.0, E3: 10.0, E1: 11.0, 
+
+[Second 31] Hall Button State:
+  E0: Floor=4.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 10.0, E2: 10.0, 
+6D == E3: 5.0, E1: 10.0, E2: 10.0, 
+
+[Second 32] Hall Button State:
+  E0: Floor=4.2, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 9.0, E2: 10.0, 
+6D == E3: 5.0, E1: 9.0, E2: 10.0, 
+
+[Second 33] Hall Button State:
+  E0: Floor=4.4, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 7.999999999999998, E2: 10.0, 
+6D == E3: 5.0, E1: 7.999999999999998, E2: 10.0, 
+
+[Second 34] Hall Button State:
+  E0: Floor=4.6, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 7.000000000000002, E2: 10.0, 
+6D == E3: 5.0, E1: 6.000000000000001, E2: 10.0, 
+
+[Second 35] Hall Button State:
+  E0: Floor=4.8, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E3: 5.0, E1: 6.000000000000001, E2: 10.0, 
+6D == E1: 5.0, E3: 5.0, E2: 10.0, 
+
+[Second 36] Hall Button State:
+  E0: Floor=5.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 37] Hall Button State:
+  E0: Floor=5.2, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 38] Hall Button State:
+  E0: Floor=5.4, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 39] Hall Button State:
+  E0: Floor=5.6, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 40] Hall Button State:
+  E0: Floor=5.8, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 41] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 42] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 43] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 44] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 45] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 46] Hall Button State:
+  E0: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 47] Hall Button State:
+  E0: Floor=6.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E1: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+*** All 6 scheduler trees are empty AND all elevators IDLE ***
+
+--- Simulation Finished (or Timed out) ---
+Checking for lingering requests and internal scheduler state...
+
+[Elevator 0]
+  Current Floor: 6.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+[Elevator 1]
+  Current Floor: 4.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+[Elevator 2]
+  Current Floor: 5.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+No bug found. All requests cleared.
+
+============================================================
+PERMUTATION 3: [(4, 'D'), (4, 'U'), (5, 'U'), (6, 'D'), (5, 'D'), (3, 'U'), (3, 'D')]
+============================================================
+Adding requests...
+E1: 20, E2: 20, E3: 20, 
+Requesting: 4 D -> Assigned to E0
+E1: 20, E2: 20, E3: 20, 
+Requesting: 4 U -> Assigned to E0
+E2: 25, E3: 25, E1: 35, 
+Requesting: 5 U -> Assigned to E1
+E3: 30, E2: 35, E1: 40, 
+Requesting: 6 D -> Assigned to E2
+E2: 30, E1: 35, E3: 70, 
+Requesting: 5 D -> Assigned to E1
+E1: 15, E2: 15, E3: 15, 
+Requesting: 3 U -> Assigned to E0
+E1: 65, E2: 75, E3: 80, 
+Requesting: 3 D -> Assigned to E0
+Requests added. Waiting for elevators to handle them...
+
+[Second 1] Hall Button State:
+  E0: Floor=0, Dir=U, UP=[3, 4], DOWN=[3, 4], INT=[]
+  E1: Floor=0, Dir=U, UP=[5], DOWN=[5], INT=[]
+  E2: Floor=0, Dir=U, UP=[], DOWN=[6], INT=[]
+4D == E3: 20, E1: 34.0, E2: 64.0, 
+[Re-Assigning Elevator] Request:4D, Old:E1, New:E3
+4U == E2: 19.0, E3: 20, E1: 24.0, 
+5U == E2: 24.0, E3: 30, E1: 34.0, 
+6D == E2: 34.0, E1: 39.0, E3: 40, 
+[Re-Assigning Elevator] Request:6D, Old:E3, New:E2
+5D == E3: 30, E1: 34.0, E2: 69.0, 
+[Re-Assigning Elevator] Request:5D, Old:E2, New:E3
+3U == E1: 14.0, E2: 14.0, E3: 15, 
+3D == E1: 59.0, E3: 75, E2: 79.0, 
+4D == E1: 29.0, E3: 65, E2: 74.0, 
+[Re-Assigning Elevator] Request:4D, Old:E3, New:E1
+4U == E2: 19.0, E3: 20, E1: 29.0, 
+[Re-Assigning Elevator] Request:4U, Old:E1, New:E2
+5U == E3: 25, E2: 29.0, E1: 34.0, 
+6D == E3: 35, E1: 39.0, E2: 39.0, 
+5D == E3: 30, E1: 34.0, E2: 74.0, 
+3U == E1: 14.0, E2: 14.0, E3: 15, 
+3D == E1: 59.0, E3: 70, E2: 84.0, 
+
+[Second 2] Hall Button State:
+  E0: Floor=0.2, Dir=U, UP=[3], DOWN=[3, 4], INT=[]
+  E1: Floor=0.2, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=0, Dir=U, UP=[], DOWN=[5], INT=[]
+4D == E3: 20, E1: 28.0, E2: 78.0, 
+[Re-Assigning Elevator] Request:4D, Old:E1, New:E3
+4U == E2: 18.0, E3: 20, E1: 23.0, 
+5U == E2: 23.0, E1: 28.0, E3: 30, 
+6D == E1: 33.0, E2: 38.0, E3: 40, 
+5D == E1: 28.0, E3: 35, E2: 68.0, 
+[Re-Assigning Elevator] Request:5D, Old:E3, New:E1
+3U == E1: 13.0, E2: 13.0, E3: 15, 
+3D == E3: 60, E1: 68.0, E2: 83.0, 
+[Re-Assigning Elevator] Request:3D, Old:E1, New:E3
+4D == E3: 30, E1: 63.0, E2: 78.0, 
+4U == E1: 18.0, E2: 18.0, E3: 25, 
+5U == E1: 23.0, E2: 23.0, E3: 35, 
+6D == E1: 33.0, E2: 38.0, E3: 40, 
+5D == E1: 28.0, E3: 35, E2: 68.0, 
+3U == E1: 13.0, E2: 13.0, E3: 15, 
+3D == E3: 60, E1: 68.0, E2: 83.0, 
+
+[Second 3] Hall Button State:
+  E0: Floor=0.4, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=0.4, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=0, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 20, E1: 62.0, E2: 77.0, 
+4U == E1: 17.0, E2: 17.0, E3: 20, 
+5U == E1: 22.0, E2: 22.0, E3: 25, 
+6D == E3: 30, E1: 32.0, E2: 37.0, 
+[Re-Assigning Elevator] Request:6D, Old:E2, New:E3
+5D == E1: 27.0, E2: 27.0, E3: 80, 
+3U == E1: 12.0, E2: 12.0, E3: 15, 
+3D == E1: 67.0, E2: 67.0, E3: 85, 
+[Re-Assigning Elevator] Request:3D, Old:E3, New:E1
+4D == E2: 62.0, E1: 67.0, E3: 75, 
+[Re-Assigning Elevator] Request:4D, Old:E3, New:E2
+4U == E2: 17.0, E3: 20, E1: 22.0, 
+5U == E3: 25, E1: 27.0, E2: 27.0, 
+6D == E3: 35, E1: 37.0, E2: 37.0, 
+5D == E1: 32.0, E2: 32.0, E3: 70, 
+3U == E1: 12.0, E2: 12.0, E3: 15, 
+3D == E1: 67.0, E2: 72.0, E3: 80, 
+
+[Second 4] Hall Button State:
+  E0: Floor=0.6, Dir=U, UP=[3], DOWN=[3, 5], INT=[]
+  E1: Floor=0.6, Dir=U, UP=[4, 5], DOWN=[4], INT=[]
+  E2: Floor=0, Dir=U, UP=[], DOWN=[6], INT=[]
+4D == E3: 20, E2: 61.0, E1: 66.0, 
+[Re-Assigning Elevator] Request:4D, Old:E2, New:E3
+4U == E2: 16.0, E3: 20, E1: 21.0, 
+5U == E2: 21.0, E1: 26.0, E3: 30, 
+6D == E2: 31.0, E1: 36.0, E3: 40, 
+[Re-Assigning Elevator] Request:6D, Old:E3, New:E2
+5D == E3: 30, E1: 31.0, E2: 66.0, 
+3U == E1: 11.0, E2: 11.0, E3: 15, 
+3D == E3: 60, E1: 66.0, E2: 81.0, 
+[Re-Assigning Elevator] Request:3D, Old:E1, New:E3
+4D == E3: 30, E1: 61.0, E2: 76.0, 
+4U == E1: 16.0, E2: 16.0, E3: 25, 
+5U == E1: 21.0, E2: 21.0, E3: 35, 
+6D == E1: 31.0, E2: 36.0, E3: 40, 
+5D == E1: 26.0, E3: 35, E2: 66.0, 
+3U == E1: 11.0, E2: 11.0, E3: 15, 
+3D == E3: 60, E1: 66.0, E2: 81.0, 
+
+[Second 5] Hall Button State:
+  E0: Floor=0.8, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=0.8, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=0, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 20, E1: 60.0, E2: 75.0, 
+4U == E1: 15.0, E2: 15.0, E3: 20, 
+5U == E1: 20.0, E2: 20.0, E3: 25, 
+6D == E1: 30.0, E3: 30, E2: 35.0, 
+5D == E1: 25.0, E3: 25, E2: 65.0, 
+3U == E1: 10.0, E2: 10.0, E3: 15, 
+3D == E3: 15, E1: 65.0, E2: 80.0, 
+4D == E3: 20, E1: 60.0, E2: 75.0, 
+4U == E1: 15.0, E2: 15.0, E3: 20, 
+5U == E1: 20.0, E2: 20.0, E3: 25, 
+6D == E1: 30.0, E3: 30, E2: 35.0, 
+5D == E1: 25.0, E3: 25, E2: 65.0, 
+3U == E1: 10.0, E2: 10.0, E3: 15, 
+3D == E3: 15, E1: 65.0, E2: 80.0, 
+
+[Second 6] Hall Button State:
+  E0: Floor=1.0, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=1.0, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=0, Dir=IDLE, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 24.0, E1: 59.0, E2: 74.0, 
+4U == E1: 14.0, E2: 14.0, E3: 24.0, 
+5U == E1: 19.0, E2: 19.0, E3: 29.0, 
+6D == E1: 29.0, E2: 34.0, E3: 34.0, 
+5D == E1: 24.0, E3: 29.0, E2: 64.0, 
+3U == E1: 9.0, E2: 9.0, E3: 14.0, 
+3D == E3: 54.0, E1: 64.0, E2: 79.0, 
+4D == E3: 24.0, E1: 59.0, E2: 74.0, 
+4U == E1: 14.0, E2: 14.0, E3: 24.0, 
+5U == E1: 19.0, E2: 19.0, E3: 29.0, 
+6D == E1: 29.0, E2: 34.0, E3: 34.0, 
+5D == E1: 24.0, E3: 29.0, E2: 64.0, 
+3U == E1: 9.0, E2: 9.0, E3: 14.0, 
+3D == E3: 54.0, E1: 64.0, E2: 79.0, 
+
+[Second 7] Hall Button State:
+  E0: Floor=1.2, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=1.2, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=0.2, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 23.0, E1: 58.0, E2: 73.0, 
+4U == E1: 13.0, E2: 13.0, E3: 23.0, 
+5U == E1: 18.0, E2: 18.0, E3: 28.0, 
+6D == E1: 28.0, E2: 33.0, E3: 33.0, 
+5D == E1: 23.0, E3: 28.0, E2: 63.0, 
+3U == E1: 8.0, E2: 8.0, E3: 13.0, 
+3D == E3: 53.0, E1: 63.0, E2: 78.0, 
+4D == E3: 23.0, E1: 58.0, E2: 73.0, 
+4U == E1: 13.0, E2: 13.0, E3: 23.0, 
+5U == E1: 18.0, E2: 18.0, E3: 28.0, 
+6D == E1: 28.0, E2: 33.0, E3: 33.0, 
+5D == E1: 23.0, E3: 28.0, E2: 63.0, 
+3U == E1: 8.0, E2: 8.0, E3: 13.0, 
+3D == E3: 53.0, E1: 63.0, E2: 78.0, 
+
+[Second 8] Hall Button State:
+  E0: Floor=1.4, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=1.4, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=0.4, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 22.0, E1: 57.0, E2: 72.0, 
+4U == E1: 12.0, E2: 12.0, E3: 22.0, 
+5U == E1: 17.0, E2: 17.0, E3: 27.0, 
+6D == E1: 27.0, E2: 32.0, E3: 32.0, 
+5D == E1: 22.0, E3: 27.0, E2: 62.0, 
+3U == E1: 7.0, E2: 7.0, E3: 12.0, 
+3D == E3: 52.0, E1: 62.0, E2: 77.0, 
+4D == E3: 22.0, E1: 57.0, E2: 72.0, 
+4U == E1: 12.0, E2: 12.0, E3: 22.0, 
+5U == E1: 17.0, E2: 17.0, E3: 27.0, 
+6D == E1: 27.0, E2: 32.0, E3: 32.0, 
+5D == E1: 22.0, E3: 27.0, E2: 62.0, 
+3U == E1: 7.0, E2: 7.0, E3: 12.0, 
+3D == E3: 52.0, E1: 62.0, E2: 77.0, 
+
+[Second 9] Hall Button State:
+  E0: Floor=1.6, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=1.6, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=0.6, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 21.0, E1: 56.0, E2: 71.0, 
+4U == E1: 11.0, E2: 11.0, E3: 21.0, 
+5U == E1: 16.0, E2: 16.0, E3: 26.0, 
+6D == E1: 26.0, E2: 31.0, E3: 31.0, 
+5D == E1: 21.0, E3: 26.0, E2: 61.0, 
+3U == E1: 6.0, E2: 6.0, E3: 11.0, 
+3D == E3: 51.0, E1: 61.0, E2: 76.0, 
+4D == E3: 21.0, E1: 56.0, E2: 71.0, 
+4U == E1: 11.0, E2: 11.0, E3: 21.0, 
+5U == E1: 16.0, E2: 16.0, E3: 26.0, 
+6D == E1: 26.0, E2: 31.0, E3: 31.0, 
+5D == E1: 21.0, E3: 26.0, E2: 61.0, 
+3U == E1: 6.0, E2: 6.0, E3: 11.0, 
+3D == E3: 51.0, E1: 61.0, E2: 76.0, 
+
+[Second 10] Hall Button State:
+  E0: Floor=1.8, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=1.8, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=0.8, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 20.0, E1: 55.0, E2: 70.0, 
+4U == E1: 10.0, E2: 10.0, E3: 20.0, 
+5U == E1: 15.0, E2: 15.0, E3: 25.0, 
+6D == E1: 25.0, E2: 30.0, E3: 30.0, 
+5D == E1: 20.0, E3: 25.0, E2: 60.0, 
+3U == E1: 5.0, E2: 5.0, E3: 10.0, 
+3D == E3: 50.0, E1: 60.0, E2: 75.0, 
+4D == E3: 20.0, E1: 55.0, E2: 70.0, 
+4U == E1: 10.0, E2: 10.0, E3: 20.0, 
+5U == E1: 15.0, E2: 15.0, E3: 25.0, 
+6D == E1: 25.0, E2: 30.0, E3: 30.0, 
+5D == E1: 20.0, E3: 25.0, E2: 60.0, 
+3D == E3: 50.0, E1: 60.0, E2: 75.0, 
+
+[Second 11] Hall Button State:
+  E0: Floor=2.0, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=2.0, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=1.0, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 19.0, E1: 54.0, E2: 69.0, 
+4U == E1: 9.0, E2: 9.0, E3: 19.0, 
+5U == E1: 14.0, E2: 14.0, E3: 24.0, 
+6D == E1: 24.0, E2: 29.0, E3: 29.0, 
+5D == E1: 19.0, E3: 24.0, E2: 59.0, 
+3D == E3: 49.0, E1: 59.0, E2: 74.0, 
+4D == E3: 19.0, E1: 54.0, E2: 69.0, 
+4U == E1: 9.0, E2: 9.0, E3: 19.0, 
+5U == E1: 14.0, E2: 14.0, E3: 24.0, 
+6D == E1: 24.0, E2: 29.0, E3: 29.0, 
+5D == E1: 19.0, E3: 24.0, E2: 59.0, 
+3D == E3: 49.0, E1: 59.0, E2: 74.0, 
+
+[Second 12] Hall Button State:
+  E0: Floor=2.2, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=2.2, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=1.2, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 18.0, E1: 53.0, E2: 68.0, 
+4U == E1: 8.0, E2: 8.0, E3: 18.0, 
+5U == E1: 13.0, E2: 13.0, E3: 23.0, 
+6D == E1: 23.0, E2: 28.0, E3: 28.0, 
+5D == E1: 18.0, E3: 23.0, E2: 58.0, 
+3D == E3: 48.0, E1: 58.0, E2: 73.0, 
+4D == E3: 18.0, E1: 53.0, E2: 68.0, 
+4U == E1: 8.0, E2: 8.0, E3: 18.0, 
+5U == E1: 13.0, E2: 13.0, E3: 23.0, 
+6D == E1: 23.0, E2: 28.0, E3: 28.0, 
+5D == E1: 18.0, E3: 23.0, E2: 58.0, 
+3D == E3: 48.0, E1: 58.0, E2: 73.0, 
+
+[Second 13] Hall Button State:
+  E0: Floor=2.4, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=2.4, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=1.4, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 17.0, E1: 52.0, E2: 67.0, 
+4U == E1: 7.0, E2: 7.0, E3: 17.0, 
+5U == E1: 12.0, E2: 12.0, E3: 22.0, 
+6D == E1: 22.0, E2: 27.0, E3: 27.0, 
+5D == E1: 17.0, E3: 22.0, E2: 57.0, 
+3D == E3: 47.0, E1: 57.0, E2: 72.0, 
+4D == E3: 17.0, E1: 52.0, E2: 67.0, 
+4U == E1: 7.0, E2: 7.0, E3: 17.0, 
+5U == E1: 12.0, E2: 12.0, E3: 22.0, 
+6D == E1: 22.0, E2: 27.0, E3: 27.0, 
+5D == E1: 17.0, E3: 22.0, E2: 57.0, 
+3D == E3: 47.0, E1: 57.0, E2: 72.0, 
+
+[Second 14] Hall Button State:
+  E0: Floor=2.6, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=2.6, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=1.6, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 16.0, E1: 51.0, E2: 66.0, 
+4U == E1: 6.000000000000001, E2: 6.000000000000001, E3: 16.0, 
+5U == E1: 11.0, E2: 11.0, E3: 21.0, 
+6D == E1: 21.0, E2: 26.0, E3: 26.0, 
+5D == E1: 16.0, E3: 21.0, E2: 56.0, 
+3D == E3: 46.0, E1: 56.0, E2: 71.0, 
+4D == E3: 16.0, E1: 51.0, E2: 66.0, 
+4U == E1: 6.000000000000001, E2: 6.000000000000001, E3: 16.0, 
+5U == E1: 11.0, E2: 11.0, E3: 21.0, 
+6D == E1: 21.0, E2: 26.0, E3: 26.0, 
+5D == E1: 16.0, E3: 21.0, E2: 56.0, 
+3D == E3: 46.0, E1: 56.0, E2: 71.0, 
+
+[Second 15] Hall Button State:
+  E0: Floor=2.8, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=2.8, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=1.8, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 15.0, E1: 50.0, E2: 65.0, 
+4U == E1: 5.0, E2: 5.0, E3: 15.0, 
+5U == E1: 10.0, E2: 10.0, E3: 20.0, 
+6D == E1: 20.0, E2: 25.0, E3: 25.0, 
+5D == E1: 15.0, E3: 20.0, E2: 55.0, 
+3D == E3: 45.0, E1: 55.0, E2: 70.0, 
+4D == E3: 15.0, E1: 50.0, E2: 65.0, 
+5U == E1: 10.0, E2: 10.0, E3: 20.0, 
+6D == E1: 20.0, E2: 25.0, E3: 25.0, 
+5D == E1: 15.0, E3: 20.0, E2: 55.0, 
+3D == E3: 45.0, E1: 55.0, E2: 70.0, 
+
+[Second 16] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[3], DOWN=[5], INT=[]
+  E1: Floor=3.0, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=2.0, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 14.0, E1: 50.0, E2: 64.0, 
+5U == E2: 9.0, E1: 10.0, E3: 19.0, 
+6D == E1: 20.0, E2: 24.0, E3: 24.0, 
+5D == E1: 15.0, E3: 19.0, E2: 54.0, 
+3D == E3: 44.0, E1: 55.0, E2: 69.0, 
+4D == E3: 14.0, E1: 50.0, E2: 64.0, 
+5U == E2: 9.0, E1: 10.0, E3: 19.0, 
+6D == E1: 20.0, E2: 24.0, E3: 24.0, 
+5D == E1: 15.0, E3: 19.0, E2: 54.0, 
+3D == E3: 44.0, E1: 55.0, E2: 69.0, 
+
+[Second 17] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=3.2, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=2.2, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 13.0, E1: 50.0, E2: 63.0, 
+5U == E2: 8.0, E1: 10.0, E3: 18.0, 
+6D == E1: 20.0, E2: 23.0, E3: 23.0, 
+5D == E1: 15.0, E3: 18.0, E2: 53.0, 
+3D == E3: 43.0, E1: 55.0, E2: 68.0, 
+4D == E3: 13.0, E1: 50.0, E2: 63.0, 
+5U == E2: 8.0, E1: 10.0, E3: 18.0, 
+6D == E1: 20.0, E2: 23.0, E3: 23.0, 
+5D == E1: 15.0, E3: 18.0, E2: 53.0, 
+3D == E3: 43.0, E1: 55.0, E2: 68.0, 
+
+[Second 18] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=3.4, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=2.4, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 12.0, E1: 50.0, E2: 62.0, 
+5U == E2: 7.0, E1: 10.0, E3: 17.0, 
+6D == E1: 20.0, E2: 22.0, E3: 22.0, 
+5D == E1: 15.0, E3: 17.0, E2: 52.0, 
+3D == E3: 42.0, E1: 55.0, E2: 67.0, 
+4D == E3: 12.0, E1: 50.0, E2: 62.0, 
+5U == E2: 7.0, E1: 10.0, E3: 17.0, 
+6D == E1: 20.0, E2: 22.0, E3: 22.0, 
+5D == E1: 15.0, E3: 17.0, E2: 52.0, 
+3D == E3: 42.0, E1: 55.0, E2: 67.0, 
+
+[Second 19] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=3.6, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=2.6, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 11.0, E1: 50.0, E2: 61.0, 
+5U == E2: 6.000000000000001, E1: 10.0, E3: 16.0, 
+6D == E1: 20.0, E2: 21.0, E3: 21.0, 
+5D == E1: 15.0, E3: 16.0, E2: 51.0, 
+3D == E3: 41.0, E1: 55.0, E2: 66.0, 
+4D == E3: 11.0, E1: 50.0, E2: 61.0, 
+5U == E2: 6.000000000000001, E1: 10.0, E3: 16.0, 
+6D == E1: 20.0, E2: 21.0, E3: 21.0, 
+5D == E1: 15.0, E3: 16.0, E2: 51.0, 
+3D == E3: 41.0, E1: 55.0, E2: 66.0, 
+
+[Second 20] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=3.8, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=2.8, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 10.0, E1: 50.0, E2: 60.0, 
+5U == E2: 5.0, E1: 10.0, E3: 15.0, 
+6D == E1: 20.0, E2: 20.0, E3: 20.0, 
+5D == E1: 15.0, E3: 15.0, E2: 50.0, 
+3D == E3: 40.0, E1: 55.0, E2: 65.0, 
+4D == E3: 10.0, E1: 50.0, E2: 60.0, 
+6D == E1: 20.0, E2: 20.0, E3: 20.0, 
+5D == E1: 15.0, E3: 15.0, E2: 50.0, 
+3D == E3: 40.0, E1: 55.0, E2: 65.0, 
+
+[Second 21] Hall Button State:
+  E0: Floor=3.0, Dir=IDLE, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[4, 5], DOWN=[6], INT=[]
+  E2: Floor=3.0, Dir=U, UP=[], DOWN=[3, 4], INT=[]
+4D == E3: 3.999999999999999, E1: 5.0, E2: 60.0, 
+6D == E3: 14.0, E1: 15.0, E2: 20.0, 
+[Re-Assigning Elevator] Request:6D, Old:E2, New:E3
+5D == E1: 10.0, E2: 10.0, E3: 54.0, 
+3D == E1: 0.0, E2: 50.0, E3: 59.0, 
+[Re-Assigning Elevator] Request:3D, Old:E3, New:E1
+6D == E1: 15.0, E2: 15.0, E3: 19.0, 
+5D == E1: 10.0, E2: 10.0, E3: 54.0, 
+3D == E1: 0.0, E2: 50.0, E3: 64.0, 
+
+[Second 22] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[5], DOWN=[], INT=[]
+  E2: Floor=3.2, Dir=U, UP=[], DOWN=[4, 6], INT=[]
+6D == E1: 15.0, E2: 15.0, E3: 18.0, 
+5D == E1: 10.0, E2: 10.0, E3: 53.0, 
+6D == E1: 15.0, E2: 15.0, E3: 18.0, 
+5D == E1: 10.0, E2: 10.0, E3: 53.0, 
+
+[Second 23] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[5], DOWN=[], INT=[]
+  E2: Floor=3.4, Dir=U, UP=[], DOWN=[4, 6], INT=[]
+6D == E1: 15.0, E2: 15.0, E3: 17.0, 
+5D == E1: 10.0, E2: 10.0, E3: 52.0, 
+6D == E1: 15.0, E2: 15.0, E3: 17.0, 
+5D == E1: 10.0, E2: 10.0, E3: 52.0, 
+
+[Second 24] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[5], DOWN=[], INT=[]
+  E2: Floor=3.6, Dir=U, UP=[], DOWN=[4, 6], INT=[]
+6D == E1: 15.0, E2: 15.0, E3: 16.0, 
+5D == E1: 10.0, E2: 10.0, E3: 51.0, 
+6D == E1: 15.0, E2: 15.0, E3: 16.0, 
+5D == E1: 10.0, E2: 10.0, E3: 51.0, 
+
+[Second 25] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.0, Dir=U, UP=[5], DOWN=[], INT=[]
+  E2: Floor=3.8, Dir=U, UP=[], DOWN=[4, 6], INT=[]
+6D == E1: 15.0, E2: 15.0, E3: 15.0, 
+5D == E1: 10.0, E2: 10.0, E3: 50.0, 
+6D == E1: 15.0, E2: 15.0, E3: 15.0, 
+5D == E1: 10.0, E2: 10.0, E3: 50.0, 
+
+[Second 26] Hall Button State:
+  E0: Floor=3.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.2, Dir=U, UP=[5], DOWN=[], INT=[]
+  E2: Floor=4.0, Dir=U, UP=[], DOWN=[4, 6], INT=[]
+6D == E2: 9.0, E1: 15.0, E3: 15.0, 
+[Re-Assigning Elevator] Request:6D, Old:E3, New:E2
+5D == E3: 5.0, E1: 10.0, E2: 49.0, 
+6D == E3: 10.0, E2: 14.0, E1: 15.0, 
+5D == E3: 5.0, E1: 10.0, E2: 49.0, 
+
+[Second 27] Hall Button State:
+  E0: Floor=3.2, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.4, Dir=U, UP=[5], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=U, UP=[], DOWN=[4], INT=[]
+6D == E3: 10.0, E2: 12.999999999999998, E1: 14.0, 
+5D == E3: 5.0, E1: 9.0, E2: 48.0, 
+6D == E3: 10.0, E2: 12.999999999999998, E1: 14.0, 
+5D == E3: 5.0, E1: 9.0, E2: 48.0, 
+
+[Second 28] Hall Button State:
+  E0: Floor=3.4, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.6, Dir=U, UP=[5], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=U, UP=[], DOWN=[4], INT=[]
+6D == E3: 10.0, E2: 12.000000000000002, E1: 13.0, 
+5D == E3: 5.0, E1: 8.0, E2: 47.0, 
+6D == E3: 10.0, E2: 12.000000000000002, E1: 13.0, 
+5D == E3: 5.0, E1: 8.0, E2: 47.0, 
+
+[Second 29] Hall Button State:
+  E0: Floor=3.6, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=4.8, Dir=U, UP=[5], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=U, UP=[], DOWN=[4], INT=[]
+6D == E3: 10.0, E2: 11.0, E1: 12.0, 
+5D == E3: 5.0, E1: 7.0, E2: 46.0, 
+6D == E3: 10.0, E2: 11.0, E1: 12.0, 
+5D == E3: 5.0, E1: 7.0, E2: 46.0, 
+
+[Second 30] Hall Button State:
+  E0: Floor=3.8, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=5.0, Dir=U, UP=[5], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=U, UP=[], DOWN=[4], INT=[]
+6D == E2: 10.0, E3: 10.0, E1: 11.0, 
+5D == E3: 5.0, E1: 6.000000000000001, E2: 45.0, 
+6D == E1: 10.0, E2: 10.0, E3: 10.0, 
+5D == E1: 5.0, E3: 5.0, E2: 45.0, 
+
+[Second 31] Hall Button State:
+  E0: Floor=4.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=5.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E1: 10.0, E2: 10.0, E3: 10.0, 
+6D == E1: 9.0, E2: 10.0, E3: 10.0, 
+
+[Second 32] Hall Button State:
+  E0: Floor=4.2, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=5.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E1: 9.0, E2: 10.0, E3: 10.0, 
+
+[Second 33] Hall Button State:
+  E0: Floor=4.4, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=5.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E1: 7.999999999999998, E2: 10.0, E3: 10.0, 
+6D == E1: 7.999999999999998, E2: 10.0, E3: 10.0, 
+
+[Second 34] Hall Button State:
+  E0: Floor=4.6, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=5.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E1: 7.000000000000002, E2: 10.0, E3: 10.0, 
+6D == E1: 7.000000000000002, E2: 10.0, E3: 10.0, 
+
+[Second 35] Hall Button State:
+  E0: Floor=4.8, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=5.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E1: 6.000000000000001, E2: 10.0, E3: 10.0, 
+6D == E1: 6.000000000000001, E2: 10.0, E3: 10.0, 
+
+[Second 36] Hall Button State:
+  E0: Floor=5.0, Dir=U, UP=[], DOWN=[5], INT=[]
+  E1: Floor=5.0, Dir=IDLE, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+6D == E1: 5.0, E2: 5.0, E3: 10.0, 
+
+[Second 37] Hall Button State:
+  E0: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=5.2, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 38] Hall Button State:
+  E0: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=5.4, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 39] Hall Button State:
+  E0: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=5.6, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 40] Hall Button State:
+  E0: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=5.8, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 41] Hall Button State:
+  E0: Floor=5.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E1: Floor=6.0, Dir=U, UP=[], DOWN=[6], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 42] Hall Button State:
+  E0: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E1: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 43] Hall Button State:
+  E0: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E1: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 44] Hall Button State:
+  E0: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E1: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 45] Hall Button State:
+  E0: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E1: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 46] Hall Button State:
+  E0: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E1: Floor=6.0, Dir=U, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+[Second 47] Hall Button State:
+  E0: Floor=5.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E1: Floor=6.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+  E2: Floor=4.0, Dir=IDLE, UP=[], DOWN=[], INT=[]
+
+*** All 6 scheduler trees are empty AND all elevators IDLE ***
+
+--- Simulation Finished (or Timed out) ---
+Checking for lingering requests and internal scheduler state...
+
+[Elevator 0]
+  Current Floor: 5.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+[Elevator 1]
+  Current Floor: 6.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+[Elevator 2]
+  Current Floor: 4.0
+  Direction: IDLE
+  UI External UP: set()
+  UI External DOWN: set()
+  UI Internal: set()
+  Scheduler up_up: []
+  Scheduler down_down: []
+  Scheduler up_down: []
+  Scheduler down_up: []
+  Scheduler internal_up: []
+  Scheduler internal_down: []
+
+No bug found. All requests cleared.
+
+================================================================================
+FINAL SUMMARY
+================================================================================
+Total permutations tested: 3
+Permutations with ghost button bugs: 0
+
+No ghost button bugs found in any permutation!

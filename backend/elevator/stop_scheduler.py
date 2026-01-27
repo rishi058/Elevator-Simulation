@@ -214,4 +214,29 @@ class StopScheduler(BaseElevator):
             return self._process_up_logic(delete, only_same_direction=False) # [only_same_direction] remains False
         
         return None, None
-    
+
+#!---------------------------------------------------------------------------------------------
+    # --- HELPERS FOR UI STATE MANAGER ---
+
+    def has_requests_above(self, floor: int) -> bool:
+        return any(
+            val is not None and val > floor
+            for val in (
+                self.internal_up.get_max()[0],
+                self.up_up.get_max()[0],
+                self.up_down.get_max()[0],
+                self.down_up.get_max()[0],
+            )
+        )
+
+
+    def has_requests_below(self, floor: int) -> bool:
+        return any(
+            val is not None and val < floor
+            for val in (
+                self.internal_down.get_min()[0],
+                self.down_down.get_min()[0],
+                self.down_up.get_min()[0],
+                self.up_down.get_min()[0],
+            )
+        )

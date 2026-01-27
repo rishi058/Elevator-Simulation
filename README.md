@@ -20,34 +20,36 @@ The system follows a clean **Microservices Architecture**, separating the "Brain
 
 ```mermaid
 graph TD
-    subgraph "Client Layer"
-        Browser[User's Browser (React SPA)]
+    subgraph Client_Layer["Client Layer"]
+        Browser["User Browser - React SPA"]
     end
 
-    subgraph "Network Layer"
-        HTTP[REST API (Command)]
-        WS[WebSocket (Status Stream)]
+    subgraph Network_Layer["Network Layer"]
+        HTTP["REST API (Command)"]
+        WS["WebSocket (Status Stream)"]
     end
 
-    subgraph "Backend Core (The Brain)"
-        API[FastAPI Gateway]
-        Dispatcher[Collective Dispatch Controller]
-        
-        subgraph "Agent Cluster"
-            E1[Elevator 0 (Independent Loop)]
-            E2[Elevator 1 (Independent Loop)]
-            E3[Elevator 2 (Independent Loop)]
+    subgraph Backend_Core["Backend Core - The Brain"]
+        API["FastAPI Gateway"]
+        Dispatcher["Collective Dispatch Controller"]
+
+        subgraph Agent_Cluster["Agent Cluster"]
+            E1["Elevator 0 - Independent Loop"]
+            E2["Elevator 1 - Independent Loop"]
+            E3["Elevator 2 - Independent Loop"]
         end
-        
-        State[Global State Manager]
+
+        State["Global State Manager"]
     end
 
-    Browser -- POST /api/request --> API
-    API -- queue_request() --> Dispatcher
-    Dispatcher -- assign_best() --> E1 & E2 & E3
-    E1 -- update_position() --> State
-    State -- broadcast_json() --> WS
-    WS -- push_payload --> Browser
+    Browser -->|POST /api/request| API
+    API -->|queue_request()| Dispatcher
+    Dispatcher -->|assign_best()| E1
+    Dispatcher -->|assign_best()| E2
+    Dispatcher -->|assign_best()| E3
+    E1 -->|update_position()| State
+    State -->|broadcast_json()| WS
+    WS -->|push_payload| Browser
 ```
 
 ---
