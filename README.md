@@ -43,12 +43,12 @@ graph TD
     end
 
     Browser -->|POST /api/request| API
-    API -->|queue_request()| Dispatcher
-    Dispatcher -->|assign_best()| E1
-    Dispatcher -->|assign_best()| E2
-    Dispatcher -->|assign_best()| E3
-    E1 -->|update_position()| State
-    State -->|broadcast_json()| WS
+    API -->|"queue_request()"| Dispatcher
+    Dispatcher -->|"assign_best()"| E1
+    Dispatcher -->|"assign_best()"| E2
+    Dispatcher -->|"assign_best()"| E3
+    E1 -->|"update_position()"| State
+    State -->|"broadcast_json()"| WS
     WS -->|push_payload| Browser
 ```
 
